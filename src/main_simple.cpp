@@ -23,7 +23,6 @@
 #include "vtk.hpp"
 
 int main(int argc, char **argv) {
-  // Printing stupid things to cheer the simpleminded user
   printf("             ███▄    █  █    ██  ███▄ ▄███▓  ██████  ██▓ ███▄ ▄███▓\n");
   printf("             ██ ▀█   █  ██  ▓██▒▓██▒▀█▀ ██▒▒██    ▒ ▓██▒▓██▒▀█▀ ██▒\n");
   printf("            ▓██  ▀█ ██▒▓██  ▒██░▓██    ▓██░░ ▓██▄   ▒██▒▓██    ▓██░\n");
@@ -35,63 +34,5 @@ int main(int argc, char **argv) {
   printf("                     ░    ░            ░         ░   ░         ░   \n");
   printf("Numerische Simulationen 16/17 von\n   Etienne Ott\n   Moritz Schleicher\n   Patrick Buchfink\n\n");
   
-/*
-  // Create parameter and geometry instances with default values
-  Parameter param;
-  Geometry geom;
-  // Create the fluid solver
-  Compute comp(&geom, &param);
-
-#ifdef USE_DEBUG_VISU
-  // Create and initialize the visualization
-  Renderer visu(geom.Length(), geom.Mesh());
-  visu.Init(800, 800);
-#endif // USE_DEBUG_VISU
-
-  // Create a VTK generator
-  VTK vtk(geom.Mesh(), geom.Size());
-
-  const Grid *visugrid;
-  bool run = true;
-
-  visugrid = comp.GetVelocity();
-
-  // Run the time steps until the end is reached
-  while (comp.GetTime() < param.Tend() && run) {
-#ifdef USE_DEBUG_VISU
-    // Render and check if window is closed
-    switch (visu.Render(visugrid)) {
-    case -1:
-      run = false;
-      break;
-    case 0:
-      visugrid = comp.GetVelocity();
-      break;
-    case 1:
-      visugrid = comp.GetU();
-      break;
-    case 2:
-      visugrid = comp.GetV();
-      break;
-    case 3:
-      visugrid = comp.GetP();
-      break;
-    default:
-      break;
-    };
-#endif // DEBUG_VISU
-
-    // Create a VTK File in the folder VTK (must exist)
-    vtk.Init("VTK/field");
-    vtk.AddField("Velocity", comp.GetU(), comp.GetV());
-    vtk.AddScalar("Pressure", comp.GetP());
-    vtk.Finish();
-
-    // Run a few steps
-    for (uint32_t i = 0; i < 9; ++i)
-      comp.TimeStep(false);
-    comp.TimeStep(true);
-  }
-*/
   return 0;
 }

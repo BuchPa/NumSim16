@@ -53,8 +53,8 @@ set (HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/src/parameter.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/solver.hpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/typedef.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/zeitgeist.hpp
+#  ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk.hpp
+#  ${CMAKE_CURRENT_SOURCE_DIR}/src/zeitgeist.hpp
   )
 
 set (SOURCES
@@ -65,7 +65,7 @@ set (SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/iterator.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/parameter.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/solver.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk.cpp
+#  ${CMAKE_CURRENT_SOURCE_DIR}/src/vtk.cpp
   )
 
 # add header and source of visu if it shall be built

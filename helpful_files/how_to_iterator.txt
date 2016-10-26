@@ -1,0 +1,11 @@
+Wie Iterator verwendet werden soll (hier Grid::Max):
+
+
+real_t Grid::Max() const {
+
+Iterator it(_geom);
+relt_t res = data[0];
+for (it.First();it.Valid();it.Next())
+	if (_data[it] > res) res = _data[it];
+return res;
+}

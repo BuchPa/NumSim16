@@ -1,0 +1,4 @@
+paraview
+cmake
+libsdl2-dev
+libmpich-dev

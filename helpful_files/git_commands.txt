@@ -1,6 +1,9 @@
 # Einzelne Datei hinzufügen
 git add Filename
 
+# Einzelne Datei zurücksetzen
+git checkout -- Filename
+
 # Alles hinzufügen (rekursiv ab aktuellem Verzeichnis)
 git add .
 

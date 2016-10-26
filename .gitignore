@@ -1,0 +1,7 @@
+build/
+VTK/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+CMakeFiles/
+numsim
