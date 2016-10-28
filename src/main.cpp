@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
   printf("                     ░    ░            ░         ░   ░         ░   \n");
   printf("Numerische Simulationen 16/17 von\n   Etienne Ott\n   Moritz Schleicher\n   Patrick Buchfink\n\n");
   
-/*
+
   // Create parameter and geometry instances with default values
   Parameter param;
   Geometry geom;
@@ -92,6 +92,6 @@ int main(int argc, char **argv) {
       comp.TimeStep(false);
     comp.TimeStep(true);
   }
-*/
+
   return 0;
 }
