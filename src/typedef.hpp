@@ -16,6 +16,8 @@
  */
 
 #include <stdint.h>
+// For debugging with printf
+#include <stdio.h>
 
 //------------------------------------------------------------------------------
 
