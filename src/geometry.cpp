@@ -7,8 +7,8 @@ Geometry::Geometry(){
   // Init number of cells in each dimension
 //   _size[0] = 128;
 //   _size[1] = 128;
-  _size[0] = 128;
-  _size[1] = 128;
+  _size[0] = 2;
+  _size[1] = 2;
   
   // Init length of driven cavity
   _length[0] = 1.0;

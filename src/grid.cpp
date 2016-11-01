@@ -7,6 +7,7 @@
 #include <algorithm> // std::fill
 
 /// Constructs a grid based on a geometry
+//  @param geom   Geometry information
 Grid::Grid(const Geometry *geom)
     : _geom(geom) {
   
@@ -23,6 +24,10 @@ Grid::Grid(const Geometry *geom)
   this->Initialize(real_t(0.0));
 }
 
+/// Constructs a grid based on a geometry with an offset
+//  @param geom   Geometry information
+//  @param offset distance of staggered grid point to cell's anchor point;
+//                (anchor point = lower left corner)
 Grid::Grid(const Geometry *geom, const multi_real_t &offset)
     : _geom(geom), _offset(offset) {
   
@@ -44,7 +49,8 @@ Grid::~Grid(){
 //  @param value  Fixed Value
 void Grid::Initialize(const real_t &value){
   // Init array with fixed value
-  std::fill( &_data[0], &_data[0] + sizeof(_data), value );
+  const multi_index_t size = _geom->Size();
+  std::fill( &_data[0], &_data[0] + (size[0])*(size[1]), value );
 }
 
 /// Write access to the grid cell at position [it]

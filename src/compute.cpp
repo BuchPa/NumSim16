@@ -26,7 +26,7 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   offset_v[1] = geom->Mesh()[1];
   
   offset_p[0] = geom->Mesh()[0]/2.0;
-  offset_p[1] = geom->Mesh()[0]/2.0;
+  offset_p[1] = geom->Mesh()[1]/2.0;
   
   // Create and init velocity / pressure field
   _u = new Grid(geom, offset_u);
