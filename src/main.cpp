@@ -22,6 +22,8 @@
 #include "visu.hpp"
 #include "vtk.hpp"
 
+#include <iostream> // getchar()
+
 int main(int argc, char **argv) {
   // Printing stupid things to cheer the simpleminded user
   printf("             ███▄    █  █    ██  ███▄ ▄███▓  ██████  ██▓ ███▄ ▄███▓\n");
@@ -80,6 +82,9 @@ int main(int argc, char **argv) {
       break;
     };
 #endif // DEBUG_VISU
+    
+//     // Wait for user input to debug step-by-step
+//     getchar();
 
     // Create a VTK File in the folder VTK (must exist)
     vtk.Init("VTK/field");

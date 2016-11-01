@@ -80,6 +80,9 @@ public:
 
   /// Returns a pointer to the raw data
   real_t *Data();
+  
+  /// Print field to console
+  void Print() const;
 
 private:
   real_t *_data;

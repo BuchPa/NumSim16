@@ -33,6 +33,16 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   _v = new Grid(geom, offset_v);
   _p = new Grid(geom, offset_p);
   
+//   //TEST -->
+//   Iterator it(_geom);
+//   real_t i = 1;
+//   while(it.Valid()){
+//     _u->Cell(it) = i;
+//     i++;
+//     it.Next();
+//   }
+//   //TEST --^
+  
   // Create and init other fields
   _F   = new Grid(geom);
   _G   = new Grid(geom);
@@ -122,6 +132,7 @@ void Compute::TimeStep(bool printInfo) {
   _t += _param->Dt();
   if(printInfo){
     printf("Time step: %4.2f\n", _t);
+//     _u->Print();
   }
   //TODO
 }

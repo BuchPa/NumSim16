@@ -4,7 +4,6 @@
 #include "iterator.hpp"
 
 #include <cmath>     // std::abs
-#include <algorithm> // std::fill
 
 /// Constructs a grid based on a geometry
 //  @param geom   Geometry information
@@ -15,7 +14,7 @@ Grid::Grid(const Geometry *geom)
   _offset[0] = real_t(0.0);
   _offset[1] = real_t(0.0);
   
-  // Create data
+  // Calculate grid size and create data
   const multi_index_t size = _geom->Size();
   //TODO N oder N+1 ode N+2?
   _data = new real_t[(size[0])*(size[1])];
@@ -31,7 +30,7 @@ Grid::Grid(const Geometry *geom)
 Grid::Grid(const Geometry *geom, const multi_real_t &offset)
     : _geom(geom), _offset(offset) {
   
-  // Create data
+  // Calculate grid size and create data
   const multi_index_t size = _geom->Size();
   //TODO N oder N+1 ode N+2?
   _data = new real_t[(size[0])*(size[1])];
@@ -49,8 +48,11 @@ Grid::~Grid(){
 //  @param value  Fixed Value
 void Grid::Initialize(const real_t &value){
   // Init array with fixed value
-  const multi_index_t size = _geom->Size();
-  std::fill( &_data[0], &_data[0] + (size[0])*(size[1]), value );
+  Iterator it(_geom);
+  
+  for (it.First();it.Valid();it.Next()){
+    this->Cell(it) = value;
+  }
 }
 
 /// Write access to the grid cell at position [it]
@@ -140,7 +142,7 @@ real_t Grid::Max() const{
   Iterator it(_geom);
   real_t res = _data[0];
   for (it.First();it.Valid();it.Next())
-          if (_data[it] > res) res = _data[it];
+    if (_data[it] > res) res = _data[it];
   return res;
 }
 /// Returns the minimal value of the grid
@@ -149,7 +151,7 @@ real_t Grid::Min() const{
   Iterator it(_geom);
   real_t res = _data[0];
   for (it.First();it.Valid();it.Next())
-          if (_data[it] < res) res = _data[it];
+    if (_data[it] < res) res = _data[it];
   return res;
 }
 /// Returns the absolute maximal value
@@ -158,12 +160,24 @@ real_t Grid::AbsMax() const{
   Iterator it(_geom);
   real_t res = _data[0];
   for (it.First();it.Valid();it.Next())
-          if (std::abs(_data[it]) > res) res = std::abs(_data[it]);
+    if (std::abs(_data[it]) > res) res = std::abs(_data[it]);
   return res;
 }
 
 /// Returns a pointer to the raw data
 real_t *Grid::Data(){
   return _data;
+}
+
+/// Print field to console
+void Grid::Print() const{
+  // Cycle field with Iterator and print
+  Iterator it(_geom);
+  
+  for (it.First();it.Valid();it.Next()){
+    if((it % _geom->Size()[0]) == 0) printf("\n");
+    printf("%6.2f", this->Cell(it));
+  }
+  printf("\n");
 }
 

@@ -5,10 +5,8 @@
 // driven cavity with 128 x 128 grid, no-slip boundary conditions
 Geometry::Geometry(){
   // Init number of cells in each dimension
-//   _size[0] = 128;
-//   _size[1] = 128;
-  _size[0] = 2;
-  _size[1] = 2;
+  _size[0] = 128;
+  _size[1] = 128;
   
   // Init length of driven cavity
   _length[0] = 1.0;
