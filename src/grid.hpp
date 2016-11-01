@@ -34,15 +34,19 @@ public:
   /// Deletes the grid
   ~Grid();
 
-  ///     Initializes the grid with a value
+  /// Initializes the grid with a value
+  //  @param value  Fixed Value
   void Initialize(const real_t &value);
 
   /// Write access to the grid cell at position [it]
+  //  @param it  Position [it]
   real_t &Cell(const Iterator &it);
   /// Read access to the grid cell at position [it]
+  //  @param it  Position [it]
   const real_t &Cell(const Iterator &it) const;
 
   /// Interpolate the value at a arbitrary position
+  //  @param pos  arbitrary position
   real_t Interpolate(const multi_real_t &pos) const;
 
   /// Computes the left-sided difference quatient in x-dim at [it]

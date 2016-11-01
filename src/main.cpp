@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
   visugrid = comp.GetVelocity();
 
   // Run the time steps until the end is reached
-  while (comp.GetTime() < param.Tend() && run) {
+  while ((comp.GetTime() - param.Tend())<-param.Dt() && run) {
 #ifdef USE_DEBUG_VISU
     // Render and check if window is closed
     switch (visu.Render(visugrid)) {

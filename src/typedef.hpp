@@ -29,6 +29,7 @@
 #define DIM 2
 #define REAL_TYPE double
 #define INDEX_TYPE uint32_t
+#define EPSILON 2.22045e-016
 
 //------------------------------------------------------------------------------
 
