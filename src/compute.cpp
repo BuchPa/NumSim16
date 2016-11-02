@@ -130,7 +130,7 @@ const Grid *Compute::GetStream(){
 // @ param printInfo print information about current solver state (residual etc.)
 void Compute::TimeStep(bool printInfo) {
   _t += _param->Dt();
-  if(printInfo){
+  if (printInfo) {
     printf("Time step: %4.2f\n", _t);
 //     _u->Print();
   }
