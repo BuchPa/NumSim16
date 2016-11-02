@@ -17,7 +17,7 @@ Parameter::Parameter(){
 
 /// Loads the parameter values from a file
 //  @param file File path as char array
-void Parameter::Load(const char *file){
+void Parameter::Load(const char *file) {
   string line;
   ifstream ifile(file);
   

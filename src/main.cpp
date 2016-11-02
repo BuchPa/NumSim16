@@ -24,6 +24,35 @@
 
 #include <iostream> // getchar()
 
+void test_compute() {
+  printf("Testing Compute\n");
+}
+
+void test_iterator() {
+  printf("Testing Iterator\n");
+}
+
+void test_geometry() {
+  printf("Testing Geometry\n");
+
+  // Testing default values
+  Geometry geo;
+  printf("Size %i,%i\n", geo.Size()[0], geo.Size()[1]);
+  printf("Length %f,%f\n", geo.Length()[0], geo.Length()[1]);
+  printf("Mesh %f,%f\n", geo.Mesh()[0], geo.Mesh()[1]);
+}
+
+void test_parameter() {
+  printf("Testing Parameter\n");
+
+  // Test loading and parsing of params
+  Parameter p = Parameter();
+  p.Load("test_parameter.txt");
+
+  printf("Re %f (1.0)\n", p.Re());
+  printf("IterMax %d (5)\n", p.IterMax());
+}
+
 int main(int argc, char **argv) {
   // Printing stupid things to cheer the simpleminded user
   printf("             ███▄    █  █    ██  ███▄ ▄███▓  ██████  ██▓ ███▄ ▄███▓\n");
@@ -49,6 +78,29 @@ int main(int argc, char **argv) {
   Renderer visu(geom.Length(), geom.Mesh());
   visu.Init(800, 800);
 #endif // USE_DEBUG_VISU
+
+  // Check for specific test
+  if (argc > 1) {
+    if (strcmp(argv[1], "TEST_COMPUTE") == 0) {
+      test_compute();
+      return 0;
+    }
+
+    if (strcmp(argv[1], "TEST_ITERATOR") == 0) {
+      test_iterator();
+      return 0;
+    }
+
+    if (strcmp(argv[1], "TEST_GEOMETRY") == 0) {
+      test_geometry();
+      return 0;
+    }
+
+    if (strcmp(argv[1], "TEST_PARAMETER") == 0) {
+      test_parameter();
+      return 0;
+    }
+  }
 
   // Create a VTK generator
   VTK vtk(geom.Mesh(), geom.Size());
