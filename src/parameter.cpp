@@ -1,5 +1,10 @@
+#include "iostream"
+#include "fstream"
+#include "string"
 #include "typedef.hpp"
 #include "parameter.hpp"
+
+using namespace std;
 
 /// Constructs a new Parameter set with default values
 Parameter::Parameter(){
