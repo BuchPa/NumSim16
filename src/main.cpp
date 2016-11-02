@@ -21,6 +21,7 @@
 #include "parameter.hpp"
 #include "visu.hpp"
 #include "vtk.hpp"
+#include "iterator.hpp"
 
 #include <iostream> // getchar()
 
@@ -30,6 +31,38 @@ void test_compute() {
 
 void test_iterator() {
   printf("Testing Iterator\n");
+  Geometry geom;
+  
+  printf("Iterator Test:\n");
+  Iterator it = Iterator(&geom);;
+  it.TestRun();
+  printf("\n");
+  
+  printf("Interior Iterator Test:\n");
+  InteriorIterator init = InteriorIterator(&geom);
+  init.TestRun();
+  printf("\n");
+  
+  printf("BoundaryIterator Test Bottom:\n");
+  BoundaryIterator boit = BoundaryIterator(&geom, 1);
+  boit.SetBoundary(1);
+  boit.TestRun();
+  printf("\n");
+  
+  printf("BoundaryIterator Test Right:\n");
+  boit.SetBoundary(2);
+  boit.TestRun();
+  printf("\n");
+  
+  printf("BoundaryIterator Test Top:\n");
+  boit.SetBoundary(3);
+  boit.TestRun();
+  printf("\n");
+  
+  printf("BoundaryIterator Test Left:\n");
+  boit.SetBoundary(4);
+  boit.TestRun();
+  printf("\n");
 }
 
 void test_geometry() {

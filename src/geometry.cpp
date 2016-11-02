@@ -5,8 +5,8 @@
 // driven cavity with 128 x 128 grid, no-slip boundary conditions
 Geometry::Geometry(){
   // Init number of cells in each dimension
-  _size[0] = 128;
-  _size[1] = 128;
+  _size[0] = 2;
+  _size[1] = 4;
   
   // Init length of driven cavity
   _length[0] = 1.0;
@@ -16,11 +16,15 @@ Geometry::Geometry(){
   _h[0] = _length[0]/_size[0];
   _h[1] = _length[1]/_size[1];
   
-  //TODO Stimmt das so?
+  // Set _size to size INCL ghost layers
+  _size[0] += 2;
+  _size[1] += 2;
+  
   // Set boundary values for upper boundary (u=1, v=0, p=0)
   _velocity[0] = 1.0;
   _velocity[1] = 0.0;
   
+  // Unused in driven cavity problem
   _pressure    = 0.0;
 }
 

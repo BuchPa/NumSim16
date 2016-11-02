@@ -25,8 +25,11 @@
 class Iterator {
 public:
   /// Constructs a new Iterator depending on a geometry
+  //  @param geom  Current geometry
   Iterator(const Geometry *geom);
   /// Constructs a new Iterator on a geometry with a defined starting value
+  // @param geom  Current geometry
+  // @param value Starting value
   Iterator(const Geometry *geom, const index_t &value);
 
   /// Returns the current position value
@@ -59,11 +62,21 @@ public:
   /// Returns an Iterator that is located below this one
   // If we are at the lower domain boundary, the cell sees itself
   virtual Iterator Down() const;
+  
+  /// Checks if current value is valid
+  virtual void UpdateValid();
+  
+  /// Tests Iterator in a dummy run
+  virtual void TestRun();
 
 protected:
   const Geometry *_geom;
   index_t _value;
   bool _valid;
+  // maximal value for _value (inclusive _itmax)
+  index_t _itmax;
+  // minimal value for _value (inclusive _itmin)
+  index_t _itmin;
 };
 
 //------------------------------------------------------------------------------
@@ -72,10 +85,9 @@ protected:
 class InteriorIterator : public Iterator {
 public:
   /// Construct a new InteriorIterator
+  //  @param geom  Current geometry
   InteriorIterator(const Geometry *geom);
-
-  /// Sets the iterator to the first element
-  void First();
+  
   /// Goes to the next element of the iterator, disables it if position is end
   void Next();
 };
@@ -86,7 +98,13 @@ public:
 class BoundaryIterator : public Iterator {
 public:
   /// Constructs a new BoundaryIterator
-  BoundaryIterator(const Geometry *geom);
+  //  @param geom  Current geometry
+  //  @param boundary Boundary to iterate
+  //  1: Border Bottom
+  //  2: Border Right
+  //  3: Border Top
+  //  4: Border Left
+  BoundaryIterator(const Geometry *geom, const index_t &boundary);
 
   /// Sets the boundary to iterate
   void SetBoundary(const index_t &boundary);
@@ -97,6 +115,10 @@ public:
   void Next();
 
 private:
+  //  1: Border Bottom
+  //  2: Border Right
+  //  3: Border Top
+  //  4: Border Left
   index_t _boundary;
 };
 //------------------------------------------------------------------------------
