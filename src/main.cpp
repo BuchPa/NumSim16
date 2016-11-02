@@ -22,6 +22,37 @@
 #include "visu.hpp"
 #include "vtk.hpp"
 
+#include <iostream> // getchar()
+
+void test_compute() {
+  printf("Testing Compute\n");
+}
+
+void test_iterator() {
+  printf("Testing Iterator\n");
+}
+
+void test_geometry() {
+  printf("Testing Geometry\n");
+
+  // Testing default values
+  Geometry geo;
+  printf("Size %i,%i\n", geo.Size()[0], geo.Size()[1]);
+  printf("Length %f,%f\n", geo.Length()[0], geo.Length()[1]);
+  printf("Mesh %f,%f\n", geo.Mesh()[0], geo.Mesh()[1]);
+}
+
+void test_parameter() {
+  printf("Testing Parameter\n");
+
+  // Test loading and parsing of params
+  Parameter p = Parameter();
+  p.Load("test_parameter.txt");
+
+  printf("Re %f (1.0)\n", p.Re());
+  printf("IterMax %d (5)\n", p.IterMax());
+}
+
 int main(int argc, char **argv) {
   // Printing stupid things to cheer the simpleminded user
   printf("             ███▄    █  █    ██  ███▄ ▄███▓  ██████  ██▓ ███▄ ▄███▓\n");
@@ -48,6 +79,29 @@ int main(int argc, char **argv) {
   visu.Init(800, 800);
 #endif // USE_DEBUG_VISU
 
+  // Check for specific test
+  if (argc > 1) {
+    if (strcmp(argv[1], "TEST_COMPUTE") == 0) {
+      test_compute();
+      return 0;
+    }
+
+    if (strcmp(argv[1], "TEST_ITERATOR") == 0) {
+      test_iterator();
+      return 0;
+    }
+
+    if (strcmp(argv[1], "TEST_GEOMETRY") == 0) {
+      test_geometry();
+      return 0;
+    }
+
+    if (strcmp(argv[1], "TEST_PARAMETER") == 0) {
+      test_parameter();
+      return 0;
+    }
+  }
+
   // Create a VTK generator
   VTK vtk(geom.Mesh(), geom.Size());
 
@@ -57,7 +111,7 @@ int main(int argc, char **argv) {
   visugrid = comp.GetVelocity();
 
   // Run the time steps until the end is reached
-  while (comp.GetTime() < param.Tend() && run) {
+  while ((comp.GetTime() - param.Tend())<-param.Dt() && run) {
 #ifdef USE_DEBUG_VISU
     // Render and check if window is closed
     switch (visu.Render(visugrid)) {
@@ -80,6 +134,9 @@ int main(int argc, char **argv) {
       break;
     };
 #endif // DEBUG_VISU
+    
+//     // Wait for user input to debug step-by-step
+//     getchar();
 
     // Create a VTK File in the folder VTK (must exist)
     vtk.Init("VTK/field");
