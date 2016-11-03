@@ -73,6 +73,34 @@ void test_geometry() {
   printf("Size %i,%i\n", geo.Size()[0], geo.Size()[1]);
   printf("Length %f,%f\n", geo.Length()[0], geo.Length()[1]);
   printf("Mesh %f,%f\n", geo.Mesh()[0], geo.Mesh()[1]);
+  
+  // Testing update function
+  Grid tmp(&geo);
+  real_t val = real_t(0.0);
+  
+  tmp.Initialize(val);
+  printf("Init field:\n");
+  tmp.Print();
+  
+  geo.Update_U(&tmp);
+  printf("Update U:\n");
+  tmp.Print();
+  
+  tmp.Initialize(val);
+  printf("Init field:\n");
+  tmp.Print();
+  
+  geo.Update_V(&tmp);
+  printf("Update V:\n");
+  tmp.Print();
+  
+  tmp.Initialize(val);
+  printf("Init field:\n");
+  tmp.Print();
+  
+  geo.Update_P(&tmp);
+  printf("Update P:\n");
+  tmp.Print();
 }
 
 void test_parameter() {

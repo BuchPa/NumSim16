@@ -23,7 +23,7 @@ Geometry::Geometry(){
   _size[0] += 2;
   _size[1] += 2;
   
-  // Set boundary values for upper boundary (u=1, v=0, p=0)
+  // Set boundary values for upper boundary (u=1, v=0)
   _velocity[0] = real_t(1.0);
   _velocity[1] = real_t(0.0);
   
@@ -113,8 +113,8 @@ void Geometry::Update_V(Grid *v) const{
   // Set upper boundary - zero dirichlet
   boit.SetBoundary(3);
   while(boit.Valid()){
-    v->Cell(boit)        = _velocity[0];
-    v->Cell(boit.Down()) = _velocity[0];
+    v->Cell(boit)        = _velocity[1];
+    v->Cell(boit.Down()) = _velocity[1];
     boit.Next();
   }
 }
