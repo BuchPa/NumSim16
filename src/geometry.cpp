@@ -1,10 +1,13 @@
 #include "typedef.hpp"
 #include "geometry.hpp"
 
+#include "iterator.hpp"
+#include "grid.hpp"
+
 /// Constructs a 128 x 128 driven cavity geometry:
 // driven cavity with 128 x 128 grid, no-slip boundary conditions
 Geometry::Geometry(){
-  // Init number of cells in each dimension
+  // Init number of INNER cells in each dimension
   _size[0] = 8;
   _size[1] = 8;
   
@@ -21,11 +24,11 @@ Geometry::Geometry(){
   _size[1] += 2;
   
   // Set boundary values for upper boundary (u=1, v=0, p=0)
-  _velocity[0] = 1.0;
-  _velocity[1] = 0.0;
+  _velocity[0] = real_t(1.0);
+  _velocity[1] = real_t(0.0);
   
   // Unused in driven cavity problem
-  _pressure    = 0.0;
+  _pressure    = real_t(0.0);
 }
 
 /// Loads a geometry from a file
@@ -50,15 +53,101 @@ const multi_real_t &Geometry::Length() const{
 /// Updates the velocity field u
 //  @param  u The velocity field u in x direction
 void Geometry::Update_U(Grid *u) const{
-  //TODO
+  BoundaryIterator boit(this, 1);
+  
+  // Set lower boundary - zero dirichlet
+  boit.SetBoundary(1);
+  while(boit.Valid()){
+    u->Cell(boit) = -1 * u->Cell(boit.Top());
+    boit.Next();
+  }
+  
+  // Set right boundary - zero dirichlet
+  boit.SetBoundary(2);
+  while(boit.Valid()){
+    u->Cell(boit)        = real_t(0.0);
+    u->Cell(boit.Left()) = real_t(0.0);
+    boit.Next();
+  }
+  
+  // Set left boundary - zero dirichlet
+  boit.SetBoundary(4);
+  while(boit.Valid()){
+    u->Cell(boit) = real_t(0.0);
+    boit.Next();
+  }
+  
+  // Set upper boundary - non-zero dirichlet
+  boit.SetBoundary(3);
+  while(boit.Valid()){
+    u->Cell(boit) = 2* _velocity[0] - u->Cell(boit.Down());
+    boit.Next();
+  }
 }
 /// Updates the velocity field v
 //  @param  v The velocity field v in y direction
 void Geometry::Update_V(Grid *v) const{
-  //TODO
+  BoundaryIterator boit(this, 1);
+  
+  // Set lower boundary - zero dirichlet
+  boit.SetBoundary(1);
+  while(boit.Valid()){
+    v->Cell(boit) = real_t(0.0);
+    boit.Next();
+  }
+  
+  // Set right boundary - zero dirichlet
+  boit.SetBoundary(2);
+  while(boit.Valid()){
+    v->Cell(boit) = -1 * v->Cell(boit.Left());
+    boit.Next();
+  }
+  
+  // Set left boundary - zero dirichlet
+  boit.SetBoundary(4);
+  while(boit.Valid()){
+    v->Cell(boit) = -1 * v->Cell(boit.Right());
+    boit.Next();
+  }
+  
+  // Set upper boundary - zero dirichlet
+  boit.SetBoundary(3);
+  while(boit.Valid()){
+    v->Cell(boit)        = _velocity[0];
+    v->Cell(boit.Down()) = _velocity[0];
+    boit.Next();
+  }
 }
 /// Updates the pressure field p
 //  @param  p The pressure field
 void Geometry::Update_P(Grid *p) const{
-  //TODO
+  BoundaryIterator boit(this, 1);
+  
+  // Set lower boundary
+  boit.SetBoundary(1);
+  while(boit.Valid()){
+    p->Cell(boit) = p->Cell(boit.Top());
+    boit.Next();
+  }
+  
+  // Set right boundary
+  boit.SetBoundary(2);
+  while(boit.Valid()){
+    p->Cell(boit) = p->Cell(boit.Left());
+    boit.Next();
+  }
+  
+  // Set left boundary
+  boit.SetBoundary(4);
+  while(boit.Valid()){
+    p->Cell(boit) = p->Cell(boit.Right());
+    boit.Next();
+  }
+  
+  // Set upper boundary
+  boit.SetBoundary(3);
+  while(boit.Valid()){
+    p->Cell(boit) = p->Cell(boit.Down());
+    boit.Next();
+  }
 }
