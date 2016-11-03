@@ -67,7 +67,7 @@ public:
   virtual void UpdateValid();
   
   /// Tests Iterator in a dummy run
-  virtual void TestRun();
+  virtual void TestRun(const bool printNeighbours);
 
 protected:
   const Geometry *_geom;

@@ -35,33 +35,33 @@ void test_iterator() {
   
   printf("Iterator Test:\n");
   Iterator it = Iterator(&geom);;
-  it.TestRun();
+  it.TestRun(true);
   printf("\n");
   
   printf("Interior Iterator Test:\n");
   InteriorIterator init = InteriorIterator(&geom);
-  init.TestRun();
+  init.TestRun(true);
   printf("\n");
   
   printf("BoundaryIterator Test Bottom:\n");
   BoundaryIterator boit = BoundaryIterator(&geom, 1);
   boit.SetBoundary(1);
-  boit.TestRun();
+  boit.TestRun(true);
   printf("\n");
   
   printf("BoundaryIterator Test Right:\n");
   boit.SetBoundary(2);
-  boit.TestRun();
+  boit.TestRun(true);
   printf("\n");
   
   printf("BoundaryIterator Test Top:\n");
   boit.SetBoundary(3);
-  boit.TestRun();
+  boit.TestRun(true);
   printf("\n");
   
   printf("BoundaryIterator Test Left:\n");
   boit.SetBoundary(4);
-  boit.TestRun();
+  boit.TestRun(true);
   printf("\n");
 }
 

@@ -54,25 +54,67 @@ bool Iterator::Valid() const{
 /// Returns an Iterator that is located left from this one.
 // if we are at the left boundary, the cell sees itself
 Iterator Iterator::Left() const{
-  return *this; //TODO
+  
+  index_t pos;
+  
+  // Check, left border reached
+  if(_value % _geom->Size()[0] == 0){
+    pos = _value;
+  }else{
+    pos = _value-1;
+  }
+  
+  Iterator it(_geom, pos);
+  return it;
 }
 
 /// Returns an Iterator that is located right from this one
 // If we are at the right boundary, the cell sees itself
 Iterator Iterator::Right() const{
-  return *this; //TODO
+  
+  index_t pos;
+  
+  // Check, right border reached
+  if((_value+1) % _geom->Size()[0] == 0){
+    pos = _value;
+  }else{
+    pos = _value+1;
+  }
+  
+  Iterator it(_geom, pos);
+  return it;
 }
 
 /// Returns an Iterator that is located above this one
 // If we are at the upper domain boundary, the cell sees itself
 Iterator Iterator::Top() const{
-  return *this; //TODO
+  
+  index_t pos = _value + _geom->Size()[0];
+  
+  // Check, upper border reached
+  if(pos / _geom->Size()[0] >= _geom->Size()[1]){
+    pos = _value;
+  }
+  
+  Iterator it(_geom, pos);
+  return it;
 }
 
 /// Returns an Iterator that is located below this one
 // If we are at the lower domain boundary, the cell sees itself
 Iterator Iterator::Down() const{
-  return *this; //TODO
+  
+  index_t pos;
+  
+  // Check, lower border reached
+  if(_value < _geom->Size()[0]){
+    pos = _value;
+  }else{
+    pos = _value - _geom->Size()[0];
+  }
+  
+  Iterator it(_geom, pos);
+  return it;
 }
 
 /// Checks if current value is valid
@@ -85,11 +127,27 @@ void Iterator::UpdateValid(){
 }
 
 /// Tests Iterator in a dummy run
-void Iterator::TestRun(){
-  while(this->Valid()){
-//     printf("%d, ", _value);
-    printf("%d: [%d,%d]\n", _value, this->Pos()[0], this->Pos()[1]);
-    this->Next();
+void Iterator::TestRun(const bool printNeighbours){
+  if(printNeighbours){
+    while(this->Valid()){
+      Iterator l = this->Left();
+      Iterator r = this->Right();
+      Iterator t = this->Top();
+      Iterator d = this->Down();
+      printf("%d: [%d,%d], L-%d: [%d,%d], R-%d: [%d,%d], T-%d: [%d,%d], D-%d: [%d,%d]\n", 
+        this->Value(), this->Pos()[0], this->Pos()[1],
+        l.Value()   , l.Pos()[0]   , l.Pos()[1]   ,
+        r.Value()   , r.Pos()[0]   , r.Pos()[1]   ,
+        t.Value()   , t.Pos()[0]   , t.Pos()[1]   ,
+        d.Value()   , d.Pos()[0]   , d.Pos()[1]   );
+      this->Next();
+    }
+  }else{
+    while(this->Valid()){
+//       printf("%d, ", _value);
+      printf("%d: [%d,%d]\n", _value, this->Pos()[0], this->Pos()[1]);
+      this->Next();
+    }
   }
   printf("\n");
 }
