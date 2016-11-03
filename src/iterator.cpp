@@ -208,20 +208,20 @@ void BoundaryIterator::SetBoundary(const index_t &boundary){
 void BoundaryIterator::First(){
   switch(_boundary){
     case 1:
-      _itmin =   _geom->Size()[0]+1;
-      _itmax = 2*_geom->Size()[0]-2;
+      _itmin = 0;
+      _itmax = _geom->Size()[0]-1;
       break;
     case 2:
-      _itmin = 2*_geom->Size()[0]-2;
-      _itmax =   _geom->Size()[0]*(_geom->Size()[1]-1)-2;
+      _itmin = _geom->Size()[0]-1;
+      _itmax = _geom->Size()[0]*(_geom->Size()[1])-1;
       break;
     case 3:
-      _itmin =   _geom->Size()[0]*(_geom->Size()[1]-2)+1;
-      _itmax =   _geom->Size()[0]*(_geom->Size()[1]-1)-2;
+      _itmin = _geom->Size()[0]*(_geom->Size()[1]-1);
+      _itmax = _geom->Size()[0]*(_geom->Size()[1]  )-1;
       break;
     case 4:
-      _itmin =   _geom->Size()[0]+1;
-      _itmax =   _geom->Size()[0]*(_geom->Size()[1]-2)+1;
+      _itmin = 0;
+      _itmax = _geom->Size()[0]*(_geom->Size()[1]-1);
       break;
     default:
       throw std::runtime_error(std::string("Failed to operate with current boundary value: " + std::to_string(_value)));
