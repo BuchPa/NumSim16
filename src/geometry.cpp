@@ -8,8 +8,8 @@
 // driven cavity with 128 x 128 grid, no-slip boundary conditions
 Geometry::Geometry(){
   // Init number of INNER cells in each dimension
-  _size[0] = 8;
-  _size[1] = 8;
+  _size[0] = 128;
+  _size[1] = 128;
   
   // Init length of driven cavity
   _length[0] = 1.0;
@@ -18,6 +18,10 @@ Geometry::Geometry(){
   // Calculate cell width/height
   _h[0] = _length[0]/_size[0];
   _h[1] = _length[1]/_size[1];
+  
+  // Calculate inverse mesh width/height
+  _invh[0] = _size[0]/_length[0];
+  _invh[1] = _size[1]/_length[1];
   
   // Set _size to size INCL ghost layers
   _size[0] += 2;
@@ -41,13 +45,17 @@ void Geometry::Load(const char *file){
 const multi_index_t &Geometry::Size() const {
   return _size;
 }
-/// Returns the length of the domain
+/// Returns the meshwidth
 const multi_real_t &Geometry::Mesh() const {
   return _h;
 }
-/// Returns the meshwidth
+/// Returns the length of the domain
 const multi_real_t &Geometry::Length() const{
   return _length;
+}
+/// Returns the inverse meshwidth
+const multi_real_t &InvMesh() const{
+  return _invh;
 }
 
 /// Updates the velocity field u
