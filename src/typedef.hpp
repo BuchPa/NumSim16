@@ -18,6 +18,8 @@
 #include <stdint.h>
 // For debugging with printf
 #include <stdio.h>
+// For throwing puzzling errors at the simple-minded user i.e. make him fear c/c++
+#include <stdexcept>
 
 //------------------------------------------------------------------------------
 

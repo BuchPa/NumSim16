@@ -31,6 +31,38 @@ void test_compute() {
 
 void test_iterator() {
   printf("Testing Iterator\n");
+  Geometry geom;
+  
+  printf("Iterator Test:\n");
+  Iterator it = Iterator(&geom);;
+  it.TestRun(true);
+  printf("\n");
+  
+  printf("Interior Iterator Test:\n");
+  InteriorIterator init = InteriorIterator(&geom);
+  init.TestRun(true);
+  printf("\n");
+  
+  printf("BoundaryIterator Test Bottom:\n");
+  BoundaryIterator boit = BoundaryIterator(&geom, 1);
+  boit.SetBoundary(1);
+  boit.TestRun(true);
+  printf("\n");
+  
+  printf("BoundaryIterator Test Right:\n");
+  boit.SetBoundary(2);
+  boit.TestRun(true);
+  printf("\n");
+  
+  printf("BoundaryIterator Test Top:\n");
+  boit.SetBoundary(3);
+  boit.TestRun(true);
+  printf("\n");
+  
+  printf("BoundaryIterator Test Left:\n");
+  boit.SetBoundary(4);
+  boit.TestRun(true);
+  printf("\n");
 }
 
 void test_geometry() {
@@ -41,6 +73,34 @@ void test_geometry() {
   printf("Size %i,%i\n", geo.Size()[0], geo.Size()[1]);
   printf("Length %f,%f\n", geo.Length()[0], geo.Length()[1]);
   printf("Mesh %f,%f\n", geo.Mesh()[0], geo.Mesh()[1]);
+  
+  // Testing update function
+  Grid tmp(&geo);
+  real_t val = real_t(0.0);
+  
+  tmp.Initialize(val);
+  printf("Init field:\n");
+  tmp.Print();
+  
+  geo.Update_U(&tmp);
+  printf("Update U:\n");
+  tmp.Print();
+  
+  tmp.Initialize(val);
+  printf("Init field:\n");
+  tmp.Print();
+  
+  geo.Update_V(&tmp);
+  printf("Update V:\n");
+  tmp.Print();
+  
+  tmp.Initialize(val);
+  printf("Init field:\n");
+  tmp.Print();
+  
+  geo.Update_P(&tmp);
+  printf("Update P:\n");
+  tmp.Print();
 }
 
 void test_parameter() {
