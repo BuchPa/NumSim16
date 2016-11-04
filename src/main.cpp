@@ -130,7 +130,10 @@ void test_grid() {
   it = it.Left();
   grid.Cell(it) = 2.0;
 
-  printf("Interpolate: %f (%f)\n", grid.Interpolate({0.5 / 128, 0.5 / 128}), 1.5);
+  printf("Interpolate: %f (%f)\n", grid.Interpolate({
+    0.5 / (geo.Size()[0] - 2),
+    0.5 / (geo.Size()[1] - 2)
+  }), 1.5);
 }
 
 int main(int argc, char **argv) {
