@@ -114,6 +114,28 @@ void test_parameter() {
   printf("IterMax %d (5)\n", p.IterMax());
 }
 
+void test_grid() {
+  printf("Testing Grid\n");
+
+  // Test interpolate
+  const Geometry geo;
+  Grid grid = Grid(&geo);
+  Iterator it = Iterator(&geo);
+
+  grid.Cell(it) = 0.0;
+  it = it.Right();
+  grid.Cell(it) = 1.0;
+  it = it.Top();
+  grid.Cell(it) = 3.0;
+  it = it.Left();
+  grid.Cell(it) = 2.0;
+
+  printf("Interpolate: %f (%f)\n", grid.Interpolate({
+    0.5 / (geo.Size()[0] - 2),
+    0.5 / (geo.Size()[1] - 2)
+  }), 1.5);
+}
+
 int main(int argc, char **argv) {
   // Printing stupid things to cheer the simpleminded user
   printf("             ███▄    █  █    ██  ███▄ ▄███▓  ██████  ██▓ ███▄ ▄███▓\n");
@@ -159,6 +181,11 @@ int main(int argc, char **argv) {
 
     if (strcmp(argv[1], "TEST_PARAMETER") == 0) {
       test_parameter();
+      return 0;
+    }
+
+    if (strcmp(argv[1], "TEST_GRID") == 0) {
+      test_grid();
       return 0;
     }
   }
