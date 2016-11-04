@@ -143,7 +143,7 @@ void Compute::TimeStep(bool printInfo) {
   this->MomentumEqu(dt);
   
   // Compute RHS
-  this->RHS(_dtlimit);
+  this->RHS(dt);
   
   // Solve Poisson equation (-> p)
   index_t it(0);
@@ -201,7 +201,14 @@ void Compute::TimeStep(bool printInfo) {
 
 /// Compute the new velocites u,v
 void Compute::NewVelocities(const real_t &dt){
-  //TODO
+  InteriorIterator init(_geom);
+  
+  // Cycle to compute F,G
+  for(init.First(); init.Valid(); init.Next()){
+    //TODO dx_r richtig hier?
+    _u->Cell(init) = _F->Cell(init) - dt * _p->dx_r(init);
+    _v->Cell(init) = _G->Cell(init) - dt * _p->dy_r(init);
+  }
 }
 /// Compute the temporary velocites F,G
 void Compute::MomentumEqu(const real_t &dt){
@@ -209,13 +216,19 @@ void Compute::MomentumEqu(const real_t &dt){
   
   // Cycle to compute F,G
   for(init.First(); init.Valid(); init.Next()){
-    _F(init) = _u(init) + dt * (_param->InvRe() * (_u->dxx(init) + _u->dyy(init))
-                                - 2 * _u->DC_udu_x(init)
-                               );
-    _G(init) = _v(init) + dt * (_param->InvRe() * (_v->dxx(init) + _v->dyy(init))
-                                - 
-                               );
+    _F->Cell(init) = _u->Cell(init) + dt * (_param->InvRe() * (_u->dxx(init) + _u->dyy(init))
+                                            - 2.0 * _u->DC_udu_x(init, _param->Alpha())
+                                            - _u->DC_vdu_y(init, _param->Alpha(), _v)
+                                           );
+    _G->Cell(init) = _v->Cell(init) + dt * (_param->InvRe() * (_v->dxx(init) + _v->dyy(init))
+                                            - _v->DC_udv_x(init, _param->Alpha(), _u)
+                                            - 2.0 * _v->DC_vdv_y(init, _param->Alpha())
+                                           );
+    //TODO 2.0 schon in DC_udu .. und DC_vdv ?
   }
+  
+  _geom->Update_U(_F);
+  _geom->Update_V(_G);
 }
 /// Compute the RHS of the Poisson equation
 void Compute::RHS(const real_t &dt){
@@ -223,6 +236,7 @@ void Compute::RHS(const real_t &dt){
   
   // Cycle to compute rhs
   for(init.First(); init.Valid(); init.Next()){
-    _rhs(init) = 1.0/dt * ( _F->dx_l(init) + _G->dy_l(init) );
+    //TODO dx_l richtig hier?
+    _rhs->Cell(init) = 1.0/dt * ( _F->dx_l(init) + _G->dy_l(init) );
   }
 }
