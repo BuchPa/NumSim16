@@ -5,6 +5,30 @@
 
 #include <cmath>     // std::abs
 
+/// Returns the value for the hat function at the given position on the unit
+//  square. This function provides weights for each corner value that,
+//  multiplied in sum by the values, interpolate the value based on the four
+//  corner values.
+//
+//  @param mode int Which mode of the four-part hat function is evaluated. The
+//    lower left corner is 1, lower right is 2, upper left is 3
+//    and upper right is 4
+//  @param pos multi_real_t The position to evaluate. It assumed this is
+//    relative to the unit square
+real_t hat(const int &mode, const multi_real_t &pos) {
+  switch(mode) {
+    case 1:
+      return pos[0] * pos[1] - pos[1] - pos[0] + 1;
+    case 2:
+      return -pos[0] * pos[1] + pos[0];
+    case 3:
+      return -pos[0] * pos[1] + pos[1];
+    case 4:
+      return pos[0] * pos[1];
+  }
+  return 0.0;
+}
+
 /// Constructs a grid based on a geometry
 //  @param geom   Geometry information
 Grid::Grid(const Geometry *geom)
@@ -67,11 +91,27 @@ const real_t &Grid::Cell(const Iterator &it) const{
   return _data[it];
 }
 
-/// Interpolate the value at a arbitrary position
-//  @param pos  arbitrary position
+/// Interpolate the value at an arbitrary position
+//  For notes on how this algorithm works, see the implementation notes on
+//  interpolation and the hat function.
+//
+//  @param pos multi_real_t An arbitrary position within the grid in absolute
+//    coordinates.
 real_t Grid::Interpolate(const multi_real_t &pos) const {
-  real_t v = 0.0; //TODO
-  return v;
+  multi_index_t clamp = {
+    pos[0] / _geom->Mesh()[0],
+    pos[1] / _geom->Mesh()[1]
+  };
+  multi_real_t modpos = {
+    (pos[0] - clamp[0] * _geom->Mesh()[0]) / _geom->Mesh()[0],
+    (pos[1] - clamp[1] * _geom->Mesh()[1]) / _geom->Mesh()[1]
+  };
+  Iterator it = Iterator(_geom, clamp[1] * _geom->Size()[0] + clamp[0]);
+  return this->Cell(it) * hat(1, modpos)
+    + this->Cell(it.Right()) * hat(2, modpos)
+    + this->Cell(it.Top()) * hat(3, modpos)
+    + this->Cell(it.Top().Right()) * hat(4, modpos);
+
 }
 
 /// Computes the left-sided difference quatient in x-dim at [it]
