@@ -122,6 +122,10 @@ void test_grid() {
   Grid grid = Grid(&geo);
   Iterator it = Iterator(&geo);
 
+  // Init grid with values
+  // 3  4  5
+  // 2  3  4
+  // 0  1  3
   grid.Cell(it) = 0.0;
   it = it.Right();
   grid.Cell(it) = 1.0;
@@ -129,11 +133,36 @@ void test_grid() {
   grid.Cell(it) = 3.0;
   it = it.Left();
   grid.Cell(it) = 2.0;
+  it = it.Top();
+  grid.Cell(it) = 3.0;
+  it = it.Right();
+  grid.Cell(it) = 4.0;
+  it = it.Right();
+  grid.Cell(it) = 5.0;
+  it = it.Down();
+  grid.Cell(it) = 4.0;
+  it = it.Down();
+  grid.Cell(it) = 3.0;
+  it = it.Left().Top();
 
   printf("Interpolate: %f (%f)\n", grid.Interpolate({
     0.5 / (geo.Size()[0] - 2),
     0.5 / (geo.Size()[1] - 2)
   }), 1.5);
+
+  // Test difference quotient of first order for the middle cell
+  printf("Diff-Quot (1. order)\n");
+  printf("%f (%f)\n", grid.dx_l(it), 1 / geo.Mesh()[0]);
+  printf("%f (%f)\n", grid.dx_r(it), 1 / geo.Mesh()[0]);
+  printf("%f (%f)\n", grid.dy_l(it), 2 / geo.Mesh()[1]);
+  printf("%f (%f)\n", grid.dy_r(it), 1 / geo.Mesh()[1]);
+
+  // Test difference quotient of first order for a corner cell
+  it = it.Down().Left();
+  printf("%f (%f)\n", grid.dx_l(it), 0);
+  printf("%f (%f)\n", grid.dx_r(it), 1 / geo.Mesh()[0]);
+  printf("%f (%f)\n", grid.dy_l(it), 0);
+  printf("%f (%f)\n", grid.dy_r(it), 2 / geo.Mesh()[1]);
 }
 
 int main(int argc, char **argv) {
