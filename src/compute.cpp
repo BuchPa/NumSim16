@@ -28,22 +28,12 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   offset_p[0] = geom->Mesh()[0]/2.0;
   offset_p[1] = geom->Mesh()[1]/2.0;
   
-  // Create and init velocity / pressure field
+  // Create and velocity / pressure field
   _u = new Grid(geom, offset_u);
   _v = new Grid(geom, offset_v);
   _p = new Grid(geom, offset_p);
   
-//   //TEST -->
-//   Iterator it(_geom);
-//   real_t i = 1;
-//   while(it.Valid()){
-//     _u->Cell(it) = i;
-//     i++;
-//     it.Next();
-//   }
-//   //TEST --^
-  
-  // Create and init other fields
+  // Create other fields
   _F   = new Grid(geom);
   _G   = new Grid(geom);
   
@@ -51,13 +41,24 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   
   _tmp = new Grid(geom);
   
-  // Init time step
+  // Init velocity / pressure field
+  _geom->Update_U(_u);
+  _geom->Update_V(_v);
+  _geom->Update_P(_p);
+  
+  // Init time
   _t = 0.0;
+  
+  // Compute cfl time step limitation
+  _cfl = _param->Re() *     (pow(_geom->Mesh()[0],2.0) * pow(_geom->Mesh()[1],2.0))
+                       /( 4*(pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)) );
   
   //Init _solver
   _solver = new SOR(_geom,_param->Omega());
   //TODO Init _dtlimit
+  _dtlimit = _param->Dt();
   //TODO Init _epslimit
+  _epslimit = _param->Eps();
 }
 
 /// Deletes all grids and solver
@@ -108,7 +109,7 @@ const Grid *Compute::GetVelocity() {
   
   // Go through all cells and calculate absolute velocity (u_x^2 + u_y^2)^(1/2)
   while(it.Valid()){
-    _tmp->Cell(it) = sqrt( pow(_u->Cell(it),2) + pow(_v->Cell(it),2) );
+    _tmp->Cell(it) = sqrt( pow(_u->Cell(it),2.0) + pow(_v->Cell(it),2.0) );
     it.Next();
   }
   return _tmp;
@@ -129,12 +130,69 @@ const Grid *Compute::GetStream(){
 /// Execute one time step of the fluid simulation (with or without debug info)
 // @ param printInfo print information about current solver state (residual etc.)
 void Compute::TimeStep(bool printInfo) {
-  _t += _param->Dt();
-  if (printInfo) {
-    printf("Time step: %4.2f\n", _t);
-//     _u->Print();
+  
+  // Compute candidates for current time step
+  const real_t max_x = _geom->Mesh()[0] / _u->AbsMax();
+  const real_t max_y = _geom->Mesh()[1] / _v->AbsMax();
+  
+  // Compute smallest time step from all candidates with some security factor
+  // TODO _dtlimit noch einbauen
+  const real_t dt    = _param->Tau() * std::min(std::min(max_x,max_y),_cfl);
+  
+  // Compute temporary velocites F,G
+  this->MomentumEqu(dt);
+  
+  // Compute RHS
+  this->RHS(dt);
+  
+  // Solve Poisson equation (-> p)
+  index_t it(0);
+  real_t  res(_epslimit + 0.1);
+  while((it < _param->IterMax()) && (res >= _epslimit)){
+    res = _solver->Cycle(_p, _rhs);
+    it++;
+    //TODO boundary values for p neccessary?
   }
-  //TODO
+  
+  // Compute new velocites (-> u,v)
+  this->NewVelocities(dt);
+  
+  // Set boundary values
+  _geom->Update_U(_u);
+  _geom->Update_V(_v);
+  _geom->Update_P(_p);
+  
+  // Compute new time
+  _t += dt;
+  
+  if (printInfo) {
+    // Print current time
+    printf("Current time: %4.2f\n", _t);
+    
+    // Print time step stuff
+    printf("  Time step candidates:\n");
+    printf("    x:   %4.3f\n", max_x);
+    printf("    y:   %4.3f\n", max_y);
+    printf("    cfl: %4.3f\n", _cfl);
+    printf("  Current time step %4.3f\n", dt);
+    printf("\n");
+    
+    // Solver stuff
+    if( it >= _param->IterMax() ){
+      printf("  DIDN'T converge! itermax reached!\n");
+    }else{
+      printf("  DID converge! eps reached after % d iterations!\n", it);
+    }
+    
+//     // Print field stuff
+//     printf("  Current field u:\n");
+//     _u->Print();
+//     printf("  Current field v:\n");
+//     _v->Print();
+//     printf("  Current field p:\n");
+//     _p->Print();
+    
+  }
 }
 
 /***************************************************************************
@@ -143,13 +201,42 @@ void Compute::TimeStep(bool printInfo) {
 
 /// Compute the new velocites u,v
 void Compute::NewVelocities(const real_t &dt){
-  //TODO
+  InteriorIterator init(_geom);
+  
+  // Cycle to compute F,G
+  for(init.First(); init.Valid(); init.Next()){
+    //TODO dx_r richtig hier?
+    _u->Cell(init) = _F->Cell(init) - dt * _p->dx_r(init);
+    _v->Cell(init) = _G->Cell(init) - dt * _p->dy_r(init);
+  }
 }
 /// Compute the temporary velocites F,G
 void Compute::MomentumEqu(const real_t &dt){
-  //TODO
+  InteriorIterator init(_geom);
+  
+  // Cycle to compute F,G
+  for(init.First(); init.Valid(); init.Next()){
+    _F->Cell(init) = _u->Cell(init) + dt * (_param->InvRe() * (_u->dxx(init) + _u->dyy(init))
+                                            - 2.0 * _u->DC_udu_x(init, _param->Alpha())
+                                            - _u->DC_vdu_y(init, _param->Alpha(), _v)
+                                           );
+    _G->Cell(init) = _v->Cell(init) + dt * (_param->InvRe() * (_v->dxx(init) + _v->dyy(init))
+                                            - _v->DC_udv_x(init, _param->Alpha(), _u)
+                                            - 2.0 * _v->DC_vdv_y(init, _param->Alpha())
+                                           );
+    //TODO 2.0 schon in DC_udu .. und DC_vdv ?
+  }
+  
+  _geom->Update_U(_F);
+  _geom->Update_V(_G);
 }
-/// Compute the RHS of the poisson equation
+/// Compute the RHS of the Poisson equation
 void Compute::RHS(const real_t &dt){
-  //TODO
+  InteriorIterator init(_geom);
+  
+  // Cycle to compute rhs
+  for(init.First(); init.Valid(); init.Next()){
+    //TODO dx_l richtig hier?
+    _rhs->Cell(init) = 1.0/dt * ( _F->dx_l(init) + _G->dy_l(init) );
+  }
 }

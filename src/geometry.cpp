@@ -54,7 +54,7 @@ const multi_real_t &Geometry::Length() const{
   return _length;
 }
 /// Returns the inverse meshwidth
-const multi_real_t &InvMesh() const{
+const multi_real_t &Geometry::InvMesh() const{
   return _invh;
 }
 

@@ -202,7 +202,7 @@ real_t Grid::Min() const{
 real_t Grid::AbsMax() const{
   // Create iterator and cycle _data
   Iterator it(_geom);
-  real_t res = _data[0];
+  real_t res = std::abs(_data[0]);
   for (it.First();it.Valid();it.Next())
     if (std::abs(_data[it]) > res) res = std::abs(_data[it]);
   return res;

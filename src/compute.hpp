@@ -59,6 +59,9 @@ private:
 
   // limit for residual
   real_t _epslimit;
+  
+  // CFL limitation on timestep
+  real_t _cfl;
 
   // velocities
   Grid *_u;
