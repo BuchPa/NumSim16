@@ -31,6 +31,7 @@ public:
 
   /// Getter functions for all parameters
   const real_t &Re() const;
+  const real_t &InvRe() const;
   const real_t &Omega() const;
   const real_t &Alpha() const;
   const real_t &Dt() const;
@@ -41,6 +42,7 @@ public:
 
 private:
   real_t _re;
+  real_t _invre;
   real_t _omega;
   real_t _alpha;
   real_t _dt;
