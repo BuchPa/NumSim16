@@ -141,14 +141,14 @@ real_t Grid::dy_r(const Iterator &it) const{
 /// Computes the central difference quotient of 2nd order in x-dim at [it]
 //  @param it  Position [it]
 real_t Grid::dxx(const Iterator &it) const{
-  //TODO
-  return real_t(0.0);
+  return (this->Cell(it.Right()) + this->Cell(it.Left()) - this->Cell(it) - this->Cell(it))
+    / (_geom->Mesh()[0] * _geom->Mesh()[0]);
 }
 /// Computes the central difference quotient of 2nd order in y-dim at [it]
 //  @param it  Position [it]
 real_t Grid::dyy(const Iterator &it) const{
-  //TODO
-  return real_t(0.0);
+  return (this->Cell(it.Top()) + this->Cell(it.Down()) - this->Cell(it) - this->Cell(it))
+    / (_geom->Mesh()[1] * _geom->Mesh()[1]);
 }
 
 /// Computes u*du/dx with the donor cell method

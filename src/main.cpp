@@ -151,18 +151,29 @@ void test_grid() {
   }), 1.5);
 
   // Test difference quotient of first order for the middle cell
-  printf("Diff-Quot (1. order)\n");
+  printf("Diff-Quot (1. order) middle\n");
   printf("%f (%f)\n", grid.dx_l(it), 1 / geo.Mesh()[0]);
   printf("%f (%f)\n", grid.dx_r(it), 1 / geo.Mesh()[0]);
   printf("%f (%f)\n", grid.dy_l(it), 2 / geo.Mesh()[1]);
   printf("%f (%f)\n", grid.dy_r(it), 1 / geo.Mesh()[1]);
 
+  // Test difference quotient of second order for the middle cell
+  printf("Diff-Quot (2. order) middle\n");
+  printf("%f (%f)\n", grid.dxx(it), 0);
+  printf("%f (%f)\n", grid.dyy(it), -1 / (geo.Mesh()[1] * geo.Mesh()[1]));
+
   // Test difference quotient of first order for a corner cell
+  printf("Diff-Quot (1. order) corner\n");
   it = it.Down().Left();
   printf("%f (%f)\n", grid.dx_l(it), 0);
   printf("%f (%f)\n", grid.dx_r(it), 1 / geo.Mesh()[0]);
   printf("%f (%f)\n", grid.dy_l(it), 0);
   printf("%f (%f)\n", grid.dy_r(it), 2 / geo.Mesh()[1]);
+
+  // Test difference quotient of second order for a corner cell
+  printf("Diff-Quot (2. order) corner\n");
+  printf("%f (%f)\n", grid.dxx(it), 1 / (geo.Mesh()[1] * geo.Mesh()[1]));
+  printf("%f (%f)\n", grid.dyy(it), 2 / (geo.Mesh()[1] * geo.Mesh()[1]));
 }
 
 int main(int argc, char **argv) {
