@@ -121,22 +121,22 @@ real_t Grid::Interpolate(const multi_real_t &pos) const {
 /// Computes the left-sided difference quotient in x-dim at [it]
 //  @param it  Position [it]
 real_t Grid::dx_l(const Iterator &it) const{
-  return -(this->Cell(it.Left()) - this->Cell(it)) / _geom->Mesh()[0];
+  return (this->Cell(it) - this->Cell(it.Left())) / _geom->Mesh()[0];
 }
 /// Computes the right-sided difference quotient in x-dim at [it]
 //  @param it  Position [it]
 real_t Grid::dx_r(const Iterator &it) const{
-  return -(this->Cell(it) - this->Cell(it.Right())) / _geom->Mesh()[0];
+  return (this->Cell(it.Right()) - this->Cell(it)) / _geom->Mesh()[0];
 }
 /// Computes the left-sided difference quotient in y-dim at [it]
 //  @param it  Position [it]
 real_t Grid::dy_l(const Iterator &it) const{
-  return -(this->Cell(it.Down()) - this->Cell(it)) / _geom->Mesh()[1];
+  return (this->Cell(it) - this->Cell(it.Down())) / _geom->Mesh()[1];
 }
 /// Computes the right-sided difference quotient in x-dim at [it]
 //  @param it  Position [it]
 real_t Grid::dy_r(const Iterator &it) const{
-  return -(this->Cell(it) - this->Cell(it.Top())) / _geom->Mesh()[1];
+  return (this->Cell(it.Top()) - this->Cell(it)) / _geom->Mesh()[1];
 }
 /// Computes the central difference quotient of 2nd order in x-dim at [it]
 //  @param it  Position [it]
