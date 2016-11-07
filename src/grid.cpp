@@ -119,41 +119,37 @@ real_t Grid::Interpolate(const multi_real_t &pos) const {
 
 }
 
-/// Computes the left-sided difference quatient in x-dim at [it]
+/// Computes the left-sided difference quotient in x-dim at [it]
 //  @param it  Position [it]
 real_t Grid::dx_l(const Iterator &it) const{
-  //TODO
-  return real_t(0.0);
+  return (this->Cell(it) - this->Cell(it.Left())) / _geom->Mesh()[0];
 }
-/// Computes the right-sided difference quatient in x-dim at [it]
+/// Computes the right-sided difference quotient in x-dim at [it]
 //  @param it  Position [it]
 real_t Grid::dx_r(const Iterator &it) const{
-  //TODO
-  return real_t(0.0);
+  return (this->Cell(it.Right()) - this->Cell(it)) / _geom->Mesh()[0];
 }
-/// Computes the left-sided difference quatient in y-dim at [it]
+/// Computes the left-sided difference quotient in y-dim at [it]
 //  @param it  Position [it]
 real_t Grid::dy_l(const Iterator &it) const{
-  //TODO
-  return real_t(0.0);
+  return (this->Cell(it) - this->Cell(it.Down())) / _geom->Mesh()[1];
 }
-/// Computes the right-sided difference quatient in x-dim at [it]
+/// Computes the right-sided difference quotient in x-dim at [it]
 //  @param it  Position [it]
 real_t Grid::dy_r(const Iterator &it) const{
-  //TODO
-  return real_t(0.0);
+  return (this->Cell(it.Top()) - this->Cell(it)) / _geom->Mesh()[1];
 }
-/// Computes the central difference quatient of 2nd order in x-dim at [it]
+/// Computes the central difference quotient of 2nd order in x-dim at [it]
 //  @param it  Position [it]
 real_t Grid::dxx(const Iterator &it) const{
-  //TODO
-  return real_t(0.0);
+  return (this->Cell(it.Right()) + this->Cell(it.Left()) - this->Cell(it) - this->Cell(it))
+    / (_geom->Mesh()[0] * _geom->Mesh()[0]);
 }
-/// Computes the central difference quatient of 2nd order in y-dim at [it]
+/// Computes the central difference quotient of 2nd order in y-dim at [it]
 //  @param it  Position [it]
 real_t Grid::dyy(const Iterator &it) const{
-  //TODO
-  return real_t(0.0);
+  return (this->Cell(it.Top()) + this->Cell(it.Down()) - this->Cell(it) - this->Cell(it))
+    / (_geom->Mesh()[1] * _geom->Mesh()[1]);
 }
 
 /// Computes u*du/dx with the donor cell method
@@ -165,8 +161,11 @@ real_t Grid::DC_udu_x(const Iterator &it, const real_t &alpha) const{
 /// Computes v*du/dy with the donor cell method
 //  @param it  Position [it]
 real_t Grid::DC_vdu_y(const Iterator &it, const real_t &alpha, const Grid *v) const{
-  //TODO
-  return real_t(0.0);
+  real_t ft = 0.25 * (v->Cell(it) + v->Cell(it.Right())) * (this->Cell(it) + this->Cell(it.Top()))
+    - 0.25 * (v->Cell(it.Top()) + v->Cell(it.Right().Down())) * (this->Cell(it.Down()) + this->Cell(it));
+  real_t st = 0.25 * abs(v->Cell(it) + v->Cell(it.Right())) * (this->Cell(it) - this->Cell(it.Top()))
+    + 0.25 * abs(v->Cell(it.Down()) + v->Cell(it.Right().Down())) * (this->Cell(it.Down()) - this->Cell(it));
+  return (ft + alpha * st) / _geom->Mesh()[1];
 }
 /// Computes u*dv/dx with the donor cell method
 //  @param it  Position [it]

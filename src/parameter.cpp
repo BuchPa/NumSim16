@@ -1,6 +1,7 @@
-#include "iostream"
-#include "fstream"
-#include "string"
+#include <cstdio>  // file methods
+#include <cstring> // string
+#include <cstdlib> // read/write
+
 #include "typedef.hpp"
 #include "parameter.hpp"
 
@@ -26,37 +27,22 @@ Parameter::Parameter(){
 /// Loads the parameter values from a file
 //  @param file File path as char array
 void Parameter::Load(const char *file) {
-  string line;
-  ifstream ifile(file);
-  
-  if (ifile.is_open()) {
-    while (getline (ifile, line)) {
-      index_t pos = line.find("=");
-      if (pos > 0) {
-        string name = line.substr(0, pos);
-        string val = line.substr(pos + 1);
-
-        if (name.find("Re")) {
-          _re = strtod(val.c_str(), NULL);
-        } else if (name.find("Omega")) {
-          _omega = strtod(val.c_str(), NULL);
-        } else if (name.find("Alpha")) {
-          _alpha = strtod(val.c_str(), NULL);
-        } else if (name.find("Dt")) {
-          _dt = strtod(val.c_str(), NULL);
-        } else if (name.find("Tend")) {
-          _tend = strtod(val.c_str(), NULL);
-        } else if (name.find("IterMax")) {
-          _itermax = strtol(val.c_str(), NULL, 0);
-        } else if (name.find("Eps")) {
-          _eps = strtod(val.c_str(), NULL);
-        } else if (name.find("Tau")) {
-          _tau = strtod(val.c_str(), NULL);
-        }
-      }
-    }
-    ifile.close();
+  FILE* handle = fopen(file,"r");
+  double inval;
+  char name[20];
+  while (!feof(handle)) {
+    if (!fscanf(handle, "%s = %lf\n", name, &inval)) continue;
+    if (strcmp(name,"re") == 0) _re = inval;
+    else if (strcmp(name,"omg") == 0) _omega = inval;
+    else if (strcmp(name,"alpha") == 0) _alpha = inval;
+    else if (strcmp(name,"dt") == 0) _dt = inval;
+    else if (strcmp(name,"tend") == 0) _tend = inval;
+    else if (strcmp(name,"iter") == 0) _itermax = inval;
+    else if (strcmp(name,"eps") == 0) _eps = inval;
+    else if (strcmp(name,"tau") == 0) _tau = inval;
+    else printf("Unknown parameter %s\n",name);
   }
+  fclose(handle);
 }
 
 /// Getter functions for Re
