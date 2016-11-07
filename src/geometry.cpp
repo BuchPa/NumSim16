@@ -4,6 +4,11 @@
 #include "iterator.hpp"
 #include "grid.hpp"
 
+#include <cstdio>  // file methods
+#include <cstring> // string
+#include <cstdlib> // read/write
+
+
 /// Constructs a 128 x 128 driven cavity geometry:
 // driven cavity with 128 x 128 grid, no-slip boundary conditions
 Geometry::Geometry(){
@@ -34,7 +39,45 @@ Geometry::Geometry(){
 /// Loads a geometry from a file
 //  @param file File path as char array
 void Geometry::Load(const char *file){
-  //TODO
+  FILE* handle = fopen(file, "r");
+
+  double inval[2];
+  char name[20];
+
+  while (!feof(handle)) {
+    if (!fscanf(handle, "%s =", name)) continue;
+
+    if (strcmp(name, "size") == 0) {
+      if (fscanf(handle, " %lf %lf\n", &inval[0], &inval[1])) {
+        _size[0] = inval[0];
+        _size[1] = inval[1];
+      }
+      continue;
+    }
+
+    if (strcmp(name, "length") == 0) {
+      if (fscanf(handle, " %lf %lf\n", &inval[0], &inval[1])) {
+        _length[0] = inval[0];
+        _length[1] = inval[1];
+      }
+      continue;
+    }
+
+    if (strcmp(name, "velocity") == 0) {
+      if (fscanf(handle, " %lf %lf\n", &inval[0], &inval[1])) {
+        _velocity[0] = inval[0];
+        _velocity[1] = inval[1];
+      }
+      continue;
+    }
+
+    if (strcmp(name, "pressure") == 0) {
+      if (fscanf(handle, " %lf\n", &inval[0]))
+        _pressure = inval[0];
+      continue;
+    }
+  }
+  fclose(handle);
 }
 
 /// Returns the number of cells in each dimension
