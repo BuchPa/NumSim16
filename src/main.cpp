@@ -125,6 +125,7 @@ void test_grid() {
   // Test interpolate
   const Geometry geo;
   Grid grid = Grid(&geo);
+  Grid grid2 = Grid(&geo);
   Iterator it = Iterator(&geo);
 
   // Init grid with values
@@ -179,6 +180,34 @@ void test_grid() {
   printf("Diff-Quot (2. order) corner\n");
   printf("%f (%f)\n", grid.dxx(it), 1 / (geo.Mesh()[1] * geo.Mesh()[1]));
   printf("%f (%f)\n", grid.dyy(it), 2 / (geo.Mesh()[1] * geo.Mesh()[1]));
+
+  // Init second grid for mixed-term difference quotients
+  // 3  4  5
+  // 2  3  4
+  // 1  2  3
+  it.First();
+  grid2.Cell(it) = 1.0;
+  it = it.Right();
+  grid2.Cell(it) = 2.0;
+  it = it.Top();
+  grid2.Cell(it) = 3.0;
+  it = it.Left();
+  grid2.Cell(it) = 2.0;
+  it = it.Top();
+  grid2.Cell(it) = 3.0;
+  it = it.Right();
+  grid2.Cell(it) = 4.0;
+  it = it.Right();
+  grid2.Cell(it) = 5.0;
+  it = it.Down();
+  grid2.Cell(it) = 4.0;
+  it = it.Down();
+  grid2.Cell(it) = 3.0;
+  it = it.Left().Top();
+
+  // Test donor-cell difference quotients for center cell
+  printf("DC-Quot center\n");
+  printf("%f (%f)", grid.DC_vdu_y(it, 0.5, &grid2), 33.5 / (4 * geo.Mesh()[1]));
 }
 
 int main(int argc, char **argv) {

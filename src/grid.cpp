@@ -160,8 +160,11 @@ real_t Grid::DC_udu_x(const Iterator &it, const real_t &alpha) const{
 /// Computes v*du/dy with the donor cell method
 //  @param it  Position [it]
 real_t Grid::DC_vdu_y(const Iterator &it, const real_t &alpha, const Grid *v) const{
-  //TODO
-  return real_t(0.0);
+  real_t ft = 0.25 * (v->Cell(it) + v->Cell(it.Right())) * (this->Cell(it) + this->Cell(it.Top()))
+    - 0.25 * (v->Cell(it.Top()) + v->Cell(it.Right().Down())) * (this->Cell(it.Down()) + this->Cell(it));
+  real_t st = 0.25 * abs(v->Cell(it) + v->Cell(it.Right())) * (this->Cell(it) - this->Cell(it.Top()))
+    + 0.25 * abs(v->Cell(it.Down()) + v->Cell(it.Right().Down())) * (this->Cell(it.Down()) - this->Cell(it));
+  return (ft + alpha * st) / _geom->Mesh()[1];
 }
 /// Computes u*dv/dx with the donor cell method
 //  @param it  Position [it]
