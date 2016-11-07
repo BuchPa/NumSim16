@@ -46,6 +46,8 @@ public:
   const multi_real_t &Length() const;
   /// Returns the meshwidth
   const multi_real_t &Mesh() const;
+  /// Returns the inverse meshwidth
+  const multi_real_t &InvMesh() const;
 
   /// Updates the velocity field u
   void Update_U(Grid *u) const;
@@ -61,6 +63,9 @@ private:
 
   multi_real_t _velocity;
   real_t _pressure;
+  
+  // Inverse mesh width
+  multi_real_t _invh;
 };
 //------------------------------------------------------------------------------
 #endif // __GEOMETRY_HPP

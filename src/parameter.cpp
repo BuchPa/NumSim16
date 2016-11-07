@@ -19,6 +19,9 @@ Parameter::Parameter(){
   //TODO Werte
   _dt      = 0.1; // Dummy value!
   _tend    = 10;  // Dummy value!
+  
+  // Compute inverse Re
+  _invre   = 1.0/_re;
 }
 
 /// Loads the parameter values from a file
@@ -45,6 +48,10 @@ void Parameter::Load(const char *file) {
 /// Getter functions for Re
 const real_t &Parameter::Re() const{
   return _re;
+}
+/// Getter functions for InvRe
+const real_t &Parameter::InvRe() const{
+  return _invre;
 }
 /// Getter functions for Omega
 const real_t &Parameter::Omega() const{
