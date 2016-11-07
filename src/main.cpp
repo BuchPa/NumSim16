@@ -114,6 +114,47 @@ void test_parameter() {
   printf("IterMax %d (5)\n", p.IterMax());
 }
 
+void test_interpolate() {
+  printf("Testing Interpolate\n");
+  printf("  Cycle Iterator visually by pressing 'Return' in Visu...\n");
+
+  // Test interpolate
+  const Geometry geo;
+  Grid grid(&geo);
+  Iterator it(&geo);
+  
+  // Create and initialize the visualization
+  Renderer visu(geo.Length(), geo.Mesh());
+  visu.Init(800, 800);
+  
+  for(it.First(); it.Valid(); it.Next()){
+    // Set current cell
+    grid.Cell(it) = real_t(1.0);
+    
+    // Visualize field and wait for user to press return
+    int key = 0;
+    
+    while((key != 10)&&(key!=-1)){
+      visu.Render(&grid);
+      key = visu.Check();
+    }
+    
+    // Abort iteration if visu is closed
+    if(key==-1){
+      printf("  ... aborted iteration since visu was closed!\n");
+      return;
+    }else{
+      printf("  ... Iterate Next ...\n");
+    }
+    
+    // Reset and countinue
+    grid.Cell(it) = real_t(0.0);
+  }
+  
+  printf("  ... finished!\n");
+  
+}
+
 void test_grid() {
   printf("Testing Grid\n");
 
@@ -186,6 +227,11 @@ int main(int argc, char **argv) {
 
     if (strcmp(argv[1], "TEST_GRID") == 0) {
       test_grid();
+      return 0;
+    }
+    
+    if (strcmp(argv[1], "TEST_INTERPOLATE") == 0) {
+      test_interpolate();
       return 0;
     }
   }
