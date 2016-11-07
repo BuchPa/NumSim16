@@ -113,10 +113,10 @@ void test_parameter() {
 
   // Test loading and parsing of params
   Parameter p = Parameter();
-  p.Load("test_parameter.txt");
+  p.Load("ex1_parameter");
 
-  printf("Re %f (1.0)\n", p.Re());
-  printf("IterMax %d (5)\n", p.IterMax());
+  printf("Re %f (1000.0)\n", p.Re());
+  printf("IterMax %d (100)\n", p.IterMax());
 }
 
 void test_grid() {
