@@ -65,6 +65,12 @@ Iterator Iterator::Left() const{
   }
   
   Iterator it(_geom, pos);
+  
+  // Check valid, if not let the user know
+  if(!it.Valid()){
+    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
+  }
+  
   return it;
 }
 
@@ -82,6 +88,12 @@ Iterator Iterator::Right() const{
   }
   
   Iterator it(_geom, pos);
+  
+  // Check valid, if not let the user know
+  if(!it.Valid()){
+    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
+  }
+  
   return it;
 }
 
@@ -97,6 +109,12 @@ Iterator Iterator::Top() const{
   }
   
   Iterator it(_geom, pos);
+  
+  // Check valid, if not let the user know
+  if(!it.Valid()){
+    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
+  }
+  
   return it;
 }
 
@@ -114,6 +132,12 @@ Iterator Iterator::Down() const{
   }
   
   Iterator it(_geom, pos);
+  
+  // Check valid, if not reset to value
+  if(!it.Valid()){
+    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
+  }
+  
   return it;
 }
 

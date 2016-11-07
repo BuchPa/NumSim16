@@ -120,12 +120,23 @@ void test_interpolate() {
 
   // Test interpolate
   const Geometry geo;
-  Grid grid(&geo);
+  
+  // Create grid
+  const real_t faktor = 0.5;
+  const multi_real_t offset = {
+    faktor * geo.Mesh()[0],
+    faktor * geo.Mesh()[1]
+  };
+  Grid grid(&geo, offset);
+  
+  // Create Iterator
   Iterator it(&geo);
   
   // Create and initialize the visualization
   Renderer visu(geo.Length(), geo.Mesh());
   visu.Init(800, 800);
+  
+  visu.Render(&grid, 0.0, 1.0);
   
   for(it.First(); it.Valid(); it.Next()){
     // Set current cell
@@ -134,8 +145,9 @@ void test_interpolate() {
     // Visualize field and wait for user to press return
     int key = 0;
     
+    visu.Render(&grid, 0.0, 1.0);
+    
     while((key != 10)&&(key!=-1)){
-      visu.Render(&grid);
       key = visu.Check();
     }
     
