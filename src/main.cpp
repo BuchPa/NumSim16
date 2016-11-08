@@ -248,7 +248,10 @@ void test_grid() {
 
   // Test donor-cell difference quotients for center cell
   printf("DC-Quot center\n");
-  printf("%f (%f)", grid.DC_vdu_y(it, 0.5, &grid2), 30.5 / (4.0 * geo.Mesh()[1]));
+  printf("%f (%f)\n", grid.DC_vdu_y(it, 0.5, &grid2), 30.5 / (4.0 * geo.Mesh()[1]));
+  printf("%f (%f)\n", grid.DC_udu_x(it, 0.5), 23.0 / (4.0 * geo.Mesh()[1]));
+  printf("%f (%f)\n", grid2.DC_udv_x(it, 0.5, &grid), -29.0 / (4.0 * geo.Mesh()[0]));
+  printf("%f (%f)\n", grid2.DC_vdv_y(it, 0.5), 18.0 / (4.0 * geo.Mesh()[1]));
 }
 
 int main(int argc, char **argv) {

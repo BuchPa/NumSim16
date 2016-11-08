@@ -154,8 +154,11 @@ real_t Grid::dyy(const Iterator &it) const{
 /// Computes u*du/dx with the donor cell method
 //  @param it  Position [it]
 real_t Grid::DC_udu_x(const Iterator &it, const real_t &alpha) const{
-  //TODO
-  return real_t(0.0);
+  real_t ft = pow((this->Cell(it) + this->Cell(it.Right())), 2)
+    - pow((this->Cell(it.Left()) + this->Cell(it)), 2);
+  real_t st = abs(this->Cell(it) + this->Cell(it.Right())) * (this->Cell(it) - this->Cell(it.Right()))
+    - abs(this->Cell(it.Left()) + this->Cell(it)) * (this->Cell(it.Left()) - this->Cell(it));
+  return (0.25 * (ft + alpha * st)) / _geom->Mesh()[0];
 }
 /// Computes v*du/dy with the donor cell method
 //  @param it  Position [it]
@@ -169,14 +172,20 @@ real_t Grid::DC_vdu_y(const Iterator &it, const real_t &alpha, const Grid *v) co
 /// Computes u*dv/dx with the donor cell method
 //  @param it  Position [it]
 real_t Grid::DC_udv_x(const Iterator &it, const real_t &alpha, const Grid *u) const{
-  //TODO
-  return real_t(0.0);
+  real_t ft = (this->Cell(it) + this->Cell(it.Top())) * (u->Cell(it) + u->Cell(it.Left()))
+    - (this->Cell(it.Right()) + this->Cell(it.Right().Top())) * (u->Cell(it.Right()) + u->Cell(it));
+  real_t st = abs(this->Cell(it) + this->Cell(it.Top())) * (u->Cell(it) - u->Cell(it.Left()))
+    - abs(this->Cell(it.Right()) + this->Cell(it.Right().Top())) * (u->Cell(it.Right()) - u->Cell(it));
+  return (0.25 * (ft + alpha * st)) / _geom->Mesh()[0];
 }
 /// Computes v*dv/dy with the donor cell method
 //  @param it  Position [it]
 real_t Grid::DC_vdv_y(const Iterator &it, const real_t &alpha) const{
-  //TODO
-  return real_t(0.0);
+  real_t ft = pow((this->Cell(it) + this->Cell(it.Top())), 2)
+    - pow((this->Cell(it.Down()) + this->Cell(it)), 2);
+  real_t st = abs(this->Cell(it) + this->Cell(it.Top())) * (this->Cell(it) - this->Cell(it.Top()))
+    - abs(this->Cell(it.Down()) + this->Cell(it)) * (this->Cell(it.Top()) - this->Cell(it));
+  return (0.25 * (ft + alpha * st)) / _geom->Mesh()[1];
 }
 
 /// Returns the maximal value of the grid
