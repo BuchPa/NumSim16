@@ -107,18 +107,18 @@ real_t Grid::Interpolate(const multi_real_t &pos) const {
 
   // Clamp to a grid point (lower left corner)
   multi_index_t clamp = {
-    floor(innerpos[0] / _geom->Mesh()[0]),
-    floor(innerpos[1] / _geom->Mesh()[1])
+    floor(innerpos[0] / _geom->Mesh()[0]) + 1,
+    floor(innerpos[1] / _geom->Mesh()[1]) + 1
   };
   // Calculate position within unit square spanned by the four grid points
   multi_real_t modpos = {
-    innerpos[0] / _geom->Mesh()[0] - clamp[0],
-    innerpos[1] / _geom->Mesh()[1] - clamp[1]
+    innerpos[0] / _geom->Mesh()[0] - clamp[0] + 1,
+    innerpos[1] / _geom->Mesh()[1] - clamp[1] + 1
   };
   
   // Calculate interpolated value by weighing the value of each corner
   // by the weight given by the hat function for that corner
-  Iterator it = Iterator(_geom, (clamp[1]+1) * _geom->Size()[0] + clamp[0] + 1);
+  Iterator it = Iterator(_geom, clamp[1] * _geom->Size()[0] + clamp[0]);
   return this->Cell(it) * hat(1, modpos)
     + this->Cell(it.Right()) * hat(2, modpos)
     + this->Cell(it.Top()) * hat(3, modpos)

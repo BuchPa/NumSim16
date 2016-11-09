@@ -30,7 +30,7 @@
 
 #define DIM 2
 #define REAL_TYPE double
-#define INDEX_TYPE int32_t
+#define INDEX_TYPE uint32_t
 
 //------------------------------------------------------------------------------
 
