@@ -184,7 +184,7 @@ void Compute::TimeStep(bool printInfo) {
     if( it >= _param->IterMax() ){
       printf("  DIDN'T converge! itermax reached!\n");
     }else{
-      printf("  DID converge! eps reached after % d iterations!\n", it);
+      printf("  DID converge! eps (%f < %f) reached after % d iterations!\n", res, _epslimit, it);
     }
     
 //     // Print field stuff
@@ -206,7 +206,7 @@ void Compute::TimeStep(bool printInfo) {
 void Compute::NewVelocities(const real_t &dt){
   InteriorIterator init(_geom);
   
-  // Cycle to compute F,G
+  // Cycle to compute u,v
   for(init.First(); init.Valid(); init.Next()){
     _u->Cell(init) = _F->Cell(init) - dt * _p->dx_r(init);
     _v->Cell(init) = _G->Cell(init) - dt * _p->dy_r(init);

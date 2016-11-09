@@ -38,6 +38,7 @@ public:
 
 protected:
   const Geometry *_geom;
+  real_t _hsquare;
 
   /// Returns the residual at [it] for the pressure-Poisson equation
   real_t localRes(const Iterator &it, const Grid *grid, const Grid *rhs) const;

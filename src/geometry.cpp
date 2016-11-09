@@ -13,24 +13,14 @@
 // driven cavity with 128 x 128 grid, no-slip boundary conditions
 Geometry::Geometry(){
   // Init number of INNER cells in each dimension
-  _size[0] = 4;
-  _size[1] = 4;
+  _size[0] = 128;
+  _size[1] = 128;
   
   // Init length of driven cavity
   _length[0] = 1.0;
   _length[1] = 1.0;
   
-  // Calculate cell width/height
-  _h[0] = _length[0]/_size[0];
-  _h[1] = _length[1]/_size[1];
-  
-  // Calculate inverse mesh width/height
-  _invh[0] = _size[0]/_length[0];
-  _invh[1] = _size[1]/_length[1];
-  
-  // Set _size to size INCL ghost layers
-  _size[0] += 2;
-  _size[1] += 2;
+  this->CalculateMesh();
   
   // Set boundary values for upper boundary (u=1, v=0)
   _velocity[0] = real_t(1.0);
@@ -82,6 +72,23 @@ void Geometry::Load(const char *file){
     }
   }
   fclose(handle);
+  
+  this->CalculateMesh();
+}
+
+/// Calculates mesh width
+void Geometry::CalculateMesh() {
+  // Calculate cell width/height
+  _h[0] = _length[0]/_size[0];
+  _h[1] = _length[1]/_size[1];
+  
+  // Calculate inverse mesh width/height
+  _invh[0] = _size[0]/_length[0];
+  _invh[1] = _size[1]/_length[1];
+  
+  // Set _size to size INCL ghost layers
+  _size[0] += 2;
+  _size[1] += 2;
 }
 
 /// Returns the number of cells in each dimension

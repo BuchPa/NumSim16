@@ -266,6 +266,21 @@ void test_grid() {
   printf("%f (%f)\n", grid2.DC_vdv_y(it, 0.5), 18.0 / (4.0 * geo.Mesh()[1]));
 }
 
+void test_load(const Parameter *param, const Geometry *geom){
+  printf("Re: %f\n", param->Re());
+  printf("Omega: %f\n", param->Omega());
+  printf("Alpha: %f\n", param->Alpha());
+  printf("Dt: %f\n", param->Dt());
+  printf("Tend: %f\n", param->Tend());
+  printf("IterMax: %d\n", param->IterMax());
+  printf("Eps: %f\n", param->Eps());
+  printf("Tau: %f\n", param->Tau());
+  
+  printf("Size: (%d, %d)\n", geom->Size()[0], geom->Size()[1]);
+  printf("Len:  (%f, %f)\n", geom->Length()[0], geom->Length()[1]);
+  printf("Mesh: (%f, %f)\n", geom->Mesh()[0], geom->Mesh()[1]);
+}
+
 int main(int argc, char **argv) {
   // Printing stupid things to cheer the simpleminded user
   printf("             ███▄    █  █    ██  ███▄ ▄███▓  ██████  ██▓ ███▄ ▄███▓\n");
@@ -283,6 +298,12 @@ int main(int argc, char **argv) {
   // Create parameter and geometry instances with default values
   Parameter param;
   Geometry geom;
+  
+  // Read parameter file
+  param.Load("ex1_parameter");
+  // Read geometry file
+  geom.Load("ex1_geometry");
+  
   // Create the fluid solver
   Compute comp(&geom, &param);
 
@@ -323,8 +344,13 @@ int main(int argc, char **argv) {
       test_interpolate();
       return 0;
     }
+    
+    if (strcmp(argv[1], "TEST_LOAD") == 0) {
+      test_load(&param, &geom);
+      return 0;
+    }
   }
-
+  
   // Create a VTK generator
   VTK vtk(geom.Mesh(), geom.Size());
 
