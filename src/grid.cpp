@@ -3,7 +3,7 @@
 #include "geometry.hpp"
 #include "iterator.hpp"
 
-#include <cmath>     // std::abs
+#include <cmath>     // std::fabs
 
 using namespace std;
 
@@ -160,10 +160,10 @@ real_t Grid::dyy(const Iterator &it) const{
 /// Computes u*du/dx with the donor cell method
 //  @param it  Position [it]
 real_t Grid::DC_udu_x(const Iterator &it, const real_t &alpha) const{
-  real_t ft = pow((this->Cell(it) + this->Cell(it.Right())), 2)
-    - pow((this->Cell(it.Left()) + this->Cell(it)), 2);
-  real_t st = abs(this->Cell(it) + this->Cell(it.Right())) * (this->Cell(it) - this->Cell(it.Right()))
-    - abs(this->Cell(it.Left()) + this->Cell(it)) * (this->Cell(it.Left()) - this->Cell(it));
+  real_t ft = pow((this->Cell(it) + this->Cell(it.Right())), 2.0)
+    - pow((this->Cell(it.Left()) + this->Cell(it)), 2.0);
+  real_t st = fabs(this->Cell(it) + this->Cell(it.Right())) * (this->Cell(it) - this->Cell(it.Right()))
+    - fabs(this->Cell(it.Left()) + this->Cell(it)) * (this->Cell(it.Left()) - this->Cell(it));
   return (0.25 * (ft + alpha * st)) / _geom->Mesh()[0];
 }
 /// Computes v*du/dy with the donor cell method
@@ -171,26 +171,26 @@ real_t Grid::DC_udu_x(const Iterator &it, const real_t &alpha) const{
 real_t Grid::DC_vdu_y(const Iterator &it, const real_t &alpha, const Grid *v) const{
   real_t ft = (v->Cell(it) + v->Cell(it.Right())) * (this->Cell(it) + this->Cell(it.Top()))
     - (v->Cell(it.Down()) + v->Cell(it.Right().Down())) * (this->Cell(it.Down()) + this->Cell(it));
-  real_t st = abs(v->Cell(it) + v->Cell(it.Right())) * (this->Cell(it) - this->Cell(it.Top()))
-    - abs(v->Cell(it.Down()) + v->Cell(it.Right().Down())) * (this->Cell(it.Down()) - this->Cell(it));
+  real_t st = fabs(v->Cell(it) + v->Cell(it.Right())) * (this->Cell(it) - this->Cell(it.Top()))
+    - fabs(v->Cell(it.Down()) + v->Cell(it.Right().Down())) * (this->Cell(it.Down()) - this->Cell(it));
   return (0.25 * (ft + alpha * st)) / _geom->Mesh()[1];
 }
 /// Computes u*dv/dx with the donor cell method
 //  @param it  Position [it]
 real_t Grid::DC_udv_x(const Iterator &it, const real_t &alpha, const Grid *u) const{
-  real_t ft = (this->Cell(it) + this->Cell(it.Top())) * (u->Cell(it) + u->Cell(it.Left()))
-    - (this->Cell(it.Right()) + this->Cell(it.Right().Top())) * (u->Cell(it.Right()) + u->Cell(it));
-  real_t st = abs(this->Cell(it) + this->Cell(it.Top())) * (u->Cell(it) - u->Cell(it.Left()))
-    - abs(this->Cell(it.Right()) + this->Cell(it.Right().Top())) * (u->Cell(it.Right()) - u->Cell(it));
+  real_t ft = (this->Cell(it) + this->Cell(it.Right())) * (u->Cell(it) + u->Cell(it.Top()))
+    - (this->Cell(it.Left()) + this->Cell(it)) * (u->Cell(it.Left()) + u->Cell(it.Left().Top()));
+  real_t st = fabs(u->Cell(it) + u->Cell(it.Top())) * (this->Cell(it) - this->Cell(it.Right()))
+    - fabs(u->Cell(it.Left()) + u->Cell(it.Left().Top())) * (this->Cell(it.Left()) - this->Cell(it));
   return (0.25 * (ft + alpha * st)) / _geom->Mesh()[0];
 }
 /// Computes v*dv/dy with the donor cell method
 //  @param it  Position [it]
 real_t Grid::DC_vdv_y(const Iterator &it, const real_t &alpha) const{
-  real_t ft = pow((this->Cell(it) + this->Cell(it.Top())), 2)
-    - pow((this->Cell(it.Down()) + this->Cell(it)), 2);
-  real_t st = abs(this->Cell(it) + this->Cell(it.Top())) * (this->Cell(it) - this->Cell(it.Top()))
-    - abs(this->Cell(it.Down()) + this->Cell(it)) * (this->Cell(it.Top()) - this->Cell(it));
+  real_t ft = pow((this->Cell(it) + this->Cell(it.Top())), 2.0)
+    - pow((this->Cell(it.Down()) + this->Cell(it)), 2.0);
+  real_t st = fabs(this->Cell(it) + this->Cell(it.Top())) * (this->Cell(it) - this->Cell(it.Top()))
+    - fabs(this->Cell(it.Down()) + this->Cell(it)) * (this->Cell(it.Down()) - this->Cell(it));
   return (0.25 * (ft + alpha * st)) / _geom->Mesh()[1];
 }
 
@@ -216,9 +216,9 @@ real_t Grid::Min() const{
 real_t Grid::AbsMax() const{
   // Create iterator and cycle _data
   Iterator it(_geom);
-  real_t res = std::abs(_data[0]);
+  real_t res = fabs(_data[0]);
   for (it.First();it.Valid();it.Next())
-    if (std::abs(_data[it]) > res) res = std::abs(_data[it]);
+    if (fabs(_data[it]) > res) res = fabs(_data[it]);
   return res;
 }
 
