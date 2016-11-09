@@ -5,6 +5,8 @@
 
 #include <cmath>     // std::abs
 
+using namespace std;
+
 /// Returns the value for the hat function at the given position on the unit
 //  square. This function provides weights for each corner value that,
 //  multiplied in sum by the values, interpolate the value based on the four
@@ -98,15 +100,20 @@ const real_t &Grid::Cell(const Iterator &it) const{
 //  @param pos multi_real_t An arbitrary position within the grid in absolute
 //    coordinates.
 real_t Grid::Interpolate(const multi_real_t &pos) const {
+  multi_real_t innerpos = {
+    min(_geom->Length()[0], max(0.0, pos[0])) - _offset[0],
+    min(_geom->Length()[1], max(0.0, pos[1])) - _offset[1]
+  };
+
   // Clamp to a grid point (lower left corner)
   multi_index_t clamp = {
-    floor((pos[0] - _offset[0]) / _geom->Mesh()[0]),
-    floor((pos[1] - _offset[1]) / _geom->Mesh()[1])
+    floor(innerpos[0] / _geom->Mesh()[0]),
+    floor(innerpos[1] / _geom->Mesh()[1])
   };
   // Calculate position within unit square spanned by the four grid points
   multi_real_t modpos = {
-    (pos[0] - _offset[0]) / _geom->Mesh()[0] - clamp[0],
-    (pos[1] - _offset[1]) / _geom->Mesh()[1] - clamp[1]
+    innerpos[0] / _geom->Mesh()[0] - clamp[0],
+    innerpos[1] / _geom->Mesh()[1] - clamp[1]
   };
   
   // Calculate interpolated value by weighing the value of each corner
