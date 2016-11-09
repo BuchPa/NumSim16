@@ -8,6 +8,8 @@
 
 #include <cmath>
 
+using namespace std;
+
 /// Creates a compute instance with given geometry and parameter
 //  @param geom   Current geometry
 //  @param param  Current parameters
@@ -53,11 +55,11 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   _cfl = _param->Re() *     (pow(_geom->Mesh()[0],2.0) * pow(_geom->Mesh()[1],2.0))
                        /( 4*(pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)) );
   
-  //Init _solver
+  // Init _solver
   _solver = new SOR(_geom,_param->Omega());
-  //TODO Init _dtlimit
+  // Init _dtlimit
   _dtlimit = _param->Dt();
-  //TODO Init _epslimit
+  // Init _epslimit
   _epslimit = _param->Eps();
 }
 
@@ -136,8 +138,8 @@ void Compute::TimeStep(bool printInfo) {
   const real_t max_y = _geom->Mesh()[1] / _v->AbsMax();
   
   // Compute smallest time step from all candidates with some security factor
-  // TODO _dtlimit noch einbauen
-  const real_t dt    = _param->Tau() * std::min(std::min(max_x,max_y),_cfl);
+  // and a minimum timestep
+  const real_t dt    = _param->Tau() * min(_dtlimit, min(min(max_x, max_y), _cfl));
   
   // Compute temporary velocites F,G
   this->MomentumEqu(dt);
@@ -151,7 +153,8 @@ void Compute::TimeStep(bool printInfo) {
   while((it < _param->IterMax()) && (res >= _epslimit)){
     res = _solver->Cycle(_p, _rhs);
     it++;
-    //TODO boundary values for p neccessary?
+    // Set boundary values in each iter, because it changes with each iter
+    _geom->Update_P(_p);
   }
   
   // Compute new velocites (-> u,v)
@@ -160,7 +163,6 @@ void Compute::TimeStep(bool printInfo) {
   // Set boundary values
   _geom->Update_U(_u);
   _geom->Update_V(_v);
-  _geom->Update_P(_p);
   
   // Compute new time
   _t += dt;
@@ -171,9 +173,10 @@ void Compute::TimeStep(bool printInfo) {
     
     // Print time step stuff
     printf("  Time step candidates:\n");
-    printf("    x:   %4.3f\n", max_x);
-    printf("    y:   %4.3f\n", max_y);
-    printf("    cfl: %4.3f\n", _cfl);
+    printf("    x:       %4.3f\n", max_x);
+    printf("    y:       %4.3f\n", max_y);
+    printf("    cfl:     %4.3f\n", _cfl);
+    printf("    dtlimit: %4.3f\n", _dtlimit);
     printf("  Current time step %4.3f\n", dt);
     printf("\n");
     
@@ -205,7 +208,6 @@ void Compute::NewVelocities(const real_t &dt){
   
   // Cycle to compute F,G
   for(init.First(); init.Valid(); init.Next()){
-    //TODO dx_r richtig hier?
     _u->Cell(init) = _F->Cell(init) - dt * _p->dx_r(init);
     _v->Cell(init) = _G->Cell(init) - dt * _p->dy_r(init);
   }
@@ -217,14 +219,13 @@ void Compute::MomentumEqu(const real_t &dt){
   // Cycle to compute F,G
   for(init.First(); init.Valid(); init.Next()){
     _F->Cell(init) = _u->Cell(init) + dt * (_param->InvRe() * (_u->dxx(init) + _u->dyy(init))
-                                            - 2.0 * _u->DC_udu_x(init, _param->Alpha())
+                                            - _u->DC_udu_x(init, _param->Alpha())
                                             - _u->DC_vdu_y(init, _param->Alpha(), _v)
                                            );
     _G->Cell(init) = _v->Cell(init) + dt * (_param->InvRe() * (_v->dxx(init) + _v->dyy(init))
                                             - _v->DC_udv_x(init, _param->Alpha(), _u)
-                                            - 2.0 * _v->DC_vdv_y(init, _param->Alpha())
+                                            - _v->DC_vdv_y(init, _param->Alpha())
                                            );
-    //TODO 2.0 schon in DC_udu .. und DC_vdv ?
   }
   
   _geom->Update_U(_F);
@@ -236,7 +237,6 @@ void Compute::RHS(const real_t &dt){
   
   // Cycle to compute rhs
   for(init.First(); init.Valid(); init.Next()){
-    //TODO dx_l richtig hier?
     _rhs->Cell(init) = 1.0/dt * ( _F->dx_l(init) + _G->dy_l(init) );
   }
 }

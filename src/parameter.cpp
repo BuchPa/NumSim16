@@ -16,9 +16,8 @@ Parameter::Parameter(){
   _eps     = 1e-3;
   _tau     = 0.5;
   _itermax = 1e2;
-  //TODO Werte
-  _dt      = 0.1; // Dummy value!
-  _tend    = 10;  // Dummy value!
+  _dt      = 0.1;
+  _tend    = 10;
   
   // Compute inverse Re
   _invre   = 1.0/_re;

@@ -42,7 +42,6 @@ Grid::Grid(const Geometry *geom)
   
   // Calculate grid size and create data
   const multi_index_t size = _geom->Size();
-  //TODO N oder N+1 ode N+2?
   _data = new real_t[(size[0])*(size[1])];
   
   // Init data with zeros
@@ -58,7 +57,6 @@ Grid::Grid(const Geometry *geom, const multi_real_t &offset)
   
   // Calculate grid size and create data
   const multi_index_t size = _geom->Size();
-  //TODO N oder N+1 ode N+2?
   _data = new real_t[(size[0])*(size[1])];
   
   // Init data with zeros
