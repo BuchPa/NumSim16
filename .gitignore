@@ -1,7 +1,16 @@
-build/
+# VTK output
 VTK/
+
+# cmake files and compile targets
+build/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
 CMakeFiles/
+
+# Executables and compiled files
 numsim
+
+# Profiler files
+gmon.out
+profile.out
