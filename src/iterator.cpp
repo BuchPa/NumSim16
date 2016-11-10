@@ -154,16 +154,7 @@ void Iterator::UpdateValid(){
 void Iterator::TestRun(const bool printNeighbours){
   if(printNeighbours){
     while(this->Valid()){
-      Iterator l = this->Left();
-      Iterator r = this->Right();
-      Iterator t = this->Top();
-      Iterator d = this->Down();
-      printf("%d: [%d,%d], L-%d: [%d,%d], R-%d: [%d,%d], T-%d: [%d,%d], D-%d: [%d,%d]\n", 
-        this->Value(), this->Pos()[0], this->Pos()[1],
-        l.Value()   , l.Pos()[0]   , l.Pos()[1]   ,
-        r.Value()   , r.Pos()[0]   , r.Pos()[1]   ,
-        t.Value()   , t.Pos()[0]   , t.Pos()[1]   ,
-        d.Value()   , d.Pos()[0]   , d.Pos()[1]   );
+      this->printNeighbours();
       this->Next();
     }
   }else{
@@ -174,6 +165,20 @@ void Iterator::TestRun(const bool printNeighbours){
     }
   }
   printf("\n");
+}
+
+/// Print iterator value with all its printNeighbours
+void Iterator::printNeighbours() const{
+  Iterator l = this->Left();
+  Iterator r = this->Right();
+  Iterator t = this->Top();
+  Iterator d = this->Down();
+  printf("%d: [%d,%d], L_%d: [%d,%d], R_%d: [%d,%d], T_%d: [%d,%d], D_%d: [%d,%d]\n", 
+    this->Value(), this->Pos()[0], this->Pos()[1],
+    l.Value()   , l.Pos()[0]   , l.Pos()[1]   ,
+    r.Value()   , r.Pos()[0]   , r.Pos()[1]   ,
+    t.Value()   , t.Pos()[0]   , t.Pos()[1]   ,
+    d.Value()   , d.Pos()[0]   , d.Pos()[1]   );
 }
 
 /***************************************************************************
@@ -275,4 +280,64 @@ void BoundaryIterator::Next(){
       break;
   }
   this->UpdateValid();
+}
+
+/// Returns Iterator pointing to the bottom left corner
+Iterator BoundaryIterator::CornerBottomLeft(){
+  this->SetBoundary(1);
+  index_t pos = _itmin;
+  
+  Iterator it(_geom, pos);
+  
+  // Check valid, if not let the user know
+  if(!it.Valid()){
+    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
+  }
+  
+  return it;
+}
+
+/// Returns Iterator pointing to the bottom right corner
+Iterator BoundaryIterator::CornerBottomRight(){
+  this->SetBoundary(1);
+  index_t pos = _itmax;
+  
+  Iterator it(_geom, pos);
+  
+  // Check valid, if not let the user know
+  if(!it.Valid()){
+    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
+  }
+  
+  return it;
+}
+
+/// Returns Iterator pointing to the top left corner
+Iterator BoundaryIterator::CornerTopLeft(){
+  this->SetBoundary(3);
+  index_t pos = _itmin;
+  
+  Iterator it(_geom, pos);
+  
+  // Check valid, if not let the user know
+  if(!it.Valid()){
+    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
+  }
+  
+  return it;
+}
+
+/// Returns Iterator pointing to the top right corner
+Iterator BoundaryIterator::CornerTopRight(){
+  this->SetBoundary(3);
+  index_t pos = _itmax;
+  
+  Iterator it(_geom, pos);
+  
+  // Check valid, if not let the user know
+  if(!it.Valid()){
+    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
+  }
+  
+  return it;
 }

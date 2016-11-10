@@ -13,8 +13,8 @@
 // driven cavity with 128 x 128 grid, no-slip boundary conditions
 Geometry::Geometry(){
   // Init number of INNER cells in each dimension
-  _size[0] = 128;
-  _size[1] = 128;
+  _size[0] = 8;
+  _size[1] = 8;
   
   // Init length of driven cavity
   _length[0] = 1.0;
@@ -141,18 +141,12 @@ void Geometry::Update_U(Grid *u) const{
     u->Cell(boit) = 2* _velocity[0] - u->Cell(boit.Down());
     boit.Next();
   }
+  
 }
 /// Updates the velocity field v
 //  @param  v The velocity field v in y direction
 void Geometry::Update_V(Grid *v) const{
   BoundaryIterator boit(this, 1);
-  
-  // Set lower boundary - zero dirichlet
-  boit.SetBoundary(1);
-  while(boit.Valid()){
-    v->Cell(boit) = real_t(0.0);
-    boit.Next();
-  }
   
   // Set right boundary - zero dirichlet
   boit.SetBoundary(2);
@@ -165,6 +159,13 @@ void Geometry::Update_V(Grid *v) const{
   boit.SetBoundary(4);
   while(boit.Valid()){
     v->Cell(boit) = -1 * v->Cell(boit.Right());
+    boit.Next();
+  }
+  
+  // Set lower boundary - zero dirichlet
+  boit.SetBoundary(1);
+  while(boit.Valid()){
+    v->Cell(boit) = real_t(0.0);
     boit.Next();
   }
   
@@ -181,13 +182,6 @@ void Geometry::Update_V(Grid *v) const{
 void Geometry::Update_P(Grid *p) const{
   BoundaryIterator boit(this, 1);
   
-  // Set lower boundary
-  boit.SetBoundary(1);
-  while(boit.Valid()){
-    p->Cell(boit) = p->Cell(boit.Top());
-    boit.Next();
-  }
-  
   // Set right boundary
   boit.SetBoundary(2);
   while(boit.Valid()){
@@ -202,10 +196,30 @@ void Geometry::Update_P(Grid *p) const{
     boit.Next();
   }
   
+  // Set lower boundary
+  boit.SetBoundary(1);
+  while(boit.Valid()){
+    p->Cell(boit) = p->Cell(boit.Top());
+    boit.Next();
+  }
+  
   // Set upper boundary
   boit.SetBoundary(3);
   while(boit.Valid()){
     p->Cell(boit) = p->Cell(boit.Down());
     boit.Next();
   }
+  
+  // Set corners to avg of neighbour cells
+  Iterator cbl = boit.CornerBottomLeft();
+  p->Cell(cbl) = (p->Cell(cbl.Right()) + p->Cell(cbl.Top()))/2.0;
+  
+  Iterator cbr = boit.CornerBottomRight();
+  p->Cell(cbr) = (p->Cell(cbr.Left()) + p->Cell(cbr.Top()))/2.0;
+  
+  Iterator ctl = boit.CornerTopLeft();
+  p->Cell(ctl) = (p->Cell(ctl.Right()) + p->Cell(ctl.Down()))/2.0;
+  
+  Iterator ctr = boit.CornerTopRight();
+  p->Cell(ctr) = (p->Cell(ctr.Left()) + p->Cell(ctr.Down()))/2.0; 
 }

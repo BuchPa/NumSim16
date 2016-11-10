@@ -68,6 +68,8 @@ public:
   
   /// Tests Iterator in a dummy run
   virtual void TestRun(const bool printNeighbours);
+  /// Print iterator value with all its printNeighbours
+  virtual void printNeighbours() const;
 
 protected:
   const Geometry *_geom;
@@ -113,6 +115,15 @@ public:
   void First();
   /// Goes to the next element of the iterator, disables it if position is end
   void Next();
+  
+  /// Returns Iterator pointing to the bottom left corner
+  Iterator CornerBottomLeft();
+  /// Returns Iterator pointing to the bottom right corner
+  Iterator CornerBottomRight();
+  /// Returns Iterator pointing to the top left corner
+  Iterator CornerTopLeft();
+  /// Returns Iterator pointing to the top right corner
+  Iterator CornerTopRight();
 
 private:
   //  1: Border Bottom

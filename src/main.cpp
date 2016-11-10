@@ -64,6 +64,27 @@ void test_iterator() {
   boit.SetBoundary(4);
   boit.TestRun(true);
   printf("\n");
+  
+  printf("BoundaryIterator Test Corner Bottom Left:\n");
+  Iterator cbl = boit.CornerBottomLeft();
+  cbl.printNeighbours();
+  printf("\n");
+  
+  printf("BoundaryIterator Test Corner Bottom Right:\n");
+  Iterator cbr = boit.CornerBottomRight();
+  cbr.printNeighbours();
+  printf("\n");
+  
+  printf("BoundaryIterator Test Corner Top Left:\n");
+  Iterator ctl = boit.CornerTopLeft();
+  ctl.printNeighbours();
+  printf("\n");
+  
+  printf("BoundaryIterator Test Corner Top Right:\n");
+  Iterator ctr = boit.CornerTopRight();
+  ctr.printNeighbours();
+  printf("\n");
+  
 }
 
 void test_geometry() {
@@ -351,7 +372,7 @@ int main(int argc, char **argv) {
   // Read parameter file
   param.Load("ex1_parameter");
   // Read geometry file
-//   geom.Load("ex1_geometry");
+  geom.Load("ex1_geometry");
   
   // Create the fluid solver
   Compute comp(&geom, &param);
