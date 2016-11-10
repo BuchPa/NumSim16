@@ -11,8 +11,8 @@ using namespace std;
 /// Constructor of the abstract Solver class
 Solver::Solver(const Geometry *geom)
     : _geom(geom){
-      _hsquare =       (pow(_geom->Mesh()[0],2.0) * pow(_geom->Mesh()[1],2.0))
-                 / ( 2*(pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)) );
+      _hsquare =         (pow(_geom->Mesh()[0],2.0) * pow(_geom->Mesh()[1],2.0))
+                 / ( 2.0*(pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)) );
     }
 
 /// Destructor of the Solver Class
@@ -24,12 +24,12 @@ Solver::~Solver(){
 // @param grid current pressure values
 // @param rhs  right hand side
 real_t Solver::localRes(const Iterator &it, const Grid *grid, const Grid *rhs) const{
-  return _hsquare * (
-                      ( grid->Cell(it.Left()) + grid->Cell(it.Right()) )/pow(_geom->Mesh()[0],2.0)
-                     +( grid->Cell(it.Down()) + grid->Cell(it.Top())   )/pow(_geom->Mesh()[1],2.0)
-                     -( grid->Cell(it)/_hsquare )
-                     - rhs->Cell(it)
-                    );
+  return (
+            ( grid->Cell(it.Left()) + grid->Cell(it.Right()) )/pow(_geom->Mesh()[0],2.0)
+            +( grid->Cell(it.Down()) + grid->Cell(it.Top())   )/pow(_geom->Mesh()[1],2.0)
+            -( grid->Cell(it)/_hsquare )
+            - rhs->Cell(it)
+          );
 }
 
 
