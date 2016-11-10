@@ -49,9 +49,9 @@ void VTK::Init(const char *path) {
   fprintf(_handle, "<?xml version=\"1.0\"?>\n");
   fprintf(_handle, "<VTKFile type=\"StructuredGrid\">\n");
   fprintf(_handle, "<StructuredGrid WholeExtent=\"0 %i 0 %i 0 %i \">\n",
-          _size[0]-1, _size[1]-1, (DIM == 3 ? _size[2]-1 : 0));
-  fprintf(_handle, "<Piece Extent=\"0 %i 0 %i 0 %i \">\n", _size[0]-1,
-          _size[1]-1, (DIM == 3 ? _size[2]-1 : 0));
+          _size[0]-2, _size[1]-2, (DIM == 3 ? _size[2]-2 : 0));
+  fprintf(_handle, "<Piece Extent=\"0 %i 0 %i 0 %i \">\n", _size[0]-2,
+          _size[1]-2, (DIM == 3 ? _size[2]-2 : 0));
   fprintf(_handle, "<Points>\n");
   fprintf(_handle, "<DataArray type=\"Float64\" format=\"ascii\" "
                    "NumberOfComponents=\"3\">\n");
