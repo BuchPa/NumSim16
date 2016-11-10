@@ -22,6 +22,7 @@
 #include "visu.hpp"
 #include "vtk.hpp"
 #include "iterator.hpp"
+#include "solver.hpp"
 
 #include <iostream> // getchar()
 
@@ -281,6 +282,54 @@ void test_load(const Parameter *param, const Geometry *geom){
   printf("Mesh: (%f, %f)\n", geom->Mesh()[0], geom->Mesh()[1]);
 }
 
+void test_solver(const Parameter *param, const Geometry *geom){
+  multi_index_t size = geom->Size();
+  Grid *grid = new Grid(geom);
+  
+  InteriorIterator init(geom);
+  
+  for(init.First(); init.Valid(); init.Next()){
+    grid->Cell(init) = std::max(0.0,-(init.Pos()[0] - 0.25 * size[0]) *
+                                     (init.Pos()[0] - 0.75 * size[0]) -
+                                     (init.Pos()[1] - 0.25 * size[1]) *
+                                     (init.Pos()[1] - 0.75 * size[1]) );
+  }
+  
+  // Create Right hand side
+  Grid rhs(geom, 0.0);
+  
+  // Create and initialize the visualization
+  Renderer visu(geom->Length(), geom->Mesh());
+  visu.Init(800, 800);
+  real_t maxGrid = grid->AbsMax();
+  
+  // Create solver
+  Solver *solver = new SOR(geom,  real_t(1.7));
+  
+  // Plot grid
+  visu.Render(grid, 0.0, maxGrid);
+  
+  int key = 0;
+  int iter = 0;
+  while((key != 10)&&(key!=-1)){
+    key = visu.Check();
+    
+    real_t res = solver->Cycle(grid, &rhs);
+    
+    printf("Iter:    %d\n", iter);
+    printf("Max val: %f (%f)\n", grid->Max(), maxGrid);
+    printf("Min val: %f (%f)\n", grid->Min(), 0.0);
+    printf("Res:     %f\n", res);
+    
+    visu.Render(grid, 0.0, maxGrid);
+    
+    iter++;
+  }
+  
+  delete grid;
+  delete solver;
+}
+
 int main(int argc, char **argv) {
   // Printing stupid things to cheer the simpleminded user
   printf("             ███▄    █  █    ██  ███▄ ▄███▓  ██████  ██▓ ███▄ ▄███▓\n");
@@ -302,7 +351,7 @@ int main(int argc, char **argv) {
   // Read parameter file
   param.Load("ex1_parameter");
   // Read geometry file
-  geom.Load("ex1_geometry");
+//   geom.Load("ex1_geometry");
   
   // Create the fluid solver
   Compute comp(&geom, &param);
@@ -349,6 +398,12 @@ int main(int argc, char **argv) {
       test_load(&param, &geom);
       return 0;
     }
+    
+    if (strcmp(argv[1], "TEST_SOLVER") == 0) {
+      test_solver(&param, &geom);
+      return 0;
+    }
+    
   }
   
   // Create a VTK generator
