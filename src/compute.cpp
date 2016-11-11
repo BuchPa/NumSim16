@@ -10,6 +10,8 @@
 
 using namespace std;
 
+#define DYNAMIC_TIMESTEP true
+
 Compute::Compute(const Geometry *geom, const Parameter *param)
     : _geom(geom), _param(param) {
   
@@ -124,7 +126,12 @@ void Compute::TimeStep(bool printInfo) {
   
   // Compute smallest time step from all candidates with some security factor
   // and a minimum timestep
-  const real_t dt    = _param->Tau() * min(_dtlimit, min(min(max_x, max_y), _cfl));
+  real_t dt;
+  if (DYNAMIC_TIMESTEP) {
+    dt = _param->Tau() * min(_dtlimit, min(min(max_x, max_y), _cfl));
+  } else {
+    dt = _dtlimit;
+  }
   
   // Compute temporary velocites F,G
   this->MomentumEqu(dt);
