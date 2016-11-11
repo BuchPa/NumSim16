@@ -8,15 +8,15 @@
 using namespace std;
 
 /// Returns the value for the hat function at the given position on the unit
-//  square. This function provides weights for each corner value that,
-//  multiplied in sum by the values, interpolate the value based on the four
-//  corner values.
-//
-//  @param mode int Which mode of the four-part hat function is evaluated. The
-//    lower left corner is 1, lower right is 2, upper left is 3
-//    and upper right is 4
-//  @param pos multi_real_t The position to evaluate. It assumed this is
-//    relative to the unit square
+///  square. This function provides weights for each corner value that,
+///  multiplied in sum by the values, interpolate the value based on the four
+///  corner values.
+///
+/// @param mode int Which mode of the four-part hat function is evaluated. The
+///    lower left corner is 1, lower right is 2, upper left is 3
+///   and upper right is 4
+///  @param pos multi_real_t The position to evaluate. It assumed this is
+///    relative to the unit square
 real_t hat(const int &mode, const multi_real_t &pos) {
   switch(mode) {
     case 1:
@@ -31,8 +31,6 @@ real_t hat(const int &mode, const multi_real_t &pos) {
   return 0.0;
 }
 
-/// Constructs a grid based on a geometry
-//  @param geom   Geometry information
 Grid::Grid(const Geometry *geom)
     : _geom(geom) {
   
@@ -48,10 +46,6 @@ Grid::Grid(const Geometry *geom)
   this->Initialize(real_t(0.0));
 }
 
-/// Constructs a grid based on a geometry with an offset
-//  @param geom   Geometry information
-//  @param offset distance of staggered grid point to cell's anchor point;
-//                (anchor point = lower left corner)
 Grid::Grid(const Geometry *geom, const multi_real_t &offset)
     : _geom(geom), _offset(offset) {
   
@@ -63,14 +57,11 @@ Grid::Grid(const Geometry *geom, const multi_real_t &offset)
   this->Initialize(real_t(0.0));
 }
 
-/// Deletes the grid
 Grid::~Grid(){
   delete[] _data;
 }
 
-/// Initializes the grid with a fixed value
-//  @param value  Fixed Value
-void Grid::Initialize(const real_t &value){
+void Grid::Initialize(const real_t &value) {
   // Init array with fixed value
   Iterator it(_geom);
   
@@ -79,24 +70,14 @@ void Grid::Initialize(const real_t &value){
   }
 }
 
-/// Write access to the grid cell at position [it]
-//  @param it  Position [it]
-real_t &Grid::Cell(const Iterator &it){
+real_t &Grid::Cell(const Iterator &it) {
   return _data[it];
 }
 
-/// Read access to the grid cell at position [it]
-//  @param it  Position [it]
-const real_t &Grid::Cell(const Iterator &it) const{
+const real_t &Grid::Cell(const Iterator &it) const {
   return _data[it];
 }
 
-/// Interpolate the value at an arbitrary position
-//  For notes on how this algorithm works, see the implementation notes on
-//  interpolation and the hat function.
-//
-//  @param pos multi_real_t An arbitrary position within the grid in absolute
-//    coordinates.
 real_t Grid::Interpolate(const multi_real_t &pos) const {
   multi_real_t innerpos = {
     min(_geom->Length()[0], max(0.0, pos[0])) - _offset[0],
@@ -124,69 +105,57 @@ real_t Grid::Interpolate(const multi_real_t &pos) const {
 
 }
 
-/// Computes the left-sided difference quotient in x-dim at [it]
-//  @param it  Position [it]
 real_t Grid::dx_l(const Iterator &it) const{
   return (this->Cell(it) - this->Cell(it.Left())) / _geom->Mesh()[0];
 }
-/// Computes the right-sided difference quotient in x-dim at [it]
-//  @param it  Position [it]
+
 real_t Grid::dx_r(const Iterator &it) const{
   return (this->Cell(it.Right()) - this->Cell(it)) / _geom->Mesh()[0];
 }
-/// Computes the left-sided difference quotient in y-dim at [it]
-//  @param it  Position [it]
+
 real_t Grid::dy_l(const Iterator &it) const{
   return (this->Cell(it) - this->Cell(it.Down())) / _geom->Mesh()[1];
 }
-/// Computes the right-sided difference quotient in x-dim at [it]
-//  @param it  Position [it]
+
 real_t Grid::dy_r(const Iterator &it) const{
   return (this->Cell(it.Top()) - this->Cell(it)) / _geom->Mesh()[1];
 }
-/// Computes the central difference quotient of 2nd order in x-dim at [it]
-//  @param it  Position [it]
+
 real_t Grid::dxx(const Iterator &it) const{
   return (this->Cell(it.Right()) + this->Cell(it.Left()) - this->Cell(it) - this->Cell(it))
     / (_geom->Mesh()[0] * _geom->Mesh()[0]);
 }
-/// Computes the central difference quotient of 2nd order in y-dim at [it]
-//  @param it  Position [it]
+
 real_t Grid::dyy(const Iterator &it) const{
   return (this->Cell(it.Top()) + this->Cell(it.Down()) - this->Cell(it) - this->Cell(it))
     / (_geom->Mesh()[1] * _geom->Mesh()[1]);
 }
 
-/// Computes u*du/dx with the donor cell method
-//  @param it  Position [it]
-real_t Grid::DC_udu_x(const Iterator &it, const real_t &alpha) const{
+real_t Grid::DC_udu_x(const Iterator &it, const real_t &alpha) const {
   real_t ft = pow((this->Cell(it) + this->Cell(it.Right())), 2.0)
     - pow((this->Cell(it.Left()) + this->Cell(it)), 2.0);
   real_t st = fabs(this->Cell(it) + this->Cell(it.Right())) * (this->Cell(it) - this->Cell(it.Right()))
     - fabs(this->Cell(it.Left()) + this->Cell(it)) * (this->Cell(it.Left()) - this->Cell(it));
   return (0.25 * (ft + alpha * st)) / _geom->Mesh()[0];
 }
-/// Computes v*du/dy with the donor cell method
-//  @param it  Position [it]
-real_t Grid::DC_vdu_y(const Iterator &it, const real_t &alpha, const Grid *v) const{
+
+real_t Grid::DC_vdu_y(const Iterator &it, const real_t &alpha, const Grid *v) const {
   real_t ft = (v->Cell(it) + v->Cell(it.Right())) * (this->Cell(it) + this->Cell(it.Top()))
     - (v->Cell(it.Down()) + v->Cell(it.Right().Down())) * (this->Cell(it.Down()) + this->Cell(it));
   real_t st = fabs(v->Cell(it) + v->Cell(it.Right())) * (this->Cell(it) - this->Cell(it.Top()))
     - fabs(v->Cell(it.Down()) + v->Cell(it.Right().Down())) * (this->Cell(it.Down()) - this->Cell(it));
   return (0.25 * (ft + alpha * st)) / _geom->Mesh()[1];
 }
-/// Computes u*dv/dx with the donor cell method
-//  @param it  Position [it]
-real_t Grid::DC_udv_x(const Iterator &it, const real_t &alpha, const Grid *u) const{
+
+real_t Grid::DC_udv_x(const Iterator &it, const real_t &alpha, const Grid *u) const {
   real_t ft = (this->Cell(it) + this->Cell(it.Right())) * (u->Cell(it) + u->Cell(it.Top()))
     - (this->Cell(it.Left()) + this->Cell(it)) * (u->Cell(it.Left()) + u->Cell(it.Left().Top()));
   real_t st = fabs(u->Cell(it) + u->Cell(it.Top())) * (this->Cell(it) - this->Cell(it.Right()))
     - fabs(u->Cell(it.Left()) + u->Cell(it.Left().Top())) * (this->Cell(it.Left()) - this->Cell(it));
   return (0.25 * (ft + alpha * st)) / _geom->Mesh()[0];
 }
-/// Computes v*dv/dy with the donor cell method
-//  @param it  Position [it]
-real_t Grid::DC_vdv_y(const Iterator &it, const real_t &alpha) const{
+
+real_t Grid::DC_vdv_y(const Iterator &it, const real_t &alpha) const {
   real_t ft = pow((this->Cell(it) + this->Cell(it.Top())), 2.0)
     - pow((this->Cell(it.Down()) + this->Cell(it)), 2.0);
   real_t st = fabs(this->Cell(it) + this->Cell(it.Top())) * (this->Cell(it) - this->Cell(it.Top()))
@@ -194,7 +163,6 @@ real_t Grid::DC_vdv_y(const Iterator &it, const real_t &alpha) const{
   return (0.25 * (ft + alpha * st)) / _geom->Mesh()[1];
 }
 
-/// Returns the maximal value of the grid
 real_t Grid::Max() const{
   // Create iterator and cycle _data
   Iterator it(_geom);
@@ -203,7 +171,7 @@ real_t Grid::Max() const{
     if (_data[it] > res) res = _data[it];
   return res;
 }
-/// Returns the minimal value of the grid
+
 real_t Grid::Min() const{
   // Create iterator and cycle _data
   Iterator it(_geom);
@@ -212,7 +180,7 @@ real_t Grid::Min() const{
     if (_data[it] < res) res = _data[it];
   return res;
 }
-/// Returns the absolute maximal value
+
 real_t Grid::AbsMax() const{
   // Create iterator and cycle _data
   Iterator it(_geom);
@@ -222,12 +190,10 @@ real_t Grid::AbsMax() const{
   return res;
 }
 
-/// Returns a pointer to the raw data
 real_t *Grid::Data(){
   return _data;
 }
 
-/// Print field to console
 void Grid::Print() const{
   // Cycle field with Iterator and print
   Iterator it(_geom);
@@ -238,4 +204,3 @@ void Grid::Print() const{
   }
   printf("\n");
 }
-

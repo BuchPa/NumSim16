@@ -8,9 +8,6 @@
 #include <cstring> // string
 #include <cstdlib> // read/write
 
-
-/// Constructs a 128 x 128 driven cavity geometry:
-// driven cavity with 128 x 128 grid, no-slip boundary conditions
 Geometry::Geometry(){
   // Init number of INNER cells in each dimension
   _size[0] = 8;
@@ -30,8 +27,6 @@ Geometry::Geometry(){
   _pressure    = real_t(0.0);
 }
 
-/// Loads a geometry from a file
-//  @param file File path as char array
 void Geometry::Load(const char *file){
   FILE* handle = fopen(file, "r");
 
@@ -76,7 +71,6 @@ void Geometry::Load(const char *file){
   this->CalculateMesh();
 }
 
-/// Calculates mesh width
 void Geometry::CalculateMesh() {
   // Calculate cell width/height
   _h[0] = _length[0]/_size[0];
@@ -91,25 +85,22 @@ void Geometry::CalculateMesh() {
   _size[1] += 2;
 }
 
-/// Returns the number of cells in each dimension
 const multi_index_t &Geometry::Size() const {
   return _size;
 }
-/// Returns the meshwidth
+
 const multi_real_t &Geometry::Mesh() const {
   return _h;
 }
-/// Returns the length of the domain
+
 const multi_real_t &Geometry::Length() const{
   return _length;
 }
-/// Returns the inverse meshwidth
+
 const multi_real_t &Geometry::InvMesh() const{
   return _invh;
 }
 
-/// Updates the velocity field u
-//  @param  u The velocity field u in x direction
 void Geometry::Update_U(Grid *u) const{
   BoundaryIterator boit(this, 1);
   
@@ -143,8 +134,7 @@ void Geometry::Update_U(Grid *u) const{
   }
   
 }
-/// Updates the velocity field v
-//  @param  v The velocity field v in y direction
+
 void Geometry::Update_V(Grid *v) const{
   BoundaryIterator boit(this, 1);
   
@@ -177,8 +167,7 @@ void Geometry::Update_V(Grid *v) const{
     boit.Next();
   }
 }
-/// Updates the pressure field p
-//  @param  p The pressure field
+
 void Geometry::Update_P(Grid *p) const{
   BoundaryIterator boit(this, 1);
   

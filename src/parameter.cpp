@@ -7,7 +7,6 @@
 
 using namespace std;
 
-/// Constructs a new Parameter set with default values
 Parameter::Parameter(){
   // Driven Cavity parameters; see exercise sheet 1
   _re      = 1e3;
@@ -23,8 +22,6 @@ Parameter::Parameter(){
   _invre   = 1.0/_re;
 }
 
-/// Loads the parameter values from a file
-//  @param file File path as char array
 void Parameter::Load(const char *file) {
   FILE* handle = fopen(file,"r");
   double inval;
@@ -44,39 +41,38 @@ void Parameter::Load(const char *file) {
   fclose(handle);
 }
 
-/// Getter functions for Re
 const real_t &Parameter::Re() const{
   return _re;
 }
-/// Getter functions for InvRe
+
 const real_t &Parameter::InvRe() const{
   return _invre;
 }
-/// Getter functions for Omega
+
 const real_t &Parameter::Omega() const{
   return _omega;
 }
-/// Getter functions for Alpha
+
 const real_t &Parameter::Alpha() const{
   return _alpha;
 }
-/// Getter functions for Dt
+
 const real_t &Parameter::Dt() const{
   return _dt;
 }
-/// Getter functions for Tend
+
 const real_t &Parameter::Tend() const{
   return _tend;
 }
-/// Getter functions for IterMax
+
 const index_t &Parameter::IterMax() const{
   return _itermax;
 }
-/// Getter functions for Eps
+
 const real_t &Parameter::Eps() const{
   return _eps;
 }
-/// Getter functions for Tau
+
 const real_t &Parameter::Tau() const{
   return _tau;
 }

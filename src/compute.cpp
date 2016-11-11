@@ -10,10 +10,6 @@
 
 using namespace std;
 
-/// Creates a compute instance with given geometry and parameter.
-//
-//  @param geom Geometry The geometry to work with
-//  @param param Parameter The parameter to work with
 Compute::Compute(const Geometry *geom, const Parameter *param)
     : _geom(geom), _param(param) {
   
@@ -64,7 +60,6 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   _epslimit = _param->Eps();
 }
 
-/// Deconstructs the compute instance.
 Compute::~Compute() {
   delete _u;
   delete _v;
@@ -80,45 +75,26 @@ Compute::~Compute() {
   delete _solver;
 }
 
-/// Returns the simulated time in total.
-//
-// @return real_t The simulated time in total.
 const real_t &Compute::GetTime() const {
   return _t;
 }
 
-/// Returns the pointer to U.
-//
-// @return Grid The grid containing the u velocities.
 const Grid *Compute::GetU() const {
   return _u;
 }
 
-/// Returns the pointer to V.
-//
-// @return Grid The grid containing the v velocities.
 const Grid *Compute::GetV() const {
   return _v;
 }
 
-/// Returns the pointer to P.
-//
-// @return Grid The grid containing the pressure.
 const Grid *Compute::GetP() const {
   return _p;
 }
 
-/// Returns the pointer to RHS.
-//
-// @return Grid The grid containing the right-hand-side of the Navier-Stokes
-//   equation.
 const Grid *Compute::GetRHS() const{
   return _rhs;
 }
 
-/// Computes and returns the absolute velocity (u_x + u_y)^(1/2) on a grid.
-//
-// @return Grid A grid containing the absolute velocities.
 const Grid *Compute::GetVelocity() {
   // Create Iterator
   Iterator it = Iterator(_geom);
@@ -131,28 +107,17 @@ const Grid *Compute::GetVelocity() {
   return _tmp;
 }
 
-/// Computes and returns the vorticity on a grid.
-//
-// @return Grid A grid containing the vorticity.
 const Grid *Compute::GetVorticity(){
   // Not used so far. Return something.
   return _tmp;
 }
 
-/// Computes and returns the stream line values on a grid.
-//
-// @return Grid A grid containing the stream lines.
 const Grid *Compute::GetStream(){
   // Not used so far. Return something.
   return _tmp;
 }
 
-/// Execute one time step of the fluid simulation (with or without debug info).
-//
-// @param printInfo bool If true, prints information about the current
-//   solver state (residual etc.)
-void Compute::TimeStep(bool printInfo) {
-  
+void Compute::TimeStep(bool printInfo) {  
   // Compute candidates for current time step
   const real_t max_x = _geom->Mesh()[0] / _u->AbsMax();
   const real_t max_y = _geom->Mesh()[1] / _v->AbsMax();
@@ -213,9 +178,6 @@ void Compute::TimeStep(bool printInfo) {
  *                            PRIVATE FUNCTIONS                            *
  ***************************************************************************/
 
-/// Compute the new velocites u & v.
-//
-// @param dt real_t The timestep dt
 void Compute::NewVelocities(const real_t &dt){
   InteriorIterator init(_geom);
   
@@ -226,9 +188,6 @@ void Compute::NewVelocities(const real_t &dt){
   }
 }
 
-/// Compute the temporary velocites F & G.
-//
-// @param dt real_t The timestep dt
 void Compute::MomentumEqu(const real_t &dt){
   InteriorIterator init(_geom);
   
@@ -247,9 +206,7 @@ void Compute::MomentumEqu(const real_t &dt){
   _geom->Update_U(_F);
   _geom->Update_V(_G);
 }
-/// Compute the RHS of the Poisson equation.
-//
-// @param dt real_t The timestep dt
+
 void Compute::RHS(const real_t &dt){
   InteriorIterator init(_geom);
   

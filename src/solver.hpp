@@ -21,46 +21,69 @@
 #define __SOLVER_HPP
 //------------------------------------------------------------------------------
 
-/** abstract base class for an iterative solver
-*/
+/// Abstract base class for an iterative solver. Child classes will implement
+/// specific algorithmn for solving the fluid dynamics equation (the
+/// Navier-Stokes equation)
 class Solver {
 public:
-  /// Constructor of the abstract Solver class
+  /// Constructs the solver working with the given geometry.
+  ///
+  /// @param geom Geometry The geometry to work with
   Solver(const Geometry *geom);
-  /// Destructor of the Solver Class
+
+  /// Destructs the solver instance.
   virtual ~Solver();
 
-  /// This function must be implemented in a child class
-  // @param [in][out] grid current values
-  // @param [in]      rhs  right hand side values
-  // @returns accumulated residual
+  /// Performs on cycle of the solver algorithm and returns the residual after
+  /// the calculation. This function must be implemented in a child class.
+  ///
+  /// @param [in][out] grid Grid The current p values. This grid will be modified with the
+  ///   new values.
+  /// @param rhs Grid The RHS values used in the calculation
+  /// @return real_t The accumulated residual
   virtual real_t Cycle(Grid *grid, const Grid *rhs) const = 0;
 
 protected:
+  /// _geom Geometry The geometry for boundary values etc.
   const Geometry *_geom;
+
+  /// _hsquare real_t A constant used in the calculation
   real_t _hsquare;
 
-  /// Returns the residual at [it] for the pressure-Poisson equation
+  /// Returns the residual at [it] for the pressure-Poisson equation.
+  ///
+  /// @param it Iterator The position
+  /// @param grid Grid The grid containing the p values
+  /// @param rhs Grid The grid containging the RHS values
   real_t localRes(const Iterator &it, const Grid *grid, const Grid *rhs) const;
 };
 
 //------------------------------------------------------------------------------
 
-/** concrete SOR solver
-*/
+/// The SOR solver, implementing Solver functionality by using the SOR algo-
+/// rithm.
 class SOR : public Solver {
 public:
-  /// Constructs an actual SOR solver
+  /// Constructs an SOR solver using the given geometry and omega parameter.
+  ///
+  /// @param geom Geometry The geometry
+  /// @param omega real_t The omega parameter used in the calculation
   SOR(const Geometry *geom, const real_t &omega);
-  /// Destructor
+
+  /// Deconstructs the SOR instance.
   ~SOR();
 
-  /// Returns the total residual and executes a solver cycle
-  // @param grid current pressure values
-  // @param rhs right hand side
+  /// Performs on cycle of the solver algorithm and returns the residual after
+  /// the calculation.
+  ///
+  /// @param [in][out] grid Grid The current p values. This grid will be modified with the
+  ///   new values.
+  /// @param rhs Grid The RHS values used in the calculation
+  /// @return real_t The accumulated residual
   real_t Cycle(Grid *grid, const Grid *rhs) const;
 
 protected:
+  /// _omega real_t The omega parameter
   real_t _omega;
 };
 //------------------------------------------------------------------------------

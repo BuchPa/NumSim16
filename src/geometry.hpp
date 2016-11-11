@@ -22,51 +22,91 @@
 //------------------------------------------------------------------------------
 class Geometry {
 public:
-  /// Constructs a default geometry:
-  // driven cavity with 128 x 128 grid, no-slip boundary conditions
-  // as shown below
-  //
-  //      u=1, v=0
-  //    -------------
-  //    |           |
-  // u=0|           |u=0
-  // v=0|           |v=0
-  //    |           |
-  //    |           |
-  //    -------------
-  //      u=0, v=0
+  /// Constructs a geometry instance with default values. Other values can be
+  /// loaded by using the Load method.
+  ///
+  /// Default values are:
+  /// Size: 8 by 8
+  /// Length: 0.0 to 1.0 and 0.0 to 1.0
+  /// Border-Values: 
+  ///
+  ///      u=1, v=0
+  ///    -------------
+  ///    |           |
+  /// u=0|           |u=0
+  /// v=0|           |v=0
+  ///    |           |
+  ///    |           |
+  ///    -------------
+  ///      u=0, v=0
   Geometry();
 
-  /// Loads a geometry from a file
+  /// Loads values for the geometry from a file.
+  /// See sample file ex1_geometry for how the file should be structured.
+  ///
+  ///  @param file char* File path as char array
   void Load(const char *file);
-  /// Calculates mesh width
+
+  /// Recalculates the mesh width, inverse mesh width and overhang-size and
+  /// saves it in their correspondig private members.
   void CalculateMesh();
 
-  /// Returns the number of cells in each dimension
+  /// Returns the number of cells in each dimension.
+  ///
+  /// @return multi_index_t The size in x and y dimension
   const multi_index_t &Size() const;
-  /// Returns the length of the domain
+
+  /// Returns the length of the domain in each dimension.
+  ///
+  /// @return multi_real_t The domain length in x and y dimension
   const multi_real_t &Length() const;
-  /// Returns the meshwidth
+
+  /// Returns the mesh width of a cell in each dimension.
+  ///
+  /// @return multi_real_t The mesh width in x and y dimension
   const multi_real_t &Mesh() const;
-  /// Returns the inverse meshwidth
+
+  /// Returns the inverse mesh width.
+  ///
+  /// @see Geometry::Mesh()
+  /// @return multi_real_t The inverse mesh width
   const multi_real_t &InvMesh() const;
 
-  /// Updates the velocity field u
+  /// Updates the velocity field u at the boundaries by applying the
+  /// boundary values to them.
+  ///
+  /// @param u Grid The velocity field u in x direction
   void Update_U(Grid *u) const;
-  /// Updates the velocity field v
+
+  /// Updates the velocity field v at the boundaries by applying the
+  /// boundary values to them.
+  ///
+  /// @param v Grid The velocity field v in y direction
   void Update_V(Grid *v) const;
-  /// Updates the pressure field p
+
+  /// Updates the pressure field p at the boundaries by applying the
+  /// boundary values to them.
+  ///
+  /// @param p Grid The pressure field p
   void Update_P(Grid *p) const;
 
 private:
+  /// _size multi_index_t The number of cells in each dimension
   multi_index_t _size;
+
+  /// _length multi_real_t The domain length in each dimension
   multi_real_t _length;
+
+  /// _h multi_real_t The mesh width in each dimension
   multi_real_t _h;
 
+  /// _velocity multi_real_t The velocity boundary values
   multi_real_t _velocity;
+
+  /// _pressure real_t The pressure boundary value
   real_t _pressure;
   
-  // Inverse mesh width
+  // _invh multi_real_t The inverse mesh width in each dimension
   multi_real_t _invh;
 };
 //------------------------------------------------------------------------------
