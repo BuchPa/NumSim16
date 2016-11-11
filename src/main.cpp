@@ -303,7 +303,7 @@ void test_load(const Parameter *param, const Geometry *geom){
   printf("Mesh: (%f, %f)\n", geom->Mesh()[0], geom->Mesh()[1]);
 }
 
-void test_solver(const Parameter *param, const Geometry *geom){
+void test_solver(const Geometry *geom){
   multi_index_t size = geom->Size();
   Grid *grid = new Grid(geom);
   
@@ -421,7 +421,7 @@ int main(int argc, char **argv) {
     }
     
     if (strcmp(argv[1], "TEST_SOLVER") == 0) {
-      test_solver(&param, &geom);
+      test_solver(&geom);
       return 0;
     }
     
