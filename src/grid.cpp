@@ -105,8 +105,8 @@ real_t Grid::Interpolate(const multi_real_t &pos) const {
 
   // Clamp to a grid point (lower left corner)
   multi_index_t clamp = {
-    floor(innerpos[0] / _geom->Mesh()[0]) + 1,
-    floor(innerpos[1] / _geom->Mesh()[1]) + 1
+    (index_t)(floor(innerpos[0] / _geom->Mesh()[0]) + 1),
+    (index_t)(floor(innerpos[1] / _geom->Mesh()[1]) + 1)
   };
   // Calculate position within unit square spanned by the four grid points
   multi_real_t modpos = {
