@@ -25,6 +25,9 @@
 #include "solver.hpp"
 
 #include <iostream> // getchar()
+#include <chrono>
+
+using namespace std::chrono;
 
 void test_compute() {
   printf("Testing Compute\n");
@@ -364,6 +367,9 @@ int main(int argc, char **argv) {
   printf("                     ░    ░            ░         ░   ░         ░   \n");
   printf("Numerische Simulationen 16/17 von\n   Etienne Ott\n   Moritz Schleicher\n   Patrick Buchfink\n\n");
   
+  long start = duration_cast< milliseconds >(
+      system_clock::now().time_since_epoch()
+  ).count();
 
   // Create parameter and geometry instances with default values
   Parameter param;
@@ -462,6 +468,12 @@ int main(int argc, char **argv) {
     
 //     // Wait for user input to debug step-by-step
 //     getchar();
+
+    long end = duration_cast< milliseconds >(
+      system_clock::now().time_since_epoch()
+  ).count();
+
+    printf("time(millis): %ld", end - start);
 
     // Create a VTK File in the folder VTK (must exist)
     vtk.Init("VTK/field");
