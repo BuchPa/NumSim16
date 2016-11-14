@@ -20,116 +20,172 @@
 #ifndef __ITERATOR_HPP
 #define __ITERATOR_HPP
 //------------------------------------------------------------------------------
-/** Iterator base class
-*/
+/// Iterator base class. Contains functionality for an iterator that covers a
+/// grid and provides access to cells without having to worry about boundaries
+/// within the calling function.
+///
+/// Child classes may extend Iterator for example to restrict iteration to a
+/// certain range of cells.
 class Iterator {
 public:
-  /// Constructs a new Iterator depending on a geometry
-  //  @param geom  Current geometry
+  /// Constructs a new Iterator constricted by the given geometry.
+  ///
+  /// @param geom Geometry The geometry to work with
   Iterator(const Geometry *geom);
-  /// Constructs a new Iterator on a geometry with a defined starting value
-  // @param geom  Current geometry
-  // @param value Starting value
+
+  /// Constructs a new Iterator on a geometry with a defined starting value.
+  ///
+  /// @param geom Geometry The geometry to work with
+  /// @param value index_t Starting value
   Iterator(const Geometry *geom, const index_t &value);
 
-  /// Returns the current position value
+  /// Returns the current position value.
+  ///
+  /// @return index_t The current position value
   virtual const index_t &Value() const;
-  /// Cast operator to convert Iterators to integers
+
+  /// Cast operator to convert Iterators to integers.
+  ///
+  /// @return index_t The integer (as index_t type) value of the Iterator
   virtual operator const index_t &() const;
-  /// Returns the position coordinates
+
+  /// Returns the position coordinates.
+  ///
+  /// @return multi_index_t The current position on the grid in each dimension
   virtual multi_index_t Pos() const;
 
-  /// Sets the iterator to the first element
+  /// Sets the iterator to the first element.
   virtual void First();
-  /// Goes to the next element of the iterator, disables it if position is end
+
+  /// Goes to the next element of the iterator, disables it if position is end.
   virtual void Next();
 
-  /// Checks if the iterator still has a valid value
+  /// Checks if the iterator still has a valid value.
   virtual bool Valid() const;
 
   /// Returns an Iterator that is located left from this one.
-  // if we are at the left boundary, the cell sees itself
+  /// if we are at the left boundary, the cell sees itself.
+  ///
+  /// @return Iterator An iterator that starts on the cell to the left of this
+  ///   or itself, if we are at the left boundary.
   virtual Iterator Left() const;
 
   /// Returns an Iterator that is located right from this one
-  // If we are at the right boundary, the cell sees itself
+  // If we are at the right boundary, the cell sees itself.
+  ///
+  /// @return Iterator An iterator that starts on the cell to the right of this
+  ///   or itself, if we are at the right boundary.
   virtual Iterator Right() const;
 
   /// Returns an Iterator that is located above this one
-  // If we are at the upper domain boundary, the cell sees itself
+  // If we are at the upper domain boundary, the cell sees itself.
+  ///
+  /// @return Iterator An iterator that starts on the cell above of this
+  ///   or itself, if we are at the upper boundary.
   virtual Iterator Top() const;
 
   /// Returns an Iterator that is located below this one
-  // If we are at the lower domain boundary, the cell sees itself
+  // If we are at the lower domain boundary, the cell sees itself.
+  ///
+  /// @return Iterator An iterator that starts on the cell below of this
+  ///   or itself, if we are at the lower boundary.
   virtual Iterator Down() const;
   
-  /// Checks if current value is valid
+  /// Checks if current value is valid.
   virtual void UpdateValid();
   
-  /// Tests Iterator in a dummy run
+  /// Tests Iterator in a dummy run.
+  ///
+  /// @param printNeighbours bool If true, prints the neighbors of each cell
   virtual void TestRun(const bool printNeighbours);
-  /// Print iterator value with all its printNeighbours
+
+  /// Print iterator value with all its printNeighbours.
   virtual void printNeighbours() const;
 
 protected:
+  /// _geom Geometry The geometry containing boundary information
   const Geometry *_geom;
+
+  /// _value index_t The current value of the iterator
   index_t _value;
+
+  /// _valid bool Flag to contain the iterators validity, e.g. if we have
+  ///   reached the end of the grid
   bool _valid;
-  // maximal value for _value (inclusive _itmax)
+
+  // _itmax index_t Maximal value for _value (inclusive _itmax)
   index_t _itmax;
-  // minimal value for _value (inclusive _itmin)
+
+  // _itmind index_t Minimal value for _value (inclusive _itmin)
   index_t _itmin;
 };
 
 //------------------------------------------------------------------------------
-/** Iterator for interior cells
-*/
+/// An iterator that only iterates over interio cells of a grid.
 class InteriorIterator : public Iterator {
 public:
-  /// Construct a new InteriorIterator
-  //  @param geom  Current geometry
+  /// Construct a new InteriorIterator working with the given geometry.
+  ///
+  /// @param geom Geometry The geometry to work with
   InteriorIterator(const Geometry *geom);
   
-  /// Goes to the next element of the iterator, disables it if position is end
+  /// Goes to the next element of the iterator, disables it if position is end.
   void Next();
 };
 
 //------------------------------------------------------------------------------
-/** Iterator for domain boundary cells.
-*/
+/// An iterator that only iterates over the domain boundary cells.
 class BoundaryIterator : public Iterator {
 public:
-  /// Constructs a new BoundaryIterator
-  //  @param geom  Current geometry
-  //  @param boundary Boundary to iterate
-  //  1: Border Bottom
-  //  2: Border Right
-  //  3: Border Top
-  //  4: Border Left
+  /// Constructs a new BoundaryIterator working with the given geometry and
+  /// iterating over the given boundary. The boundaries are numbered as
+  /// follows:
+  ///   1: Border Bottom
+  ///   2: Border Right
+  ///   3: Border Top
+  ///   4: Border Left
+  ///
+  /// @param geom Geometry The geometry to work with
+  /// @param boundary index_t Which boundary to iterate over
   BoundaryIterator(const Geometry *geom, const index_t &boundary);
 
-  /// Sets the boundary to iterate
+  /// Sets the boundary to iterate.
+  ///
+  /// @see BoundaryIterator::BoundaryIterator() for how the boundaries are
+  ///   numbered
+  /// @param boundary index_t Which boundary to iterate over
   void SetBoundary(const index_t &boundary);
 
-  /// Sets the iterator to the first element
+  /// Sets the iterator to the first element.
   void First();
-  /// Goes to the next element of the iterator, disables it if position is end
+
+  /// Goes to the next element of the iterator, disables it if position is end.
   void Next();
   
-  /// Returns Iterator pointing to the bottom left corner
+  /// Returns Iterator pointing to the bottom left corner.
+  ///
+  /// @return Iterator An iterator sitting on the bottom left corner
   Iterator CornerBottomLeft();
-  /// Returns Iterator pointing to the bottom right corner
+
+  /// Returns Iterator pointing to the bottom right corner.
+  ///
+  /// @return Iterator An iterator sitting on the bottom right corner
   Iterator CornerBottomRight();
-  /// Returns Iterator pointing to the top left corner
+
+  /// Returns Iterator pointing to the top left corner.
+  ///
+  /// @return Iterator An iterator sitting on the top left corner
   Iterator CornerTopLeft();
-  /// Returns Iterator pointing to the top right corner
+
+  /// Returns Iterator pointing to the top right corner.
+  ///
+  /// @return Iterator An iterator sitting on the top right corner
   Iterator CornerTopRight();
 
 private:
-  //  1: Border Bottom
-  //  2: Border Right
-  //  3: Border Top
-  //  4: Border Left
+  /// _boundary index_t On which boundary the iterator operates.
+  /// @see BoundaryIterator::BoundaryIterator() for how the boundaries are
+  ///   numbered
   index_t _boundary;
 };
 //------------------------------------------------------------------------------
