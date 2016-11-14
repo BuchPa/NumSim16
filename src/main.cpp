@@ -32,6 +32,20 @@ using namespace std::chrono;
 
 #define MEASURE_TIME true
 
+/// The entry point into the simulation program. The following console para-
+/// meters are implemented:
+///
+/// TEST_COMPUTE
+/// TEST_ITERATOR
+/// TEST_GEOMETRY
+/// TEST_PARAMETER
+/// TEST_GRID
+/// TEST_INTERPOLATE
+/// TEST_LOAD
+/// TEST_SOLVER
+///
+/// Console parameters starting with TEST are meant to be used to test specific
+/// subsystems of the programs.
 int main(int argc, char **argv) {
   // Printing stupid things to cheer the simpleminded user
   printf("             ███▄    █  █    ██  ███▄ ▄███▓  ██████  ██▓ ███▄ ▄███▓\n");
