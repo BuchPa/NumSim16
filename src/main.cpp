@@ -25,9 +25,11 @@
 #include "solver.hpp"
 
 #include <iostream> // getchar()
-#include <chrono>
+#include <chrono> // time functions
 
 using namespace std::chrono;
+
+#define MEASURE_TIME true
 
 void test_compute() {
   printf("Testing Compute\n");
@@ -367,9 +369,13 @@ int main(int argc, char **argv) {
   printf("                     ░    ░            ░         ░   ░         ░   \n");
   printf("Numerische Simulationen 16/17 von\n   Etienne Ott\n   Moritz Schleicher\n   Patrick Buchfink\n\n");
   
-  long start = duration_cast< milliseconds >(
+  long start = 0, end = 0;
+
+  if (MEASURE_TIME) {
+    start = duration_cast<milliseconds>(
       system_clock::now().time_since_epoch()
-  ).count();
+    ).count();
+  }
 
   // Create parameter and geometry instances with default values
   Parameter param;
@@ -383,11 +389,11 @@ int main(int argc, char **argv) {
   // Create the fluid solver
   Compute comp(&geom, &param);
 
-#ifdef USE_DEBUG_VISU
+  #ifdef USE_DEBUG_VISU
   // Create and initialize the visualization
   Renderer visu(geom.Length(), geom.Mesh());
   visu.Init(800, 800);
-#endif // USE_DEBUG_VISU
+  #endif // USE_DEBUG_VISU
 
   // Check for specific test
   if (argc > 1) {
@@ -443,37 +449,31 @@ int main(int argc, char **argv) {
 
   // Run the time steps until the end is reached
   while ((comp.GetTime() - param.Tend())<-param.Dt() && run) {
-#ifdef USE_DEBUG_VISU
+
+    #ifdef USE_DEBUG_VISU
+
     // Render and check if window is closed
     switch (visu.Render(visugrid)) {
-    case -1:
-      run = false;
-      break;
-    case 0:
-      visugrid = comp.GetVelocity();
-      break;
-    case 1:
-      visugrid = comp.GetU();
-      break;
-    case 2:
-      visugrid = comp.GetV();
-      break;
-    case 3:
-      visugrid = comp.GetP();
-      break;
-    default:
-      break;
+      case -1:
+        run = false;
+        break;
+      case 0:
+        visugrid = comp.GetVelocity();
+        break;
+      case 1:
+        visugrid = comp.GetU();
+        break;
+      case 2:
+        visugrid = comp.GetV();
+        break;
+      case 3:
+        visugrid = comp.GetP();
+        break;
+      default:
+        break;
     };
-#endif // DEBUG_VISU
-    
-//     // Wait for user input to debug step-by-step
-//     getchar();
 
-    long end = duration_cast< milliseconds >(
-      system_clock::now().time_since_epoch()
-  ).count();
-
-    printf("time(millis): %ld", end - start);
+    #endif // USE_DEBUG_VISU
 
     // Create a VTK File in the folder VTK (must exist)
     vtk.Init("VTK/field");
@@ -485,6 +485,13 @@ int main(int argc, char **argv) {
     for (uint32_t i = 0; i < 9; ++i)
       comp.TimeStep(false);
     comp.TimeStep(true);
+  }
+
+  if (MEASURE_TIME) {
+    end = duration_cast<milliseconds>(
+      system_clock::now().time_since_epoch()
+    ).count();
+    printf("Overall run time (ms): %ld\n", end - start);
   }
 
   return 0;
