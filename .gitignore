@@ -14,3 +14,6 @@ numsim
 # Profiler files
 gmon.out
 profile.out
+
+# Documentation with doxygen
+doc/
