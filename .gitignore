@@ -17,3 +17,6 @@ profile.out
 
 # Documentation with doxygen
 doc/
+
+# Ignore temporary files (esp. MATLAB)
+*~

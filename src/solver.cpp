@@ -57,5 +57,5 @@ real_t SOR::Cycle(Grid *grid, const Grid *rhs) const {
     n_avg    += 1;
   }
   
-  return sqrt(totalRes) / n_avg;
+  return sqrt(totalRes / n_avg);
 }
