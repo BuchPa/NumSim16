@@ -28,8 +28,10 @@ void Parameter::Load(const char *file) {
   char name[20];
   while (!feof(handle)) {
     if (!fscanf(handle, "%s = %lf\n", name, &inval)) continue;
-    if (strcmp(name,"re") == 0) _re = inval;
-    else if (strcmp(name,"omg") == 0) _omega = inval;
+    if (strcmp(name,"re") == 0){
+      _re    = inval;
+      _invre = 1.0/_re;
+    }else if (strcmp(name,"omg") == 0) _omega = inval;
     else if (strcmp(name,"alpha") == 0) _alpha = inval;
     else if (strcmp(name,"dt") == 0) _dt = inval;
     else if (strcmp(name,"tend") == 0) _tend = inval;
