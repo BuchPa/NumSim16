@@ -39,7 +39,14 @@ public:
   ///    |           |
   ///    -------------
   ///      u=0, v=0
+  
+  /// Constructs a new Geometry.
   Geometry();
+  
+  /// Constructs a new Geometry considering the given Communicator.
+  ///
+  ///  @param comm Communicator The communicator to work with
+  Geometry (const Communicator* comm);
 
   /// Loads values for the geometry from a file.
   /// See sample file ex1_geometry for how the file should be structured.
@@ -51,15 +58,25 @@ public:
   /// saves it in their correspondig private members.
   void CalculateMesh();
 
-  /// Returns the number of cells in each dimension.
+  /// Returns the number of cells in each dimension on the current CPU.
   ///
-  /// @return multi_index_t The size in x and y dimension
+  /// @return multi_index_t The size in x and y dimension on the current CPU
   const multi_index_t &Size() const;
 
-  /// Returns the length of the domain in each dimension.
+  /// Returns the number of cells in each dimension on all CPUs.
   ///
-  /// @return multi_real_t The domain length in x and y dimension
+  /// @return multi_index_t The size in x and y dimension on all CPUs
+  const multi_index_t &TotalSize() const;
+
+  /// Returns the length of the domain in each dimension on the current CPU.
+  ///
+  /// @return multi_real_t The domain length in x and y dimension on the current CPU
   const multi_real_t &Length() const;
+
+  /// Returns the length of the domain in each dimension on all CPUs.
+  ///
+  /// @return multi_real_t The domain length in x and y dimension on all CPUs
+  const multi_real_t &TotalLength() const;
 
   /// Returns the mesh width of a cell in each dimension.
   ///
@@ -91,11 +108,20 @@ public:
   void Update_P(Grid *p) const;
 
 private:
-  /// _size multi_index_t The number of cells in each dimension
+  /// _comm Communicator The communicator containing parallelization information
+  const Communicator* _comm;
+
+  /// _size multi_index_t The number of cells in each dimension on the current CPU
   multi_index_t _size;
 
-  /// _length multi_real_t The domain length in each dimension
+  /// _bsize multi_index_t The number of cells in each dimension on all CPUs
+  multi_index_t _bsize;
+
+  /// _length multi_real_t The domain length in each dimension on the current CPU
   multi_real_t _length;
+
+  /// _blength multi_real_t The domain length in each dimension on all CPUs
+  multi_real_t _blength;
 
   /// _h multi_real_t The mesh width in each dimension
   multi_real_t _h;

@@ -97,5 +97,6 @@ class Grid;
 class Parameter;
 class Solver;
 class Compute;
+class Communicator;
 
 #endif // __TYPEDEF_HPP

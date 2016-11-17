@@ -59,3 +59,26 @@ real_t SOR::Cycle(Grid *grid, const Grid *rhs) const {
   
   return sqrt(totalRes / n_avg);
 }
+
+/***************************************************************************
+ *                               RedOrBlackSOR                             *
+ ***************************************************************************/
+
+RedOrBlackSOR::RedOrBlackSOR (const Geometry *geom, const real_t &omega)
+  : SOR(geom, omega){
+  //TODO
+}
+
+RedOrBlackSOR::~RedOrBlackSOR(){
+  //TODO
+}
+
+real_t RedOrBlackSOR::RedCycle (Grid* grid, const Grid* rhs) const{
+  //TODO
+  return real_t(0.0);
+}
+
+real_t RedOrBlackSOR::BlackCycle (Grid* grid, const Grid* rhs) const{
+  //TODO
+  return real_t(0.0);
+}

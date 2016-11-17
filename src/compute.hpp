@@ -26,7 +26,8 @@ public:
   //
   //  @param geom Geometry The geometry to work with
   //  @param param Parameter The parameter to work with
-  Compute(const Geometry *geom, const Parameter *param);
+  //  @param comm Communicator The communicator to work with
+  Compute(const Geometry *geom, const Parameter *param, const Communicator* comm=0);
 
   /// Deconstructs the compute instance.
   ~Compute();
@@ -124,6 +125,9 @@ private:
 
   /// _param Parameter Holds parameter information like the reynolds number
   const Parameter *_param;
+
+  /// _comm Communicator  Holds the communacation information like number of CPUs
+  const Communicator* _comm;
 
   /// Compute the new velocites u & v.
   //

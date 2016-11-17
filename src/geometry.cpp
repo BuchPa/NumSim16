@@ -27,6 +27,11 @@ Geometry::Geometry(){
   _pressure    = real_t(0.0);
 }
 
+Geometry::Geometry (const Communicator* comm)
+  : _comm(comm){
+  //TODO
+}
+
 void Geometry::Load(const char *file){
   FILE* handle = fopen(file, "r");
 
@@ -89,12 +94,22 @@ const multi_index_t &Geometry::Size() const {
   return _size;
 }
 
+const multi_index_t &Geometry::TotalSize() const{
+  //TODO
+  return _bsize;
+}
+
 const multi_real_t &Geometry::Mesh() const {
   return _h;
 }
 
 const multi_real_t &Geometry::Length() const{
   return _length;
+}
+
+const multi_real_t &Geometry::TotalLength() const{
+  //TODO
+  return _blength;
 }
 
 const multi_real_t &Geometry::InvMesh() const{

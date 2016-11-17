@@ -73,10 +73,10 @@ public:
   /// Deconstructs the SOR instance.
   ~SOR();
 
-  /// Performs on cycle of the solver algorithm and returns the residual after
+  /// Performs one cycle of the solver algorithm and returns the residual after
   /// the calculation.
   ///
-  /// @param [in][out] grid Grid The current p values. This grid will be modified with the
+  /// @param grid Grid The current p values. This grid will be modified with the
   ///   new values.
   /// @param rhs Grid The RHS values used in the calculation
   /// @return real_t The accumulated residual
@@ -85,6 +85,38 @@ public:
 protected:
   /// _omega real_t The omega parameter
   real_t _omega;
+};
+//------------------------------------------------------------------------------
+/// The RedOrBlackSOR solver, implementing Solver functionality by using the Red-
+/// Black-algorithm for parallel use
+class RedOrBlackSOR : public SOR {
+public:
+  /// Constructs an RedOrBlackSOR solver using the given geometry and omega parameter.
+  ///
+  /// @param geom Geometry The geometry
+  /// @param omega real_t The omega parameter used in the calculation
+  RedOrBlackSOR (const Geometry *geom, const real_t &omega);
+  
+  /// Deconstructs the RedOrBlackSOR instance.
+  ~RedOrBlackSOR();
+  
+  /// Performs one red half cycle of the solver algorithm and returns the residual after
+  /// the calculation.
+  ///
+  /// @param grid Grid The current p values. This grid will be modified with the
+  ///   new values.
+  /// @param rhs Grid The RHS values used in the calculation
+  /// @return real_t The accumulated residual
+  real_t RedCycle (Grid *grid, const Grid *rhs) const;
+  
+  /// Performs one black half cycle of the solver algorithm and returns the residual after
+  /// the calculation.
+  ///
+  /// @param grid Grid The current p values. This grid will be modified with the
+  ///   new values.
+  /// @param rhs Grid The RHS values used in the calculation
+  /// @return real_t The accumulated residual
+  real_t BlackCycle (Grid *grid, const Grid *rhs) const;
 };
 //------------------------------------------------------------------------------
 #endif // __SOLVER_HPP

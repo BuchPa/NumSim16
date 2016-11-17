@@ -12,8 +12,8 @@ using namespace std;
 
 #define DYNAMIC_TIMESTEP true
 
-Compute::Compute(const Geometry *geom, const Parameter *param)
-    : _geom(geom), _param(param) {
+Compute::Compute(const Geometry *geom, const Parameter *param, const Communicator* comm)
+    : _geom(geom), _param(param), _comm(comm) {
   
   // Calculate offsets
   multi_real_t offset_u;
