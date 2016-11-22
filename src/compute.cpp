@@ -41,8 +41,15 @@ Compute::Compute(const Geometry *geom, const Parameter *param, const Communicato
   _rhs = new Grid(geom);
   
   _tmp = new Grid(geom);
-  _stream = new Grid(geom);
-  _vort = new Grid(geom);
+  
+  // Create visu fields for stream lines and GetVorticity
+  multi_real_t offset_visufields;
+  
+  offset_visufields[0] = geom->Mesh()[0];
+  offset_visufields[1] = geom->Mesh()[1];
+  
+  _stream = new Grid(geom, offset_visufields);
+  _vort   = new Grid(geom, offset_visufields);
   
   // Init velocity / pressure field
   _geom->Update_U(_u);
@@ -127,16 +134,19 @@ const Grid *Compute::GetVorticity() {
 const Grid *Compute::GetStream() {
   Iterator it = Iterator(_geom);
 
+  // Init first cell with a fixed value
   _stream->Cell(it) = 0.0;
   it.Next();
 
+  // Calculate integral over first row in x-direction
   while (it < _geom->Size()[0]) {
-    _stream->Cell(it) = _stream->Cell(it.Left()) + _u->dx_l(it);
+    _stream->Cell(it) = _stream->Cell(it.Left()) - _geom->Mesh()[0] * _v->Cell(it);
     it.Next();
   }
 
+  // Calculate integrals in y-direction
   while (it.Valid()) {
-    _stream->Cell(it) = _stream->Cell(it.Down()) + _u->dy_l(it);
+    _stream->Cell(it) = _stream->Cell(it.Down()) + _geom->Mesh()[1] * _u->Cell(it);
     it.Next();
   }
 
