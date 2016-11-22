@@ -110,7 +110,13 @@ const Grid *Compute::GetVelocity() {
 }
 
 const Grid *Compute::GetVorticity() {
-  // Not used so far. Return something.
+  Iterator it = Iterator(_geom);
+
+  while (it.Valid()) {
+    _tmp->Cell(it) = _u->dy_r(it) - _v->dx_r(it);
+    it.Next();
+  }
+
   return _tmp;
 }
 
