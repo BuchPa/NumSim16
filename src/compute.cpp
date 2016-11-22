@@ -41,6 +41,8 @@ Compute::Compute(const Geometry *geom, const Parameter *param, const Communicato
   _rhs = new Grid(geom);
   
   _tmp = new Grid(geom);
+  _stream = new Grid(geom);
+  _vort = new Grid(geom);
   
   // Init velocity / pressure field
   _geom->Update_U(_u);
@@ -73,6 +75,8 @@ Compute::~Compute() {
   delete _rhs;
   
   delete _tmp;
+  delete _stream;
+  delete _vort;
   
   delete _solver;
 }
@@ -113,30 +117,30 @@ const Grid *Compute::GetVorticity() {
   Iterator it = Iterator(_geom);
 
   while (it.Valid()) {
-    _tmp->Cell(it) = _u->dy_r(it) - _v->dx_r(it);
+    _vort->Cell(it) = _u->dy_r(it) - _v->dx_r(it);
     it.Next();
   }
 
-  return _tmp;
+  return _vort;
 }
 
 const Grid *Compute::GetStream() {
   Iterator it = Iterator(_geom);
 
-  _tmp->Cell(it) = 0.0;
+  _stream->Cell(it) = 0.0;
   it.Next();
 
   while (it < _geom->Size()[0]) {
-    _tmp->Cell(it) = _tmp->Cell(it.Left()) + _u->dx_l(it);
+    _stream->Cell(it) = _stream->Cell(it.Left()) + _u->dx_l(it);
     it.Next();
   }
 
   while (it.Valid()) {
-    _tmp->Cell(it) = _tmp->Cell(it.Down()) + _u->dy_l(it);
+    _stream->Cell(it) = _stream->Cell(it.Down()) + _u->dy_l(it);
     it.Next();
   }
 
-  return _tmp;
+  return _stream;
 }
 
 void Compute::TimeStep(bool printInfo) {  

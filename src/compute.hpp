@@ -116,6 +116,12 @@ private:
   /// _tmp Grid A container for interpolating various values.
   Grid *_tmp;
 
+  /// _stream Grid Contains the stream function values
+  Grid *_stream;
+
+  /// _vort Grid Contains the vorticity values
+  Grid *_vort;
+
   /// _solver Solver The solver used for iteratively calculating the values
   ///   for the next timestep
   Solver *_solver;
