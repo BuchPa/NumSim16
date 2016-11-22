@@ -159,6 +159,12 @@ int main(int argc, char **argv) {
       case 3:
         visugrid = comp.GetP();
         break;
+      case 4:
+        visugrid = comp.GetStream();
+        break;
+      case 5:
+        visugrid = comp.GetVorticity();
+        break;
       default:
         break;
     };

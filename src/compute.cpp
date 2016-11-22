@@ -109,13 +109,27 @@ const Grid *Compute::GetVelocity() {
   return _tmp;
 }
 
-const Grid *Compute::GetVorticity(){
+const Grid *Compute::GetVorticity() {
   // Not used so far. Return something.
   return _tmp;
 }
 
-const Grid *Compute::GetStream(){
-  // Not used so far. Return something.
+const Grid *Compute::GetStream() {
+  Iterator it = Iterator(_geom);
+
+  _tmp->Cell(it) = 0.0;
+  it.Next();
+
+  while (it < _geom->Size()[0]) {
+    _tmp->Cell(it) = _tmp->Cell(it.Left()) + _u->dx_l(it);
+    it.Next();
+  }
+
+  while (it.Valid()) {
+    _tmp->Cell(it) = _tmp->Cell(it.Down()) + _u->dy_l(it);
+    it.Next();
+  }
+
   return _tmp;
 }
 
