@@ -39,16 +39,19 @@ const bool& Communicator::EvenOdd () const{
 }
 
 real_t Communicator::gatherSum (const real_t& val) const{
-  //TODO
-  return real_t(0.0);
+  real_t sumval;
+  MPI_Allreduce(&val, &sumval, 1, MPI_REAL_TYPE, MPI_SUM, MPI_COMM_WORLD);
+  return sumval;
 }
 real_t Communicator::gatherMin (const real_t& val) const{
-  //TODO
-  return real_t(0.0);
+  real_t minval;
+  MPI_Allreduce(&val, &minval, 1, MPI_REAL_TYPE, MPI_MIN, MPI_COMM_WORLD);
+  return minval;
 }
 real_t Communicator::gatherMax (const real_t& val) const{
-  //TODO
-  return real_t(0.0);
+  real_t maxval;
+  MPI_Allreduce(&val, &maxval, 1, MPI_REAL_TYPE, MPI_MAX, MPI_COMM_WORLD);
+  return maxval;
 }
 
 void Communicator::copyBoundary (Grid* grid) const{

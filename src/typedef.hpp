@@ -20,6 +20,8 @@
 #include <stdio.h>
 // For throwing puzzling errors at the simple-minded user i.e. make him fear c/c++
 #include <stdexcept>
+// For MPI_DOUBLE/INT
+#include <mpich/mpi.h>
 
 //------------------------------------------------------------------------------
 
@@ -31,7 +33,8 @@
 #define DIM 2
 #define REAL_TYPE double
 #define INDEX_TYPE uint32_t
-
+#define MPI_REAL_TYPE MPI_DOUBLE
+#define MPI_INDEX_TYPE MPI_INT
 //------------------------------------------------------------------------------
 
 /// Typedef for reals
@@ -39,6 +42,8 @@ typedef REAL_TYPE real_t;
 
 /// Typedef for integers
 typedef INDEX_TYPE index_t;
+
+
 
 //------------------------------------------------------------------------------
 
