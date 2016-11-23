@@ -44,6 +44,9 @@ typedef REAL_TYPE real_t;
 typedef INDEX_TYPE index_t;
 
 
+enum MPI_TAG : int {
+  MPI_TAG_BOUNDARY
+}
 
 //------------------------------------------------------------------------------
 
