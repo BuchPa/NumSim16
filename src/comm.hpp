@@ -35,6 +35,7 @@ private:
   int _size;
   bool _evenodd;
 
+  void SetDimensions();
   bool copyLeftBoundary (Grid* grid) const;
   bool copyRightBoundary (Grid* grid) const;
   bool copyTopBoundary (Grid* grid) const;

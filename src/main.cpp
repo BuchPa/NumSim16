@@ -17,6 +17,7 @@
 
 #include "typedef.hpp"
 #include "compute.hpp"
+#include "comm.hpp"
 #include "geometry.hpp"
 #include "parameter.hpp"
 #include "visu.hpp"
@@ -68,7 +69,7 @@ int main(int argc, char **argv) {
   }
   
   // Create communicator
-  communicator comm(argc, argv);
+  Communicator comm(&argc, &argv);
 
   // Create parameter and geometry instances with default values
   Parameter param;
