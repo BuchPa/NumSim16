@@ -27,7 +27,7 @@ public:
   //  @param geom Geometry The geometry to work with
   //  @param param Parameter The parameter to work with
   //  @param comm Communicator The communicator to work with
-  Compute(const Geometry *geom, const Parameter *param, const Communicator* comm=0);
+  Compute(const Geometry *geom, const Parameter *param, const Communicator *comm=0);
 
   /// Deconstructs the compute instance.
   ~Compute();

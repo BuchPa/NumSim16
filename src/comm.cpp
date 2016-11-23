@@ -1,39 +1,39 @@
 #include "comm.hpp"
 
 Communicator::Communicator (int* argc, char*** argv){
-  //TODO
+  
+  // Initialize MPI and pass all parameters down to all threads
+  MPI_Init(&argc, &argv);
+  
+  // Get the rank of the current thread
+  MPI_Comm_rank(MPI_COMM_WORLD, &_rank);
+  // Get total number of threads
+  MPI_Comm_size(MPI_COMM_WORLD, &_size);
+  
 }
 Communicator::~Communicator (){
   //TODO
 }
 
 const multi_index_t& Communicator::ThreadIdx () const{
-  //TODO
-  multi_index_t pos;
-  pos[0] = 0;
-  pos[1] = 0;
-  return pos;
+  return _tidx;
 }
 const multi_index_t& Communicator::ThreadDim () const{
-  //TODO
-  multi_index_t pos;
-  pos[0] = 0;
-  pos[1] = 0;
-  return pos;
+  return _tdim;
 }
 
 const int& Communicator::ThreadNum () const{
-  //TODO
-  return int(0);
+  return _rank;
 }
 const int& Communicator::ThreadCnt () const{
-  //TODO
-  return int(0);
+  return _size;
 }
 
 const bool& Communicator::EvenOdd () const{
-  //TODO
-  return true;
+  bool odd_dim1 = _tdim[0]%2;
+  bool odd_dim2 = _tdim[1]%2;
+  
+  return odd_dim1 ^ odd_dim2;
 }
 
 real_t Communicator::gatherSum (const real_t& val) const{

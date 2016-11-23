@@ -12,7 +12,7 @@ using namespace std;
 
 #define DYNAMIC_TIMESTEP true
 
-Compute::Compute(const Geometry *geom, const Parameter *param, const Communicator* comm)
+Compute::Compute(const Geometry *geom, const Parameter *param, const Communicator *comm)
     : _geom(geom), _param(param), _comm(comm) {
   
   // Calculate offsets

@@ -66,6 +66,9 @@ int main(int argc, char **argv) {
       system_clock::now().time_since_epoch()
     ).count();
   }
+  
+  // Create communicator
+  communicator comm(argc, argv);
 
   // Create parameter and geometry instances with default values
   Parameter param;
@@ -77,7 +80,7 @@ int main(int argc, char **argv) {
   geom.Load("ex1_geometry");
   
   // Create the fluid solver
-  Compute comp(&geom, &param);
+  Compute comp(&geom, &param, &comm);
 
   #ifdef USE_DEBUG_VISU
   // Create and initialize the visualization
