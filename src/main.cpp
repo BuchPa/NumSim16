@@ -90,43 +90,50 @@ int main(int argc, char **argv) {
   #endif // USE_DEBUG_VISU
 
   // Check for specific test
-  if (argc > 1) {
-    if (strcmp(argv[1], "TEST_COMPUTE") == 0) {
+  char* test_case = NULL;
+  for (uint32_t i=0; i<argc; i++){
+    if(strstr(argv[i],"TEST") != NULL){
+      test_case = argv[i];
+      break;
+    }
+  }
+  if (test_case != NULL) {
+    if (strcmp(test_case, "TEST_COMPUTE") == 0) {
       test_compute();
       return 0;
     }
 
-    if (strcmp(argv[1], "TEST_ITERATOR") == 0) {
+    if (strcmp(test_case, "TEST_ITERATOR") == 0) {
       test_iterator();
       return 0;
     }
 
-    if (strcmp(argv[1], "TEST_GEOMETRY") == 0) {
+    if (strcmp(test_case, "TEST_GEOMETRY") == 0) {
       test_geometry();
       return 0;
     }
 
-    if (strcmp(argv[1], "TEST_PARAMETER") == 0) {
+    if (strcmp(test_case, "TEST_PARAMETER") == 0) {
       test_parameter();
       return 0;
     }
 
-    if (strcmp(argv[1], "TEST_GRID") == 0) {
+    if (strcmp(test_case, "TEST_GRID") == 0) {
       test_grid();
       return 0;
     }
     
-    if (strcmp(argv[1], "TEST_INTERPOLATE") == 0) {
+    if (strcmp(test_case, "TEST_INTERPOLATE") == 0) {
       test_interpolate();
       return 0;
     }
     
-    if (strcmp(argv[1], "TEST_LOAD") == 0) {
+    if (strcmp(test_case, "TEST_LOAD") == 0) {
       test_load(&param, &geom);
       return 0;
     }
     
-    if (strcmp(argv[1], "TEST_SOLVER") == 0) {
+    if (strcmp(test_case, "TEST_SOLVER") == 0) {
       test_solver(&geom);
       return 0;
     }
