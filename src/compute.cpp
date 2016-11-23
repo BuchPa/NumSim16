@@ -60,8 +60,8 @@ Compute::Compute(const Geometry *geom, const Parameter *param, const Communicato
   _t = 0.0;
   
   // Compute cfl time step limitation
-  _cfl = _param->Re() *     (pow(_geom->Mesh()[0],2.0) * pow(_geom->Mesh()[1],2.0))
-                       /( 4*(pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)) );
+  _diff = _param->Re() *     (pow(_geom->Mesh()[0],2.0) * pow(_geom->Mesh()[1],2.0))
+                        /( 4*(pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)) );
   
   // Init _solver
   _solver = new SOR(_geom,_param->Omega());
@@ -155,14 +155,14 @@ const Grid *Compute::GetStream() {
 
 void Compute::TimeStep(bool printInfo) {  
   // Compute candidates for current time step
-  const real_t max_x = _geom->Mesh()[0] / _u->AbsMax();
-  const real_t max_y = _geom->Mesh()[1] / _v->AbsMax();
+  const real_t cfl_x = _geom->Mesh()[0] / _u->AbsMax();
+  const real_t cfl_y = _geom->Mesh()[1] / _v->AbsMax();
   
   // Compute smallest time step from all candidates with some security factor
   // and a minimum timestep
   real_t dt;
   if (DYNAMIC_TIMESTEP) {
-    dt = _param->Tau() * min(_dtlimit, min(min(max_x, max_y), _cfl));
+    dt = _param->Tau() * min(_dtlimit, min(min(cfl_x, cfl_y), _diff));
   } else {
     dt = _dtlimit;
   }
@@ -199,9 +199,9 @@ void Compute::TimeStep(bool printInfo) {
     
     // Print time step stuff
     printf("  Time step candidates:\n");
-    printf("    x:       %4.3f\n", max_x);
-    printf("    y:       %4.3f\n", max_y);
-    printf("    cfl:     %4.3f\n", _cfl);
+    printf("    cfl_x:   %4.3f\n", cfl_x);
+    printf("    cfl_y:   %4.3f\n", cfl_y);
+    printf("    diff:    %4.3f\n", _diff);
     printf("    dtlimit: %4.3f\n", _dtlimit);
     printf("  Current time step %4.3f\n", dt);
     printf("\n");
