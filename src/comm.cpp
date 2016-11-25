@@ -220,6 +220,22 @@ bool Communicator::copyBottomBoundary (Grid* grid) const{
   return true;
 }
 
+index_t GetLeftNeighbor() {
+  return _tdim[0] * _tidx[1] + _tidx[0] - 1;
+}
+
+index_t GetRightNeighbor() {
+  return _tdim[0] * _tidx[1] + _tidx[0] + 1;
+}
+
+index_t GetTopNeighbor() {
+  return _tdim[0] * _tidx[1] + _tidx[0] + _tdim[0];
+}
+
+index_t GetBottomNeighbor() {
+  return _tdim[0] * _tidx[1] + _tidx[0] - _tdim[0];
+}
+
 void Communicator::SetDimensions() {
   switch (_size) {
     case 4:

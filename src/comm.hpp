@@ -40,6 +40,11 @@ private:
   bool copyRightBoundary (Grid* grid) const;
   bool copyTopBoundary (Grid* grid) const;
   bool copyBottomBoundary (Grid* grid) const;
+
+  index_t GetLeftNeighbor() const;
+  index_t GetRightNeighbor() const;
+  index_t GetTopNeighbor() const;
+  index_t GetBottomNeighbor() const;
 };
 //------------------------------------------------------------------------------
 #endif // __COMM_HPP
