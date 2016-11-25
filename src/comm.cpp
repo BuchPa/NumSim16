@@ -16,10 +16,12 @@ Communicator::Communicator (int* argc, char*** argv){
   bool odd_dim2 = _tdim[1]%2;
   
   _evenodd = odd_dim1 ^ odd_dim2;
+  
+  //TODO Set _size / _bsize in geometry according to number of processes
 }
 
 Communicator::~Communicator (){
-  //TODO
+  MPI_Finalize();
 }
 
 const multi_index_t& Communicator::ThreadIdx () const{
@@ -80,6 +82,20 @@ bool Communicator::isTop () const{
 
 bool Communicator::isBottom () const{
   return _tidx[1] == 0;
+}
+
+const bool Communicator::isMaster() const{
+  return _rank == 0;
+}
+
+const void collect(Grid* fullgrid, Grid* partial) const{
+  // Master collects
+  if (this->isMaster()) {
+    // MPI_Gather
+  }else{
+  // Rest sends
+    
+  }
 }
 
 bool Communicator::copyLeftBoundary (Grid* grid) const{

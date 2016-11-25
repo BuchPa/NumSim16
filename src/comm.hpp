@@ -28,6 +28,10 @@ public:
   bool isTop () const;
   bool isBottom () const;
   
+  const bool isMaster() const;
+  
+  const void collect(Grid* fullgrid, Grid* partial) const;
+  
 private:
   multi_index_t _tidx;
   multi_index_t _tdim;
