@@ -106,6 +106,7 @@ class Geometry;
 class Grid;
 class Parameter;
 class Solver;
+class RedOrBlackSOR;
 class Compute;
 class Communicator;
 

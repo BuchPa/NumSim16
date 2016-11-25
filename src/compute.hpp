@@ -127,7 +127,7 @@ private:
 
   /// _solver Solver The solver used for iteratively calculating the values
   ///   for the next timestep
-  Solver *_solver;
+  RedOrBlackSOR *_solver;
 
   /// _geom Geometry Holds the geometry information like borders and sizes
   const Geometry *_geom;

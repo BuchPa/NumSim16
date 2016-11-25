@@ -84,11 +84,11 @@ bool Communicator::isBottom () const{
   return _tidx[1] == 0;
 }
 
-const bool Communicator::isMaster() const{
+bool Communicator::isMaster() const{
   return _rank == 0;
 }
 
-const void collect(Grid* fullgrid, Grid* partial) const{
+void Communicator::collect(Grid* fullgrid, Grid* partial) const{
   // Master collects
   if (this->isMaster()) {
     // MPI_Gather
