@@ -145,14 +145,17 @@ public:
   real_t* GetTopBoundary(bool offset) const;
   real_t* GetBottomBoundary(bool offset) const;
 
-  void WriteLeftBoundary();
-  void WriteRightBoundary();
-  void WriteTopBoundary();
-  void WriteBottomBoundary();
+  void WriteLeftBoundary(real_t* data);
+  void WriteRightBoundary(real_t* data);
+  void WriteTopBoundary(real_t* data);
+  void WriteBottomBoundary(real_t* data);
 
 private:
   /// _data real_t* The raw data of the grid as pointer-array of real_t numbers
   real_t *_data;
+
+  real_t *bufferX;
+  real_t *bufferY;
 
   /// _geom Geometry The geometry instance containing boundary values and such
   const Geometry *_geom;

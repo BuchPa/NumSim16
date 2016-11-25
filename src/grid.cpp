@@ -52,6 +52,8 @@ Grid::Grid(const Geometry *geom, const multi_real_t &offset)
   // Calculate grid size and create data
   const multi_index_t size = _geom->Size();
   _data = new real_t[(size[0])*(size[1])];
+  _bufferX = new real_t[(size[0])];
+  _bufferY = new real_t[(size[1])];
   
   // Init data with zeros
   this->Initialize(real_t(0.0));
@@ -59,6 +61,8 @@ Grid::Grid(const Geometry *geom, const multi_real_t &offset)
 
 Grid::~Grid(){
   delete[] _data;
+  delete[] _bufferX;
+  delete[] _bufferY;
 }
 
 void Grid::Initialize(const real_t &value) {
@@ -203,4 +207,92 @@ void Grid::Print() const{
     printf("%6.2f", this->Cell(it));
   }
   printf("\n");
+}
+
+real_t* GetLeftBoundary(bool offset) const {
+  BoundaryIterator it(_geom, 4);
+  index_t idx = 0;
+
+  while (it.Valid()) {
+    _bufferY[idx++] = this->Cell(it.Right());
+    it.Next();
+  }
+
+  return _bufferY;
+}
+
+real_t* GetRightBoundary(bool offset) const {
+  BoundaryIterator it(_geom, 2);
+  index_t idx = 0;
+
+  while (it.Valid()) {
+    _bufferY[idx++] = this->Cell(it.Left());
+    it.Next();
+  }
+
+  return _bufferY;
+}
+
+real_t* GetTopBoundary(bool offset) const {
+  BoundaryIterator it(_geom, 3);
+  index_t idx = 0;
+
+  while (it.Valid()) {
+    _bufferX[idx++] = this->Cell(it.Bottom());
+    it.Next();
+  }
+
+  return _bufferX;
+}
+
+real_t* GetBottomBoundary(bool offset) const {
+  BoundaryIterator it(_geom, 4);
+  index_t idx = 0;
+
+  while (it.Valid()) {
+    _bufferX[idx++] = this->Cell(it.Top());
+    it.Next();
+  }
+
+  return _bufferY;
+}
+
+void WriteLeftBoundary(real_t* data) {
+  BoundaryIterator it(_geom, 4);
+  index_t idx = 0;
+
+  while (it.Valid()) {
+    this->Cell(it) = data[idx++];
+    it.Next();
+  }
+}
+
+void WriteRightBoundary(real_t* data) {
+  BoundaryIterator it(_geom, 2);
+  index_t idx = 0;
+
+  while (it.Valid()) {
+    this->Cell(it) = data[idx++];
+    it.Next();
+  }
+}
+
+void WriteTopBoundary(real_t* data) {
+  BoundaryIterator it(_geom, 3);
+  index_t idx = 0;
+
+  while (it.Valid()) {
+    this->Cell(it) = data[idx++];
+    it.Next();
+  }
+}
+
+void WriteBottomBoundary(real_t* data) {
+  BoundaryIterator it(_geom, 1);
+  index_t idx = 0;
+
+  while (it.Valid()) {
+    this->Cell(it) = data[idx++];
+    it.Next();
+  }
 }
