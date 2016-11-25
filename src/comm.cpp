@@ -64,16 +64,19 @@ void Communicator::copyBoundary (Grid* grid) const{
   this->copyBottomBoundary();
 }
 
-const bool Communicator::isLeft () const{
+bool Communicator::isLeft () const{
   return _tidx[0] == 0;
 }
-const bool Communicator::isRight () const{
+
+bool Communicator::isRight () const{
   return _tidx[0] == _tdim[0] - 1;
 }
-const bool Communicator::isTop () const{
+
+bool Communicator::isTop () const{
   return _tidx[1] == _tdim[1] - 1;
 }
-const bool Communicator::isBottom () const{
+
+bool Communicator::isBottom () const{
   return _tidx[1] == 0;
 }
 

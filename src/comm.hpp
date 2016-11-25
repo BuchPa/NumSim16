@@ -23,10 +23,10 @@ public:
   
   void copyBoundary (Grid* grid) const;
 
-  const bool isLeft () const;
-  const bool isRight () const;
-  const bool isTop () const;
-  const bool isBottom () const;
+  bool isLeft () const;
+  bool isRight () const;
+  bool isTop () const;
+  bool isBottom () const;
   
 private:
   multi_index_t _tidx;

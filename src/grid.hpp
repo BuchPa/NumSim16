@@ -154,8 +154,8 @@ private:
   /// _data real_t* The raw data of the grid as pointer-array of real_t numbers
   real_t *_data;
 
-  real_t *bufferX;
-  real_t *bufferY;
+  real_t *_bufferX;
+  real_t *_bufferY;
 
   /// _geom Geometry The geometry instance containing boundary values and such
   const Geometry *_geom;
