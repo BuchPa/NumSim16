@@ -11,6 +11,11 @@ Communicator::Communicator (int* argc, char*** argv){
   MPI_Comm_size(MPI_COMM_WORLD, &_size);
 
   this->SetDimensions();
+
+  bool odd_dim1 = _tdim[0]%2;
+  bool odd_dim2 = _tdim[1]%2;
+  
+  _evenodd = odd_dim1 ^ odd_dim2;
 }
 
 Communicator::~Communicator (){
@@ -32,10 +37,7 @@ const int& Communicator::ThreadCnt () const{
 }
 
 const bool& Communicator::EvenOdd () const{
-  bool odd_dim1 = _tdim[0]%2;
-  bool odd_dim2 = _tdim[1]%2;
-  
-  return odd_dim1 ^ odd_dim2;
+  return _evenodd;
 }
 
 real_t Communicator::gatherSum (const real_t& val) const{
@@ -55,13 +57,13 @@ real_t Communicator::gatherMax (const real_t& val) const{
 }
 
 void Communicator::copyBoundary (Grid* grid) const{
-  this->copyLeftBoundary();
+  this->copyLeftBoundary(grid);
   MPI_Barrier(MPI_COMM_WORLD);
-  this->copyRightBoundary();
+  this->copyRightBoundary(grid);
   MPI_Barrier(MPI_COMM_WORLD);
-  this->copyTopBoundary();
+  this->copyTopBoundary(grid);
   MPI_Barrier(MPI_COMM_WORLD);
-  this->copyBottomBoundary();
+  this->copyBottomBoundary(grid);
 }
 
 bool Communicator::isLeft () const{
@@ -81,7 +83,7 @@ bool Communicator::isBottom () const{
 }
 
 bool Communicator::copyLeftBoundary (Grid* grid) const{
-  real_t* buffer = grid->GetLeftBoundary();
+  real_t* buffer = grid->GetLeftBoundary(true);
   MPI_Status stat;
 
   if (this->EvenOdd()) {
@@ -98,7 +100,7 @@ bool Communicator::copyLeftBoundary (Grid* grid) const{
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
-  buffer = grid->GetLeftBoundary();
+  buffer = grid->GetLeftBoundary(true);
 
   if (!this->EvenOdd()) {
     if (!this->isLeft()) {
@@ -117,7 +119,7 @@ bool Communicator::copyLeftBoundary (Grid* grid) const{
 }
 
 bool Communicator::copyRightBoundary (Grid* grid) const{
-  real_t* buffer = grid->GetRightBoundary();
+  real_t* buffer = grid->GetRightBoundary(true);
   MPI_Status stat;
 
   if (this->EvenOdd()) {
@@ -134,7 +136,7 @@ bool Communicator::copyRightBoundary (Grid* grid) const{
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
-  buffer = grid->GetRightBoundary();
+  buffer = grid->GetRightBoundary(true);
 
   if (!this->EvenOdd()) {
     if (!this->isRight()) {
@@ -152,7 +154,7 @@ bool Communicator::copyRightBoundary (Grid* grid) const{
   return true;
 }
 bool Communicator::copyTopBoundary (Grid* grid) const{
-  real_t* buffer = grid->GetTopBoundary();
+  real_t* buffer = grid->GetTopBoundary(true);
   MPI_Status stat;
 
   if (this->EvenOdd()) {
@@ -169,7 +171,7 @@ bool Communicator::copyTopBoundary (Grid* grid) const{
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
-  buffer = grid->GetTopBoundary();
+  buffer = grid->GetTopBoundary(true);
 
   if (!this->EvenOdd()) {
     if (!this->isTop()) {
@@ -188,7 +190,7 @@ bool Communicator::copyTopBoundary (Grid* grid) const{
 }
 
 bool Communicator::copyBottomBoundary (Grid* grid) const{
-  real_t* buffer = grid->GetBottomBoundary();
+  real_t* buffer = grid->GetBottomBoundary(true);
   MPI_Status stat;
 
   if (this->EvenOdd()) {
@@ -205,7 +207,7 @@ bool Communicator::copyBottomBoundary (Grid* grid) const{
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
-  buffer = grid->GetBottomBoundary();
+  buffer = grid->GetBottomBoundary(true);
 
   if (!this->EvenOdd()) {
     if (!this->isBottom()) {
@@ -223,25 +225,26 @@ bool Communicator::copyBottomBoundary (Grid* grid) const{
   return true;
 }
 
-index_t GetLeftNeighbor() {
+index_t Communicator::GetLeftNeighbor() const {
   return _tdim[0] * _tidx[1] + _tidx[0] - 1;
 }
 
-index_t GetRightNeighbor() {
+index_t Communicator::GetRightNeighbor() const {
   return _tdim[0] * _tidx[1] + _tidx[0] + 1;
 }
 
-index_t GetTopNeighbor() {
+index_t Communicator::GetTopNeighbor() const {
   return _tdim[0] * _tidx[1] + _tidx[0] + _tdim[0];
 }
 
-index_t GetBottomNeighbor() {
+index_t Communicator::GetBottomNeighbor() const {
   return _tdim[0] * _tidx[1] + _tidx[0] - _tdim[0];
 }
 
 void Communicator::SetDimensions() {
   switch (_size) {
     case 4:
+      _tdim = {2, 2};
       switch(_rank) {
         case 0:
           _tidx = {0,0};
@@ -264,7 +267,8 @@ void Communicator::SetDimensions() {
       }
       break;
 
-    case 2:  
+    case 2:
+      _tdim = {1, 2};
       switch(_rank) {
         case 0:
           _tidx = {0,0};

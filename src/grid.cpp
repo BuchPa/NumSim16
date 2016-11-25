@@ -209,55 +209,71 @@ void Grid::Print() const{
   printf("\n");
 }
 
-real_t* GetLeftBoundary(bool offset) const {
+real_t* Grid::GetLeftBoundary(bool offset) const {
   BoundaryIterator it(_geom, 4);
   index_t idx = 0;
 
   while (it.Valid()) {
-    _bufferY[idx++] = this->Cell(it.Right());
+    if (offset) {
+      _bufferY[idx++] = this->Cell(it.Right());
+    } else {
+      _bufferY[idx++] = this->Cell(it);
+    }
     it.Next();
   }
 
   return _bufferY;
 }
 
-real_t* GetRightBoundary(bool offset) const {
+real_t* Grid::GetRightBoundary(bool offset) const {
   BoundaryIterator it(_geom, 2);
   index_t idx = 0;
 
   while (it.Valid()) {
-    _bufferY[idx++] = this->Cell(it.Left());
+    if (offset) {
+      _bufferY[idx++] = this->Cell(it.Left());
+    } else {
+      _bufferY[idx++] = this->Cell(it);
+    }
     it.Next();
   }
 
   return _bufferY;
 }
 
-real_t* GetTopBoundary(bool offset) const {
+real_t* Grid::GetTopBoundary(bool offset) const {
   BoundaryIterator it(_geom, 3);
   index_t idx = 0;
 
   while (it.Valid()) {
-    _bufferX[idx++] = this->Cell(it.Bottom());
+    if (offset) {
+      _bufferX[idx++] = this->Cell(it.Down());
+    } else {
+      _bufferX[idx++] = this->Cell(it); 
+    }
     it.Next();
   }
 
   return _bufferX;
 }
 
-real_t* GetBottomBoundary(bool offset) const {
+real_t* Grid::GetBottomBoundary(bool offset) const {
   BoundaryIterator it(_geom, 4);
   index_t idx = 0;
 
   while (it.Valid()) {
-    _bufferX[idx++] = this->Cell(it.Top());
+    if (offset) {
+      _bufferX[idx++] = this->Cell(it.Top());
+    } else {
+      _bufferX[idx++] = this->Cell(it);
+    }
     it.Next();
   }
 
   return _bufferY;
 }
 
-void WriteLeftBoundary(real_t* data) {
+void Grid::WriteLeftBoundary(real_t* data) {
   BoundaryIterator it(_geom, 4);
   index_t idx = 0;
 
@@ -267,7 +283,7 @@ void WriteLeftBoundary(real_t* data) {
   }
 }
 
-void WriteRightBoundary(real_t* data) {
+void Grid::WriteRightBoundary(real_t* data) {
   BoundaryIterator it(_geom, 2);
   index_t idx = 0;
 
@@ -277,7 +293,7 @@ void WriteRightBoundary(real_t* data) {
   }
 }
 
-void WriteTopBoundary(real_t* data) {
+void Grid::WriteTopBoundary(real_t* data) {
   BoundaryIterator it(_geom, 3);
   index_t idx = 0;
 
@@ -287,7 +303,7 @@ void WriteTopBoundary(real_t* data) {
   }
 }
 
-void WriteBottomBoundary(real_t* data) {
+void Grid::WriteBottomBoundary(real_t* data) {
   BoundaryIterator it(_geom, 1);
   index_t idx = 0;
 

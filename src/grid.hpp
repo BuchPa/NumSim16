@@ -163,6 +163,8 @@ private:
   /// _offset multi_real_t The offset from the grid's coordinate system to the
   ///   global coordinate system.
   multi_real_t _offset;
+
+  real_t* GetBoundary(index_t boundaryNr, bool offset) const;
 };
 //------------------------------------------------------------------------------
 #endif // __GRID_HPP
