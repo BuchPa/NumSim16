@@ -78,7 +78,7 @@ const bool Communicator::isBottom () const{
 }
 
 bool Communicator::copyLeftBoundary (Grid* grid) const{
-  real_t[] buffer = grid->GetLeftBoundary();
+  real_t* buffer = grid->GetLeftBoundary();
   MPI_Status stat;
 
   if (this->EvenOdd()) {
@@ -114,7 +114,7 @@ bool Communicator::copyLeftBoundary (Grid* grid) const{
 }
 
 bool Communicator::copyRightBoundary (Grid* grid) const{
-  real_t[] buffer = grid->GetRightBoundary();
+  real_t* buffer = grid->GetRightBoundary();
   MPI_Status stat;
 
   if (this->EvenOdd()) {
@@ -149,7 +149,7 @@ bool Communicator::copyRightBoundary (Grid* grid) const{
   return true;
 }
 bool Communicator::copyTopBoundary (Grid* grid) const{
-  real_t[] buffer = grid->GetTopBoundary();
+  real_t* buffer = grid->GetTopBoundary();
   MPI_Status stat;
 
   if (this->EvenOdd()) {
@@ -185,7 +185,7 @@ bool Communicator::copyTopBoundary (Grid* grid) const{
 }
 
 bool Communicator::copyBottomBoundary (Grid* grid) const{
-  real_t[] buffer = grid->GetBottomBoundary();
+  real_t* buffer = grid->GetBottomBoundary();
   MPI_Status stat;
 
   if (this->EvenOdd()) {

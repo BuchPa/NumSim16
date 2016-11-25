@@ -140,6 +140,16 @@ public:
   /// Prints the grid values to the console.
   void Print() const;
 
+  real_t* GetLeftBoundary(bool offset) const;
+  real_t* GetRightBoundary(bool offset) const;
+  real_t* GetTopBoundary(bool offset) const;
+  real_t* GetBottomBoundary(bool offset) const;
+
+  void WriteLeftBoundary();
+  void WriteRightBoundary();
+  void WriteTopBoundary();
+  void WriteBottomBoundary();
+
 private:
   /// _data real_t* The raw data of the grid as pointer-array of real_t numbers
   real_t *_data;
