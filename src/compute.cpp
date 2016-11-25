@@ -1,5 +1,5 @@
 #include "compute.hpp"
-
+#include "comm.hpp"
 #include "geometry.hpp"
 #include "grid.hpp"
 #include "iterator.hpp"

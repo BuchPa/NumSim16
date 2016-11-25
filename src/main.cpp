@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
 
   // Check for specific test
   char* test_case = NULL;
-  for (uint32_t i=0; i<argc; i++){
+  for (int i=0; i<argc; i++){
     if(strstr(argv[i],"TEST") != NULL){
       test_case = argv[i];
       break;
