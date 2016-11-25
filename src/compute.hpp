@@ -92,8 +92,8 @@ private:
   /// _epslimit real_t The limit for the residual.
   real_t _epslimit;
   
-  /// _cfl real_t The CFL limitation on the timestep.
-  real_t _cfl;
+  /// _diff real_t The diffusion limitation on the timestep.
+  real_t _diff;
 
   /// _u Grid The u velocities.
   Grid *_u;

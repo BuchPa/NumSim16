@@ -60,11 +60,11 @@ Compute::Compute(const Geometry *geom, const Parameter *param, const Communicato
   _t = 0.0;
   
   // Compute cfl time step limitation
-  _cfl = _param->Re() *     (pow(_geom->Mesh()[0],2.0) * pow(_geom->Mesh()[1],2.0))
-                       /( 4*(pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)) );
+  _diff = _param->Re() *     (pow(_geom->Mesh()[0],2.0) * pow(_geom->Mesh()[1],2.0))
+                        /( 4*(pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)) );
   
   // Init _solver
-  _solver = new SOR(_geom,_param->Omega());
+  _solver = new RedOrBlackSOR(_geom,_param->Omega());
   // Init _dtlimit
   _dtlimit = _param->Dt();
   // Init _epslimit
@@ -155,20 +155,27 @@ const Grid *Compute::GetStream() {
 
 void Compute::TimeStep(bool printInfo) {  
   // Compute candidates for current time step
-  const real_t max_x = _geom->Mesh()[0] / _u->AbsMax();
-  const real_t max_y = _geom->Mesh()[1] / _v->AbsMax();
+  const real_t cfl_x = _geom->Mesh()[0] / _u->AbsMax();
+  const real_t cfl_y = _geom->Mesh()[1] / _v->AbsMax();
   
   // Compute smallest time step from all candidates with some security factor
   // and a minimum timestep
   real_t dt;
   if (DYNAMIC_TIMESTEP) {
-    dt = _param->Tau() * min(_dtlimit, min(min(max_x, max_y), _cfl));
+    dt = _param->Tau() * min(_dtlimit, min(min(cfl_x, cfl_y), _diff));
   } else {
     dt = _dtlimit;
   }
   
-  // Compute temporary velocites F,G
+  // Communicate minimal timestep with other processes
+  dt = _comm->gatherMin(dt);
+  
+  // Compute preliminary velocites F,G
   this->MomentumEqu(dt);
+  
+  // Communicate/exchange preliminary velocities at boundaries between subdomains
+  _comm->copyBoundary(_F);
+  _comm->copyBoundary(_G);
   
   // Compute RHS
   this->RHS(dt);
@@ -176,8 +183,25 @@ void Compute::TimeStep(bool printInfo) {
   // Solve Poisson equation (-> p)
   index_t it(0);
   real_t  res(_epslimit + 0.1);
+  real_t  tmp_res(0.0);
   while((it < _param->IterMax()) && (res >= _epslimit))  {
-    res = _solver->Cycle(_p, _rhs);
+    // First half iteration
+    tmp_res = _solver->RedCycle(_p, _rhs);
+    res     = max(res, tmp_res);
+    
+    // Communicate/exchange pressure values at boundaries between subdomain
+    _comm->copyBoundary(_p);
+    
+    // Second half interation
+    tmp_tes = _solver->BlackCycle(_p, _rhs);
+    res     = max(res, tmp_res);
+    
+    // Communicate/exchange pressure values at boundaries between subdomain
+    _comm->copyBoundary(_p);
+    
+    // Communicate maximal residual with other processes
+    res = _comm->gatherMax(res);
+    
     it++;
     // Set boundary values in each iter, because it changes with each iter
     _geom->Update_P(_p);
@@ -185,6 +209,10 @@ void Compute::TimeStep(bool printInfo) {
   
   // Compute new velocites (-> u,v)
   this->NewVelocities(dt);
+  
+  // Communicate/exchange final velocities at boundaries between subdomains
+  _comm->copyBoundary(_u);
+  _comm->copyBoundary(_v);
   
   // Set boundary values
   _geom->Update_U(_u);
@@ -199,9 +227,9 @@ void Compute::TimeStep(bool printInfo) {
     
     // Print time step stuff
     printf("  Time step candidates:\n");
-    printf("    x:       %4.3f\n", max_x);
-    printf("    y:       %4.3f\n", max_y);
-    printf("    cfl:     %4.3f\n", _cfl);
+    printf("    cfl_x:   %4.3f\n", cfl_x);
+    printf("    cfl_y:   %4.3f\n", cfl_y);
+    printf("    diff:    %4.3f\n", _diff);
     printf("    dtlimit: %4.3f\n", _dtlimit);
     printf("  Current time step %4.3f\n", dt);
     printf("\n");
