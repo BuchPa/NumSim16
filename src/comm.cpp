@@ -11,10 +11,12 @@ Communicator::Communicator (int* argc, char*** argv){
   MPI_Comm_size(MPI_COMM_WORLD, &_size);
 
   this->SetDimensions();
+  
+  //TODO Set _size / _bsize in geometry according to number of processes
 }
 
 Communicator::~Communicator (){
-  //TODO
+  MPI_Finalize();
 }
 
 const multi_index_t& Communicator::ThreadIdx () const{
@@ -70,6 +72,20 @@ const bool Communicator::isTop () const{
 }
 const bool Communicator::isBottom () const{
   return _tidx[1] == 0;
+}
+
+const bool Communicator::isMaster() const{
+  return _rank == 0;
+}
+
+const void collect(Grid* fullgrid, Grid* partial) const{
+  // Master collects
+  if (this->isMaster()) {
+    // MPI_Gather
+  }else{
+  // Rest sends
+    
+  }
 }
 
 bool Communicator::copyLeftBoundary (Grid* grid) const{

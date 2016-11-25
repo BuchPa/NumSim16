@@ -22,6 +22,8 @@
 #include <stdexcept>
 // For MPI_DOUBLE/INT
 #include <mpich/mpi.h>
+// For variable input args
+#include <stdarg.h>
 
 //------------------------------------------------------------------------------
 
@@ -46,7 +48,7 @@ typedef INDEX_TYPE index_t;
 
 enum MPI_TAG : int {
   MPI_TAG_BOUNDARY
-}
+};
 
 //------------------------------------------------------------------------------
 
@@ -106,5 +108,30 @@ class Parameter;
 class Solver;
 class Compute;
 class Communicator;
+
+//------------------------------------------------------------------------------
+
+// Printf function for master
+int mprintf(const char *format, ...){
+  
+  // Check, if current process is master
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  
+  // In case of master plot current info
+  if(rank == 0){
+    
+    va_list arg; // Get variable input args
+    int done;
+    
+    va_start(arg, format);
+    done = vprintf(format, arg); // Call original printf
+    va_end(arg);
+   
+    return done;
+  }else{
+    return 1;
+  }
+}
 
 #endif // __TYPEDEF_HPP

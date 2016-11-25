@@ -121,6 +121,9 @@ private:
 
   /// _vort Grid Contains the vorticity values
   Grid *_vort;
+  
+  /// _fullgrid Grid Contains the fullgrid for the master
+  Grid *_fullgrid;
 
   /// _solver Solver The solver used for iteratively calculating the values
   ///   for the next timestep
