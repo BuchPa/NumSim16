@@ -1,0 +1,19 @@
+
+Compile with
+	mpic++ -o test_mprintf test_mprintf.cpp
+run with
+	mpirun -np 4 ./test_mprintf
+Check in advance if mpirun and mpicc are both mpich by typing
+	mpirun -V
+and
+	mpicc -v
+The output should be something like
+	mpicc for MPICH version 3.2
+	...
+and
+	some error (no executable provided)
+
+In case that mpirun is openMPI the "mpirun -V" the output looks like
+	mpirun (Open MPI) 1.10.2
+	...
+In this case deinstall openMPI (and reinstall mpich if necessary). Different versions (mpich & openMPI) yield various faults, such as rank 0 and size 1 for all processes (no matter what np is specified).
