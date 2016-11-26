@@ -11,10 +11,17 @@ Communicator::Communicator (int* argc, char*** argv){
   MPI_Comm_size(MPI_COMM_WORLD, &_size);
 
   this->SetDimensions();
+
+  bool odd_dim1 = _tdim[0]%2;
+  bool odd_dim2 = _tdim[1]%2;
+  
+  _evenodd = odd_dim1 ^ odd_dim2;
+  
+  //TODO Set _size / _bsize in geometry according to number of processes
 }
 
 Communicator::~Communicator (){
-  //TODO
+  MPI_Finalize();
 }
 
 const multi_index_t& Communicator::ThreadIdx () const{
@@ -32,10 +39,7 @@ const int& Communicator::ThreadCnt () const{
 }
 
 const bool& Communicator::EvenOdd () const{
-  bool odd_dim1 = _tdim[0]%2;
-  bool odd_dim2 = _tdim[1]%2;
-  
-  return odd_dim1 ^ odd_dim2;
+  return _evenodd;
 }
 
 real_t Communicator::gatherSum (const real_t& val) const{
@@ -55,25 +59,47 @@ real_t Communicator::gatherMax (const real_t& val) const{
 }
 
 void Communicator::copyBoundary (Grid* grid) const{
-  this->copyLeftBoundary();
+  this->copyLeftBoundary(grid);
   MPI_Barrier(MPI_COMM_WORLD);
+  this->copyRightBoundary(grid);
+  MPI_Barrier(MPI_COMM_WORLD);
+  this->copyTopBoundary(grid);
+  MPI_Barrier(MPI_COMM_WORLD);
+  this->copyBottomBoundary(grid);
 }
 
-const bool Communicator::isLeft () const{
+bool Communicator::isLeft () const{
   return _tidx[0] == 0;
 }
-const bool Communicator::isRight () const{
+
+bool Communicator::isRight () const{
   return _tidx[0] == _tdim[0] - 1;
 }
-const bool Communicator::isTop () const{
+
+bool Communicator::isTop () const{
   return _tidx[1] == _tdim[1] - 1;
 }
-const bool Communicator::isBottom () const{
+
+bool Communicator::isBottom () const{
   return _tidx[1] == 0;
 }
 
+bool Communicator::isMaster() const{
+  return _rank == 0;
+}
+
+void Communicator::collect(Grid* fullgrid, Grid* partial) const{
+  // Master collects
+  if (this->isMaster()) {
+    // MPI_Gather
+  }else{
+  // Rest sends
+    
+  }
+}
+
 bool Communicator::copyLeftBoundary (Grid* grid) const{
-  real_t[] buffer = grid->GetLeftBoundary();
+  real_t* buffer = grid->GetLeftBoundary(true);
   MPI_Status stat;
 
   if (this->EvenOdd()) {
@@ -85,11 +111,12 @@ bool Communicator::copyLeftBoundary (Grid* grid) const{
     if (!this->isRight()) {
       index_t rightNeighbor = this->GetRightNeighbor();
       MPI_Recv(buffer, sizeof(buffer)/sizeof(*buffer), MPI_REAL_TYPE, rightNeighbor, MPI_TAG_BOUNDARY, MPI_COMM_WORLD, &stat);
-      grid->WriteLeftBoundary(buffer);
+      grid->WriteRightBoundary(buffer);
     }
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
+  buffer = grid->GetLeftBoundary(true);
 
   if (!this->EvenOdd()) {
     if (!this->isLeft()) {
@@ -100,25 +127,140 @@ bool Communicator::copyLeftBoundary (Grid* grid) const{
     if (!this->isRight()) {
       index_t rightNeighbor = this->GetRightNeighbor();
       MPI_Recv(buffer, sizeof(buffer)/sizeof(*buffer), MPI_REAL_TYPE, rightNeighbor, MPI_TAG_BOUNDARY, MPI_COMM_WORLD, &stat);
+      grid->WriteRightBoundary(buffer);
     }
   }
+
+  return true;
 }
+
 bool Communicator::copyRightBoundary (Grid* grid) const{
-  //TODO
+  real_t* buffer = grid->GetRightBoundary(true);
+  MPI_Status stat;
+
+  if (this->EvenOdd()) {
+    if (!this->isRight()) {
+      index_t rightNeighbor = this->GetRightNeighbor();
+      MPI_Send(buffer, sizeof(buffer)/sizeof(*buffer), MPI_REAL_TYPE, rightNeighbor, MPI_TAG_BOUNDARY, MPI_COMM_WORLD);
+    }
+  } else {
+    if (!this->isLeft()) {
+      index_t leftNeighbor = this->GetLeftNeighbor();
+      MPI_Recv(buffer, sizeof(buffer)/sizeof(*buffer), MPI_REAL_TYPE, leftNeighbor, MPI_TAG_BOUNDARY, MPI_COMM_WORLD, &stat);
+      grid->WriteLeftBoundary(buffer);
+    }
+  }
+
+  MPI_Barrier(MPI_COMM_WORLD);
+  buffer = grid->GetRightBoundary(true);
+
+  if (!this->EvenOdd()) {
+    if (!this->isRight()) {
+      index_t rightNeighbor = this->GetRightNeighbor();
+      MPI_Send(buffer, sizeof(buffer)/sizeof(*buffer), MPI_REAL_TYPE, rightNeighbor, MPI_TAG_BOUNDARY, MPI_COMM_WORLD);
+    }
+  } else {
+    if (!this->isLeft()) {
+      index_t leftNeighbor = this->GetLeftNeighbor();
+      MPI_Recv(buffer, sizeof(buffer)/sizeof(*buffer), MPI_REAL_TYPE, leftNeighbor, MPI_TAG_BOUNDARY, MPI_COMM_WORLD, &stat);
+      grid->WriteLeftBoundary(buffer);
+    }
+  }
+
   return true;
 }
 bool Communicator::copyTopBoundary (Grid* grid) const{
-  //TODO
+  real_t* buffer = grid->GetTopBoundary(true);
+  MPI_Status stat;
+
+  if (this->EvenOdd()) {
+    if (!this->isTop()) {
+      index_t topNeighbor = this->GetTopNeighbor();
+      MPI_Send(buffer, sizeof(buffer)/sizeof(*buffer), MPI_REAL_TYPE, topNeighbor, MPI_TAG_BOUNDARY, MPI_COMM_WORLD);
+    }
+  } else {
+    if (!this->isBottom()) {
+      index_t bottomNeighbor = this->GetBottomNeighbor();
+      MPI_Recv(buffer, sizeof(buffer)/sizeof(*buffer), MPI_REAL_TYPE, bottomNeighbor, MPI_TAG_BOUNDARY, MPI_COMM_WORLD, &stat);
+      grid->WriteBottomBoundary(buffer);
+    }
+  }
+
+  MPI_Barrier(MPI_COMM_WORLD);
+  buffer = grid->GetTopBoundary(true);
+
+  if (!this->EvenOdd()) {
+    if (!this->isTop()) {
+      index_t topNeighbor = this->GetTopNeighbor();
+      MPI_Send(buffer, sizeof(buffer)/sizeof(*buffer), MPI_REAL_TYPE, topNeighbor, MPI_TAG_BOUNDARY, MPI_COMM_WORLD);
+    }
+  } else {
+    if (!this->isBottom()) {
+      index_t bottomNeighbor = this->GetBottomNeighbor();
+      MPI_Recv(buffer, sizeof(buffer)/sizeof(*buffer), MPI_REAL_TYPE, bottomNeighbor, MPI_TAG_BOUNDARY, MPI_COMM_WORLD, &stat);
+      grid->WriteBottomBoundary(buffer);
+    }
+  }
+
   return true;
 }
+
 bool Communicator::copyBottomBoundary (Grid* grid) const{
-  //TODO
+  real_t* buffer = grid->GetBottomBoundary(true);
+  MPI_Status stat;
+
+  if (this->EvenOdd()) {
+    if (!this->isBottom()) {
+      index_t bottomNeighbor = this->GetBottomNeighbor();
+      MPI_Send(buffer, sizeof(buffer)/sizeof(*buffer), MPI_REAL_TYPE, bottomNeighbor, MPI_TAG_BOUNDARY, MPI_COMM_WORLD);
+    }
+  } else {
+    if (!this->isTop()) {
+      index_t topNeighbor = this->GetTopNeighbor();
+      MPI_Recv(buffer, sizeof(buffer)/sizeof(*buffer), MPI_REAL_TYPE, topNeighbor, MPI_TAG_BOUNDARY, MPI_COMM_WORLD, &stat);
+      grid->WriteTopBoundary(buffer);
+    }
+  }
+
+  MPI_Barrier(MPI_COMM_WORLD);
+  buffer = grid->GetBottomBoundary(true);
+
+  if (!this->EvenOdd()) {
+    if (!this->isBottom()) {
+      index_t bottomNeighbor = this->GetBottomNeighbor();
+      MPI_Send(buffer, sizeof(buffer)/sizeof(*buffer), MPI_REAL_TYPE, bottomNeighbor, MPI_TAG_BOUNDARY, MPI_COMM_WORLD);
+    }
+  } else {
+    if (!this->isTop()) {
+      index_t topNeighbor = this->GetTopNeighbor();
+      MPI_Recv(buffer, sizeof(buffer)/sizeof(*buffer), MPI_REAL_TYPE, topNeighbor, MPI_TAG_BOUNDARY, MPI_COMM_WORLD, &stat);
+      grid->WriteTopBoundary(buffer);
+    }
+  }
+
   return true;
+}
+
+index_t Communicator::GetLeftNeighbor() const {
+  return _tdim[0] * _tidx[1] + _tidx[0] - 1;
+}
+
+index_t Communicator::GetRightNeighbor() const {
+  return _tdim[0] * _tidx[1] + _tidx[0] + 1;
+}
+
+index_t Communicator::GetTopNeighbor() const {
+  return _tdim[0] * _tidx[1] + _tidx[0] + _tdim[0];
+}
+
+index_t Communicator::GetBottomNeighbor() const {
+  return _tdim[0] * _tidx[1] + _tidx[0] - _tdim[0];
 }
 
 void Communicator::SetDimensions() {
   switch (_size) {
     case 4:
+      _tdim = {2, 2};
       switch(_rank) {
         case 0:
           _tidx = {0,0};
@@ -141,7 +283,8 @@ void Communicator::SetDimensions() {
       }
       break;
 
-    case 2:  
+    case 2:
+      _tdim = {1, 2};
       switch(_rank) {
         case 0:
           _tidx = {0,0};

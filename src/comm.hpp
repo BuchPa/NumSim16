@@ -23,10 +23,14 @@ public:
   
   void copyBoundary (Grid* grid) const;
 
-  const bool isLeft () const;
-  const bool isRight () const;
-  const bool isTop () const;
-  const bool isBottom () const;
+  bool isLeft () const;
+  bool isRight () const;
+  bool isTop () const;
+  bool isBottom () const;
+  
+  bool isMaster() const;
+  
+  void collect(Grid* fullgrid, Grid* partial) const;
   
 private:
   multi_index_t _tidx;
@@ -40,6 +44,11 @@ private:
   bool copyRightBoundary (Grid* grid) const;
   bool copyTopBoundary (Grid* grid) const;
   bool copyBottomBoundary (Grid* grid) const;
+
+  index_t GetLeftNeighbor() const;
+  index_t GetRightNeighbor() const;
+  index_t GetTopNeighbor() const;
+  index_t GetBottomNeighbor() const;
 };
 //------------------------------------------------------------------------------
 #endif // __COMM_HPP

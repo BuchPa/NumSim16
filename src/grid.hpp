@@ -140,9 +140,22 @@ public:
   /// Prints the grid values to the console.
   void Print() const;
 
+  real_t* GetLeftBoundary(bool offset) const;
+  real_t* GetRightBoundary(bool offset) const;
+  real_t* GetTopBoundary(bool offset) const;
+  real_t* GetBottomBoundary(bool offset) const;
+
+  void WriteLeftBoundary(real_t* data);
+  void WriteRightBoundary(real_t* data);
+  void WriteTopBoundary(real_t* data);
+  void WriteBottomBoundary(real_t* data);
+
 private:
   /// _data real_t* The raw data of the grid as pointer-array of real_t numbers
   real_t *_data;
+
+  real_t *_bufferX;
+  real_t *_bufferY;
 
   /// _geom Geometry The geometry instance containing boundary values and such
   const Geometry *_geom;
@@ -150,6 +163,8 @@ private:
   /// _offset multi_real_t The offset from the grid's coordinate system to the
   ///   global coordinate system.
   multi_real_t _offset;
+
+  real_t* GetBoundary(index_t boundaryNr, bool offset) const;
 };
 //------------------------------------------------------------------------------
 #endif // __GRID_HPP
