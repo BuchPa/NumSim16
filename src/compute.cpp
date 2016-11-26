@@ -193,7 +193,7 @@ void Compute::TimeStep(bool printInfo) {
     _comm->copyBoundary(_p);
     
     // Second half interation
-    tmp_tes = _solver->BlackCycle(_p, _rhs);
+    tmp_res = _solver->BlackCycle(_p, _rhs);
     res     = max(res, tmp_res);
     
     // Communicate/exchange pressure values at boundaries between subdomain
