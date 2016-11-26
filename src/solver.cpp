@@ -86,6 +86,8 @@ real_t RedOrBlackSOR::RedCycle (Grid* grid, const Grid* rhs) const{
     real_t localRes = this->localRes(init, grid, rhs);
     grid->Cell(init) = grid->Cell(init) + _omega * _hsquare * localRes;
    
+    totalRes += pow(localRes, 2.0);
+
     if init.Pos()[0]+2==_geom->Size()[0] {//if last red cell in the row is not at boundary jump three further
       init.Next();
       init.Next();
@@ -102,9 +104,12 @@ real_t RedOrBlackSOR::RedCycle (Grid* grid, const Grid* rhs) const{
       n_avg++;
       real_t localRes = this->localRes(init, grid, rhs);
       grid->Cell(init) = grid->Cell(init) + _omega * _hsquare * localRes;
+      
+      totalRes += pow(localRes, 2.0);
+
       init.Next();
       init.Next(); 
-  return real_t(0.0);
+  return sqrt(totalRes / n_avg);
 }
 
 real_t RedOrBlackSOR::BlackCycle (Grid* grid, const Grid* rhs) const{
@@ -120,6 +125,8 @@ real_t RedOrBlackSOR::BlackCycle (Grid* grid, const Grid* rhs) const{
     real_t localRes = this->localRes(init, grid, rhs);
     grid->Cell(init) = grid->Cell(init) + _omega * _hsquare * localRes;
 
+    totalRes += pow(localRes, 2.0);
+
     if init.Pos()[0]+2==_geom->Size()[0] {//if last red cell in the row is not at boundary jump three further
       init.Next();
       init.Next();
@@ -136,7 +143,10 @@ real_t RedOrBlackSOR::BlackCycle (Grid* grid, const Grid* rhs) const{
       n_avg++;
       real_t localRes = this->localRes(init, grid, rhs);
       grid->Cell(init) = grid->Cell(init) + _omega * _hsquare * localRes;
+
+      totalRes += pow(localRes, 2.0);
+
       init.Next();
       init.Next();
-  return real_t(0.0);
+  return sqrt(totalRes / n_avg);
 }
