@@ -113,7 +113,7 @@ class Communicator;
 //------------------------------------------------------------------------------
 
 // Printf function for master
-int mprintf(const char *format, ...){
+inline int mprintf(const char *format, ...){
   
   // Check, if current process is master
   int rank;
