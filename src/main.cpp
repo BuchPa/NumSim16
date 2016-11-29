@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
 
   // Create parameter and geometry instances with default values
   Parameter param;
-  Geometry geom;
+  Geometry geom(&comm);
   
   // Read parameter file
   param.Load("ex1_parameter");
