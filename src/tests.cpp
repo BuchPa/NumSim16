@@ -307,7 +307,7 @@ void test_solver(const Geometry *geom){
   real_t maxGrid = grid->AbsMax();
   
   // Create solver
-  Solver *solver = new RedOrBlackSOR(geom,  real_t(1.7));
+  RedOrBlackSOR *solver = new RedOrBlackSOR(geom,  real_t(1.7));
   
   // Plot grid
   visu.Render(grid, 0.0, maxGrid);
@@ -318,8 +318,8 @@ void test_solver(const Geometry *geom){
     key = visu.Check();
     
     real_t res = solver->RedCycle(grid, &rhs);
-    printf("RedRes: %f\n", res)
-    real_t res += solver->BlackCycle(grid, &rhs);
+    printf("RedRes: %f\n", res);
+    res += solver->BlackCycle(grid, &rhs);
     
     printf("Iter:    %d\n", iter);
     printf("Max val: %f (%f)\n", grid->Max(), maxGrid);
