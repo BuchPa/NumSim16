@@ -77,30 +77,32 @@ RedOrBlackSOR::~RedOrBlackSOR(){
 real_t RedOrBlackSOR::RedCycle (Grid* grid, const Grid* rhs) const{
   InteriorIterator init(_geom);
   
-  real_t  totalRes(0.0);
+  real_t totalRes(0.0);
   index_t n_avg(0);
   
-  if _geom->Size()[0] % 2==0 {//check if size is even
-    while(init.Valid()){
-    n_avg++;
-    real_t localRes = this->localRes(init, grid, rhs);
-    grid->Cell(init) = grid->Cell(init) + _omega * _hsquare * localRes;
-   
-    totalRes += pow(localRes, 2.0);
+  if (_geom->Size()[0] % 2 == 0) { // check if size is even
+    while (init.Valid()) {
+      n_avg++;
+      real_t localRes = this->localRes(init, grid, rhs);
+      grid->Cell(init) = grid->Cell(init) + _omega * _hsquare * localRes;
 
-    if init.Pos()[0]+2==_geom->Size()[0] {//if last red cell in the row is not at boundary jump three further
-      init.Next();
-      init.Next();
-      init.Next();
-    }else {
-      if init.Pos()[0]+1==_geom->Size()[0] {//if last red cell in the row is at boundary jump one further
-        init.Next();
-      }else {//inner red cells, jump two further
+      totalRes += pow(localRes, 2.0);
+
+      if (init.Pos()[0] + 2 == _geom->Size()[0]) { // if last red cell in the row is not at boundary jump three further
         init.Next();
         init.Next();
+        init.Next();
+      } else {
+        if (init.Pos()[0] + 1 == _geom->Size()[0]) { // if last red cell in the row is at boundary jump one further
+          init.Next();
+        } else { // inner red cells, jump two further
+          init.Next();
+          init.Next();
         }
-  }else{//odd celll number, just alternate black and red
-      while(init.Valid()){
+      }
+    }
+  } else { // odd celll number, just alternate black and red
+    while (init.Valid()) {
       n_avg++;
       real_t localRes = this->localRes(init, grid, rhs);
       grid->Cell(init) = grid->Cell(init) + _omega * _hsquare * localRes;
@@ -108,7 +110,10 @@ real_t RedOrBlackSOR::RedCycle (Grid* grid, const Grid* rhs) const{
       totalRes += pow(localRes, 2.0);
 
       init.Next();
-      init.Next(); 
+      init.Next();
+    }
+  }
+
   return sqrt(totalRes / n_avg);
 }
 
@@ -117,29 +122,31 @@ real_t RedOrBlackSOR::BlackCycle (Grid* grid, const Grid* rhs) const{
 
   real_t  totalRes(0.0);
   index_t n_avg(0);
-  init.Next(); //first black cell is second in the row
+  init.Next(); // first black cell is second in the row
   
-  if _geom->Size()[0] % 2==0 {//check if size is even
-    while(init.Valid()){
-    n_avg++;
-    real_t localRes = this->localRes(init, grid, rhs);
-    grid->Cell(init) = grid->Cell(init) + _omega * _hsquare * localRes;
+  if (_geom->Size()[0] % 2 == 0) { // check if size is even
+    while (init.Valid()) {
+      n_avg++;
+      real_t localRes = this->localRes(init, grid, rhs);
+      grid->Cell(init) = grid->Cell(init) + _omega * _hsquare * localRes;
 
-    totalRes += pow(localRes, 2.0);
+      totalRes += pow(localRes, 2.0);
 
-    if init.Pos()[0]+2==_geom->Size()[0] {//if last red cell in the row is not at boundary jump three further
-      init.Next();
-      init.Next();
-      init.Next();
-    }else {
-      if init.Pos()[0]+1==_geom->Size()[0] {//if last red cell in the row is at boundary jump one further
-        init.Next();
-      }else {//inner red cells, jump two further
+      if (init.Pos()[0] + 2 == _geom->Size()[0]) { // if last red cell in the row is not at boundary jump three further
         init.Next();
         init.Next();
+        init.Next();
+      } else {
+        if (init.Pos()[0] + 1 == _geom->Size()[0]) { //if last red cell in the row is at boundary jump one further
+          init.Next();
+        } else { // inner red cells, jump two further
+          init.Next();
+          init.Next();
         }
-  }else{//odd celll number, just alternate black and red
-      while(init.Valid()){
+      }
+    }
+  } else { // odd celll number, just alternate black and red
+    while (init.Valid()) {
       n_avg++;
       real_t localRes = this->localRes(init, grid, rhs);
       grid->Cell(init) = grid->Cell(init) + _omega * _hsquare * localRes;
@@ -148,5 +155,8 @@ real_t RedOrBlackSOR::BlackCycle (Grid* grid, const Grid* rhs) const{
 
       init.Next();
       init.Next();
+    }
+  }
+
   return sqrt(totalRes / n_avg);
 }
