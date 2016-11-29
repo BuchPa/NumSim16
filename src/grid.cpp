@@ -203,10 +203,10 @@ void Grid::Print() const{
   Iterator it(_geom);
   
   for (it.First();it.Valid();it.Next()){
-    if((it % _geom->Size()[0]) == 0) printf("\n");
-    printf("%6.2f", this->Cell(it));
+    if((it % _geom->Size()[0]) == 0) mprintf("\n");
+    mprintf("%6.2f", this->Cell(it));
   }
-  printf("\n");
+  mprintf("\n");
 }
 
 real_t* Grid::GetLeftBoundary(bool offset) const {

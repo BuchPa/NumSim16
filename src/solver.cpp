@@ -34,7 +34,7 @@ real_t Solver::localRes(const Iterator &it, const Grid *grid, const Grid *rhs) c
 SOR::SOR(const Geometry *geom, const real_t &omega)
     : Solver(geom), _omega(omega){
       /// @TODO choose omega mesh width specific -> Script
-      printf("Omega given: %f, omega computed: %f, %f\n", _omega, 2/(1+sin(M_PI*_geom->Mesh()[0])),
+      mprintf("Omega given: %f, omega computed: %f, %f\n", _omega, 2/(1+sin(M_PI*_geom->Mesh()[0])),
                                                                   2/(1+sin(M_PI*_geom->Mesh()[1]))
       );
     }
@@ -66,7 +66,7 @@ real_t SOR::Cycle(Grid *grid, const Grid *rhs) const {
 
 RedOrBlackSOR::RedOrBlackSOR (const Geometry *geom, const real_t &omega)
   : SOR(geom, omega){
-    printf("Omega given: %f, omega computed: %f, %f\n", _omega, 2/(1+sin(M_PI*_geom->Mesh()[0])),
+    mprintf("Omega given: %f, omega computed: %f, %f\n", _omega, 2/(1+sin(M_PI*_geom->Mesh()[0])),
                                                                   2/(1+sin(M_PI*_geom->Mesh()[1]))
       ); 
   }

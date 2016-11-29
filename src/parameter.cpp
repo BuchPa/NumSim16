@@ -38,7 +38,7 @@ void Parameter::Load(const char *file) {
     else if (strcmp(name,"iter") == 0) _itermax = inval;
     else if (strcmp(name,"eps") == 0) _eps = inval;
     else if (strcmp(name,"tau") == 0) _tau = inval;
-    else printf("Unknown parameter %s\n",name);
+    else mprintf("Unknown parameter %s\n",name);
   }
   fclose(handle);
 }

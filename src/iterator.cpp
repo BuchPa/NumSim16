@@ -138,11 +138,11 @@ void Iterator::TestRun(const bool printNeighbours){
     }
   }else{
     while(this->Valid()){
-      printf("%d: [%d,%d]\n", _value, this->Pos()[0], this->Pos()[1]);
+      mprintf("%d: [%d,%d]\n", _value, this->Pos()[0], this->Pos()[1]);
       this->Next();
     }
   }
-  printf("\n");
+  mprintf("\n");
 }
 
 void Iterator::printNeighbours() const{
@@ -150,7 +150,7 @@ void Iterator::printNeighbours() const{
   Iterator r = this->Right();
   Iterator t = this->Top();
   Iterator d = this->Down();
-  printf("%d: [%d,%d], L_%d: [%d,%d], R_%d: [%d,%d], T_%d: [%d,%d], D_%d: [%d,%d]\n", 
+  mprintf("%d: [%d,%d], L_%d: [%d,%d], R_%d: [%d,%d], T_%d: [%d,%d], D_%d: [%d,%d]\n", 
     this->Value(), this->Pos()[0], this->Pos()[1],
     l.Value()   , l.Pos()[0]   , l.Pos()[1]   ,
     r.Value()   , r.Pos()[0]   , r.Pos()[1]   ,

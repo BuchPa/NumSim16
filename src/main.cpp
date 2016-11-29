@@ -48,17 +48,21 @@ using namespace std::chrono;
 /// Console parameters starting with TEST are meant to be used to test specific
 /// subsystems of the programs.
 int main(int argc, char **argv) {
+  
+  // Create communicator
+  Communicator comm(&argc, &argv);
+
   // Printing stupid things to cheer the simpleminded user
-  printf("             ███▄    █  █    ██  ███▄ ▄███▓  ██████  ██▓ ███▄ ▄███▓\n");
-  printf("             ██ ▀█   █  ██  ▓██▒▓██▒▀█▀ ██▒▒██    ▒ ▓██▒▓██▒▀█▀ ██▒\n");
-  printf("            ▓██  ▀█ ██▒▓██  ▒██░▓██    ▓██░░ ▓██▄   ▒██▒▓██    ▓██░\n");
-  printf("            ▓██▒  ▐▌██▒▓▓█  ░██░▒██    ▒██   ▒   ██▒░██░▒██    ▒██ \n");
-  printf("            ▒██░   ▓██░▒▒█████▓ ▒██▒   ░██▒▒██████▒▒░██░▒██▒   ░██▒\n");
-  printf("            ░ ▒░   ▒ ▒ ░▒▓▒ ▒ ▒ ░ ▒░   ░  ░▒ ▒▓▒ ▒ ░░▓  ░ ▒░   ░  ░\n");
-  printf("            ░ ░░   ░ ▒░░░▒░ ░ ░ ░  ░      ░░ ░▒  ░ ░ ▒ ░░  ░      ░\n");
-  printf("               ░   ░ ░  ░░░ ░ ░ ░      ░   ░  ░  ░   ▒ ░░      ░   \n");
-  printf("                     ░    ░            ░         ░   ░         ░   \n");
-  printf("Numerische Simulationen 16/17 von\n   Etienne Ott\n   Moritz Schleicher\n   Patrick Buchfink\n\n");
+  mprintf("             ███▄    █  █    ██  ███▄ ▄███▓  ██████  ██▓ ███▄ ▄███▓\n");
+  mprintf("             ██ ▀█   █  ██  ▓██▒▓██▒▀█▀ ██▒▒██    ▒ ▓██▒▓██▒▀█▀ ██▒\n");
+  mprintf("            ▓██  ▀█ ██▒▓██  ▒██░▓██    ▓██░░ ▓██▄   ▒██▒▓██    ▓██░\n");
+  mprintf("            ▓██▒  ▐▌██▒▓▓█  ░██░▒██    ▒██   ▒   ██▒░██░▒██    ▒██ \n");
+  mprintf("            ▒██░   ▓██░▒▒█████▓ ▒██▒   ░██▒▒██████▒▒░██░▒██▒   ░██▒\n");
+  mprintf("            ░ ▒░   ▒ ▒ ░▒▓▒ ▒ ▒ ░ ▒░   ░  ░▒ ▒▓▒ ▒ ░░▓  ░ ▒░   ░  ░\n");
+  mprintf("            ░ ░░   ░ ▒░░░▒░ ░ ░ ░  ░      ░░ ░▒  ░ ░ ▒ ░░  ░      ░\n");
+  mprintf("               ░   ░ ░  ░░░ ░ ░ ░      ░   ░  ░  ░   ▒ ░░      ░   \n");
+  mprintf("                     ░    ░            ░         ░   ░         ░   \n");
+  mprintf("Numerische Simulationen 16/17 von\n   Etienne Ott\n   Moritz Schleicher\n   Patrick Buchfink\n\n");
   
   long start = 0, end = 0;
 
@@ -67,9 +71,6 @@ int main(int argc, char **argv) {
       system_clock::now().time_since_epoch()
     ).count();
   }
-  
-  // Create communicator
-  Communicator comm(&argc, &argv);
 
   // Create parameter and geometry instances with default values
   Parameter param;
@@ -200,7 +201,7 @@ int main(int argc, char **argv) {
     end = duration_cast<milliseconds>(
       system_clock::now().time_since_epoch()
     ).count();
-    printf("Overall run time (ms): %ld\n", end - start);
+    mprintf("Overall run time (ms): %ld\n", end - start);
   }
 
   return 0;

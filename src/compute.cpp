@@ -226,22 +226,22 @@ void Compute::TimeStep(bool printInfo) {
   
   if (printInfo) {
     // Print current time
-    printf("Current time: %4.2f\n", _t);
+    mprintf("Current time: %4.2f\n", _t);
     
     // Print time step stuff
-    printf("  Time step candidates:\n");
-    printf("    cfl_x:   %4.3f\n", cfl_x);
-    printf("    cfl_y:   %4.3f\n", cfl_y);
-    printf("    diff:    %4.3f\n", _diff);
-    printf("    dtlimit: %4.3f\n", _dtlimit);
-    printf("  Current time step %4.3f\n", dt);
-    printf("\n");
+    mprintf("  Time step candidates:\n");
+    mprintf("    cfl_x:   %4.3f\n", cfl_x);
+    mprintf("    cfl_y:   %4.3f\n", cfl_y);
+    mprintf("    diff:    %4.3f\n", _diff);
+    mprintf("    dtlimit: %4.3f\n", _dtlimit);
+    mprintf("  Current time step %4.3f\n", dt);
+    mprintf("\n");
     
     // Solver stuff
     if( it >= _param->IterMax() ){
-      printf("  DIDN'T converge! itermax reached!\n");
+      mprintf("  DIDN'T converge! itermax reached!\n");
     } else {
-      printf("  DID converge! eps (%f < %f) reached after % d iterations!\n", res, _epslimit, it);
+      mprintf("  DID converge! eps (%f < %f) reached after % d iterations!\n", res, _epslimit, it);
     }
   }
 }
