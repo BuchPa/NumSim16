@@ -55,8 +55,10 @@ public:
   void Load(const char *file);
 
   /// Recalculates the mesh width, inverse mesh width and overhang-size and
-  /// saves it in their correspondig private members.
-  void CalculateMesh();
+  /// saves it in their correspondig private members. This also checks the
+  /// sizes and domain lengths for each CPU and recalculates from the given
+  /// overall domain length and size.
+  void Recalculate();
 
   /// Returns the number of cells in each dimension on the current CPU.
   ///
@@ -106,6 +108,9 @@ public:
   ///
   /// @param p Grid The pressure field p
   void Update_P(Grid *p) const;
+
+  multi_index_t GetSubdomainSize();
+  multi_real_t GetSubdomainLength();
 
 private:
   /// _comm Communicator The communicator containing parallelization information

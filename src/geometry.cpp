@@ -1,6 +1,6 @@
 #include "typedef.hpp"
 #include "geometry.hpp"
-
+#include "comm.hpp"
 #include "iterator.hpp"
 #include "grid.hpp"
 
@@ -8,16 +8,14 @@
 #include <cstring> // string
 #include <cstdlib> // read/write
 
-Geometry::Geometry(){
+Geometry::Geometry() {
   // Init number of INNER cells in each dimension
-  _size[0] = 8;
-  _size[1] = 8;
+  _bsize[0] = 8;
+  _bsize[1] = 8;
   
   // Init length of driven cavity
-  _length[0] = 1.0;
-  _length[1] = 1.0;
-  
-  this->CalculateMesh();
+  _blength[0] = 1.0;
+  _blength[1] = 1.0;
   
   // Set boundary values for upper boundary (u=1, v=0)
   _velocity[0] = real_t(1.0);
@@ -25,11 +23,13 @@ Geometry::Geometry(){
   
   // Unused in driven cavity problem
   _pressure    = real_t(0.0);
+
+  this->Recalculate();
 }
 
 Geometry::Geometry (const Communicator* comm)
-  : _comm(comm){
-  //TODO
+  : Geometry() {
+  _comm = comm;
 }
 
 void Geometry::Load(const char *file){
@@ -43,16 +43,16 @@ void Geometry::Load(const char *file){
 
     if (strcmp(name, "size") == 0) {
       if (fscanf(handle, " %lf %lf\n", &inval[0], &inval[1])) {
-        _size[0] = inval[0];
-        _size[1] = inval[1];
+        _bsize[0] = inval[0];
+        _bsize[1] = inval[1];
       }
       continue;
     }
 
     if (strcmp(name, "length") == 0) {
       if (fscanf(handle, " %lf %lf\n", &inval[0], &inval[1])) {
-        _length[0] = inval[0];
-        _length[1] = inval[1];
+        _blength[0] = inval[0];
+        _blength[1] = inval[1];
       }
       continue;
     }
@@ -73,18 +73,22 @@ void Geometry::Load(const char *file){
   }
   fclose(handle);
   
-  this->CalculateMesh();
+  this->Recalculate();
 }
 
-void Geometry::CalculateMesh() {
+void Geometry::Recalculate() {
   // Calculate cell width/height
-  _h[0] = _length[0]/_size[0];
-  _h[1] = _length[1]/_size[1];
+  _h[0] = _blength[0] / _bsize[0];
+  _h[1] = _blength[1] / _bsize[1];
   
   // Calculate inverse mesh width/height
-  _invh[0] = _size[0]/_length[0];
-  _invh[1] = _size[1]/_length[1];
+  _invh[0] = _bsize[0] / _blength[0];
+  _invh[1] = _bsize[1] / _blength[1];
   
+  // Calculate size/length of subdomain
+  _size = this->GetSubdomainSize();
+  _length = this->GetSubdomainLength();
+
   // Set _size to size INCL ghost layers
   _size[0] += 2;
   _size[1] += 2;
@@ -95,7 +99,6 @@ const multi_index_t &Geometry::Size() const {
 }
 
 const multi_index_t &Geometry::TotalSize() const{
-  //TODO
   return _bsize;
 }
 
@@ -108,7 +111,6 @@ const multi_real_t &Geometry::Length() const{
 }
 
 const multi_real_t &Geometry::TotalLength() const{
-  //TODO
   return _blength;
 }
 
@@ -226,4 +228,30 @@ void Geometry::Update_P(Grid *p) const{
   
   Iterator ctr = boit.CornerTopRight();
   p->Cell(ctr) = (p->Cell(ctr.Left()) + p->Cell(ctr.Down()))/2.0; 
+}
+
+multi_index_t Geometry::GetSubdomainSize() {
+  switch (_comm->ThreadCnt()) {
+    case 2:
+      return {_bsize[0] / 2, _bsize[1]};
+
+    case 4:
+      return {_bsize[0] / 2, _bsize[1] / 2};
+
+    default:
+      throw std::runtime_error(std::string("Invalid number of processes: " + std::to_string(_comm->ThreadCnt())));
+  }
+}
+
+multi_real_t Geometry::GetSubdomainLength() {
+  switch (_comm->ThreadCnt()) {
+    case 2:
+      return {_blength[0] / 2.0, _blength[1]};
+
+    case 4:
+      return {_blength[0] / 2.0, _blength[1] / 2.0};
+
+    default:
+      throw std::runtime_error(std::string("Invalid number of processes: " + std::to_string(_comm->ThreadCnt())));
+  }
 }
