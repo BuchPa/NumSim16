@@ -122,66 +122,81 @@ void Geometry::Update_U(Grid *u) const{
   BoundaryIterator boit(this, 1);
   
   // Set lower boundary - zero dirichlet
-  boit.SetBoundary(1);
-  while(boit.Valid()){
-    u->Cell(boit) = -1 * u->Cell(boit.Top());
-    boit.Next();
+  if (_comm->isBottom()) {
+    boit.SetBoundary(1);
+    while(boit.Valid()){
+      u->Cell(boit) = -1 * u->Cell(boit.Top());
+      boit.Next();
+    }
   }
   
   // Set right boundary - zero dirichlet
-  boit.SetBoundary(2);
-  while(boit.Valid()){
-    u->Cell(boit)        = real_t(0.0);
-    u->Cell(boit.Left()) = real_t(0.0);
-    boit.Next();
+  if (_comm->isRight()) {
+    boit.SetBoundary(2);
+    while(boit.Valid()){
+      u->Cell(boit)        = real_t(0.0);
+      u->Cell(boit.Left()) = real_t(0.0);
+      boit.Next();
+    }
   }
   
   // Set left boundary - zero dirichlet
-  boit.SetBoundary(4);
-  while(boit.Valid()){
-    u->Cell(boit) = real_t(0.0);
-    boit.Next();
+  if (_comm->isLeft()) {
+    boit.SetBoundary(4);
+    while(boit.Valid()){
+      u->Cell(boit) = real_t(0.0);
+      boit.Next();
+    }
   }
   
   // Set upper boundary - non-zero dirichlet
-  boit.SetBoundary(3);
-  while(boit.Valid()){
-    u->Cell(boit) = 2* _velocity[0] - u->Cell(boit.Down());
-    boit.Next();
+  if (_comm->isTop()) {
+    boit.SetBoundary(3);
+    while(boit.Valid()){
+      u->Cell(boit) = 2* _velocity[0] - u->Cell(boit.Down());
+      boit.Next();
+    }
   }
-  
 }
 
 void Geometry::Update_V(Grid *v) const{
   BoundaryIterator boit(this, 1);
   
   // Set right boundary - zero dirichlet
-  boit.SetBoundary(2);
-  while(boit.Valid()){
-    v->Cell(boit) = -1 * v->Cell(boit.Left());
-    boit.Next();
+  if (_comm->isRight()) {
+    boit.SetBoundary(2);
+    while(boit.Valid()){
+      v->Cell(boit) = -1 * v->Cell(boit.Left());
+      boit.Next();
+    }
   }
   
   // Set left boundary - zero dirichlet
-  boit.SetBoundary(4);
-  while(boit.Valid()){
-    v->Cell(boit) = -1 * v->Cell(boit.Right());
-    boit.Next();
+  if (_comm->isLeft()) {
+    boit.SetBoundary(4);
+    while(boit.Valid()){
+      v->Cell(boit) = -1 * v->Cell(boit.Right());
+      boit.Next();
+    }
   }
   
   // Set lower boundary - zero dirichlet
-  boit.SetBoundary(1);
-  while(boit.Valid()){
-    v->Cell(boit) = real_t(0.0);
-    boit.Next();
+  if (_comm->isBottom()) {
+    boit.SetBoundary(1);
+    while(boit.Valid()){
+      v->Cell(boit) = real_t(0.0);
+      boit.Next();
+    }
   }
   
   // Set upper boundary - zero dirichlet
-  boit.SetBoundary(3);
-  while(boit.Valid()){
-    v->Cell(boit)        = _velocity[1];
-    v->Cell(boit.Down()) = _velocity[1];
-    boit.Next();
+  if (_comm->isTop()) {
+    boit.SetBoundary(3);
+    while(boit.Valid()){
+      v->Cell(boit)        = _velocity[1];
+      v->Cell(boit.Down()) = _velocity[1];
+      boit.Next();
+    }
   }
 }
 
@@ -189,45 +204,61 @@ void Geometry::Update_P(Grid *p) const{
   BoundaryIterator boit(this, 1);
   
   // Set right boundary
-  boit.SetBoundary(2);
-  while(boit.Valid()){
-    p->Cell(boit) = p->Cell(boit.Left());
-    boit.Next();
+  if (_comm->isRight()) {
+    boit.SetBoundary(2);
+    while(boit.Valid()){
+      p->Cell(boit) = p->Cell(boit.Left());
+      boit.Next();
+    }
   }
   
   // Set left boundary
-  boit.SetBoundary(4);
-  while(boit.Valid()){
-    p->Cell(boit) = p->Cell(boit.Right());
-    boit.Next();
+  if (_comm->isLeft()) {
+    boit.SetBoundary(4);
+    while(boit.Valid()){
+      p->Cell(boit) = p->Cell(boit.Right());
+      boit.Next();
+    }
   }
   
   // Set lower boundary
-  boit.SetBoundary(1);
-  while(boit.Valid()){
-    p->Cell(boit) = p->Cell(boit.Top());
-    boit.Next();
+  if (_comm->isBottom()) {
+    boit.SetBoundary(1);
+    while(boit.Valid()){
+      p->Cell(boit) = p->Cell(boit.Top());
+      boit.Next();
+    }
   }
   
   // Set upper boundary
-  boit.SetBoundary(3);
-  while(boit.Valid()){
-    p->Cell(boit) = p->Cell(boit.Down());
-    boit.Next();
+  if (_comm->isTop()) {
+    boit.SetBoundary(3);
+    while(boit.Valid()){
+      p->Cell(boit) = p->Cell(boit.Down());
+      boit.Next();
+    }
+  }
+
+  // Set corners to avg of neighbour cells
+  if (_comm->isBottom() && _comm->isLeft()) {
+    Iterator cbl = boit.CornerBottomLeft();
+    p->Cell(cbl) = (p->Cell(cbl.Right()) + p->Cell(cbl.Top()))/2.0;
   }
   
-  // Set corners to avg of neighbour cells
-  Iterator cbl = boit.CornerBottomLeft();
-  p->Cell(cbl) = (p->Cell(cbl.Right()) + p->Cell(cbl.Top()))/2.0;
+  if (_comm->isBottom() && _comm->isRight()) {
+    Iterator cbr = boit.CornerBottomRight();
+    p->Cell(cbr) = (p->Cell(cbr.Left()) + p->Cell(cbr.Top()))/2.0;
+  }
   
-  Iterator cbr = boit.CornerBottomRight();
-  p->Cell(cbr) = (p->Cell(cbr.Left()) + p->Cell(cbr.Top()))/2.0;
+  if (_comm->isTop() && _comm->isLeft()) {
+    Iterator ctl = boit.CornerTopLeft();
+    p->Cell(ctl) = (p->Cell(ctl.Right()) + p->Cell(ctl.Down()))/2.0;
+  }
   
-  Iterator ctl = boit.CornerTopLeft();
-  p->Cell(ctl) = (p->Cell(ctl.Right()) + p->Cell(ctl.Down()))/2.0;
-  
-  Iterator ctr = boit.CornerTopRight();
-  p->Cell(ctr) = (p->Cell(ctr.Left()) + p->Cell(ctr.Down()))/2.0; 
+  if (_comm->isTop() && _comm->isRight()) {
+    Iterator ctr = boit.CornerTopRight();
+    p->Cell(ctr) = (p->Cell(ctr.Left()) + p->Cell(ctr.Down()))/2.0;
+  }
 }
 
 multi_index_t Geometry::GetSubdomainSize() {
