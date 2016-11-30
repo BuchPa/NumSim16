@@ -6,19 +6,19 @@
 void test_compute();
 
 /// Tests functions/methods of Iterator.
-void test_iterator();
+void test_iterator(Communicator *comm);
 
 /// Tests functions/methods of Geometry.
-void test_geometry();
+void test_geometry(Communicator *comm);
 
 /// Tests functions/methods of Parameter.
 void test_parameter();
 
 /// Tests the interpolate method of Grid.
-void test_interpolate();
+void test_interpolate(Communicator *comm);
 
 /// Tests functions/methods of Grid.
-void test_grid();
+void test_grid(Communicator *comm);
 
 /// Tests the load functions of Parameter and Geometry.
 ///

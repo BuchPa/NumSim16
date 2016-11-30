@@ -12,9 +12,9 @@ void test_compute() {
   mprintf("Testing Compute\n");
 }
 
-void test_iterator() {
+void test_iterator(Communicator *comm) {
   mprintf("Testing Iterator\n");
-  Geometry geom;
+  Geometry geom(comm);
   
   mprintf("Iterator Test:\n");
   Iterator it = Iterator(&geom);;
@@ -69,11 +69,11 @@ void test_iterator() {
   
 }
 
-void test_geometry() {
+void test_geometry(Communicator *comm) {
   mprintf("Testing Geometry\n");
 
   // Testing default values
-  Geometry geo;
+  Geometry geo(comm);
   mprintf("Size %i,%i\n", geo.Size()[0], geo.Size()[1]);
   mprintf("Length %f,%f\n", geo.Length()[0], geo.Length()[1]);
   mprintf("Mesh %f,%f\n", geo.Mesh()[0], geo.Mesh()[1]);
@@ -123,12 +123,12 @@ void test_parameter() {
   mprintf("IterMax %d (100)\n", p.IterMax());
 }
 
-void test_interpolate() {
+void test_interpolate(Communicator *comm) {
   mprintf("Testing Interpolate\n");
   mprintf("  Cycle Iterator visually by pressing 'Return' in Visu...\n");
 
   // Test interpolate
-  const Geometry geo;
+  const Geometry geo(comm);
   
   // Create grid
   const real_t faktor = 0.5;
@@ -176,11 +176,11 @@ void test_interpolate() {
   
 }
 
-void test_grid() {
+void test_grid(Communicator *comm) {
   mprintf("Testing Grid\n");
 
   // Test interpolate
-  const Geometry geo;
+  const Geometry geo(comm);
   Grid grid = Grid(&geo);
   Grid grid2 = Grid(&geo);
   Iterator it = Iterator(&geo);

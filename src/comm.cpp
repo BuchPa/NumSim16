@@ -16,11 +16,10 @@ Communicator::Communicator (int* argc, char*** argv){
   bool odd_dim2 = _tdim[1]%2;
   
   _evenodd = odd_dim1 ^ odd_dim2;
-  
-  //TODO Set _size / _bsize in geometry according to number of processes
 }
 
 Communicator::~Communicator (){
+  MPI_Barrier(MPI_COMM_WORLD);
   MPI_Finalize();
 }
 
@@ -86,16 +85,6 @@ bool Communicator::isBottom () const{
 
 bool Communicator::isMaster() const{
   return _rank == 0;
-}
-
-void Communicator::collect(Grid* fullgrid, Grid* partial) const{
-  // Master collects
-  if (this->isMaster()) {
-    // MPI_Gather
-  }else{
-  // Rest sends
-    
-  }
 }
 
 bool Communicator::copyLeftBoundary (Grid* grid) const{
@@ -302,4 +291,34 @@ void Communicator::SetDimensions() {
     default:
       throw std::runtime_error(std::string("Invalid number of processes: " + std::to_string(_size)));
   }
+}
+
+index_t** Communicator::CollectExtent(index_t extent [4]) const{
+  index_t** collected = NULL;
+  MPI_Status stat;
+  
+  if (this->isMaster()) {
+    // Create array to save values
+    collected = new index_t*[_size];
+    
+    // Insert master values
+    collected[0] = extent;
+    
+    // Insert other values
+    for(int i_rank=1; i_rank < _size; ++i_rank){
+      index_t buffer[4];
+      MPI_Recv(buffer, 4, MPI_INDEX_TYPE, i_rank, MPI_TAG_EXTENT, MPI_COMM_WORLD, &stat);
+      
+      collected[i_rank] = new index_t[4];
+      collected[i_rank][0] = buffer[0];
+      collected[i_rank][1] = buffer[1];
+      collected[i_rank][2] = buffer[2];
+      collected[i_rank][3] = buffer[3];
+    }
+    
+  } else {
+    MPI_Send(extent, 4, MPI_INDEX_TYPE, 0, MPI_TAG_EXTENT, MPI_COMM_WORLD);
+  }
+  
+  return collected;
 }

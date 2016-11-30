@@ -47,7 +47,7 @@ typedef INDEX_TYPE index_t;
 
 
 enum MPI_TAG : int {
-  MPI_TAG_BOUNDARY
+  MPI_TAG_BOUNDARY, MPI_TAG_EXTENT
 };
 
 //------------------------------------------------------------------------------
@@ -126,7 +126,7 @@ inline int mprintf(const char *format, ...){
     int done;
     
     va_start(arg, format);
-    done = vprintf(format, arg); // Call original printf
+    done = vprintf(format, arg); // Call original vprintf
     va_end(arg);
    
     return done;

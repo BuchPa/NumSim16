@@ -17,6 +17,8 @@
 
 #include "typedef.hpp"
 #include "grid.hpp"
+#include "geometry.hpp"
+#include "comm.hpp"
 #include <cstdio>
 //------------------------------------------------------------------------------
 #ifndef __VTK_HPP
@@ -30,12 +32,11 @@
 class VTK {
 public:
   /// Constructs a VTK instance
-  VTK(const multi_real_t &h, const multi_index_t &size);
-  VTK(const multi_real_t &h, const multi_index_t &size,
-      const multi_real_t &offset);
+  VTK(const Geometry *geom, const Communicator *comm, const multi_real_t &offset);
+  VTK(const Geometry *geom, const Communicator *comm);
 
   /// Initializes the file
-  void Init(const char *path);
+  void Init(const char *path, const char *file);
   /// Closes the file
   void Finish();
 
@@ -52,29 +53,38 @@ private:
   const multi_index_t &_size;
   multi_real_t _offset;
   FILE *_handle;
+  
+  ///Parallel stuff
+  const Communicator *_comm;
+  const multi_index_t &_totsize;
+  FILE *_phandle;
+  index_t *_extent;
+  index_t **_extents;
+  index_t _iterXMax;
+  index_t _iterYMax;
 
   static uint32_t _cnt;
 };
 //------------------------------------------------------------------------------
 /*!     \class VTK
- *      This class creates a VTK conform file to visualize 1D, 2D and/or 3D data
+ *      This class creates a VTK conform file to visualize 1D and/or 2D data (3D NOT SUPPORTED)
  *      with Paraview etc.
  */
-/*!     \fn     VTK::VTK (const multi_real_t& h, const multi_index_t& size)
- *      \param h                The mesh width of the data grids to visualize
- *      \param size             The overall size of the data domain
+/*!     \fn     VTK::VTK (const Geometry *geom, const Communicator *comm)
+ *      \param geom             The Geometry class for mesh data
+ *      \param comm             The Communicator class for parallel output
  *
  *      Constructs an instance of the VTK class. It initializes the underlining
- *      domains grid points depending on \p h and \p size.
+ *      domains grid points depending on \p geom and \p comm.
  */
-/*!     \fn     VTK::VTK (const multi_real_t& h, const multi_index_t& size,
+/*!     \fn     VTK::VTK (const Geometry *geom, const Communicator *comm,
  * const multi_real_t& offset)
- *      \param h                The mesh width of the data grids to visualize
- *      \param size             The overall size of the data domain
+ *      \param geom             The Geometry class for mesh data
+ *      \param comm             The Communicator class for parallel output
  *      \param offset   The position of the first grid point
  *
  *      Constructs an instance of the VTK class. It initializes the underlining
- *      domains grid points depending on \p h and \p size. All grid nodes are
+ *      domains grid points depending on \p geom and \p comm. All grid nodes are
  *      shifted by \p offset.
  */
 /*!     \fn void VTK::Init (const char* path)

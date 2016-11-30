@@ -48,6 +48,9 @@ public:
   ///  @param comm Communicator The communicator to work with
   Geometry (const Communicator* comm);
 
+  /// Destructs the Geometry
+  ~Geometry();
+
   /// Loads values for the geometry from a file.
   /// See sample file ex1_geometry for how the file should be structured.
   ///
@@ -59,6 +62,17 @@ public:
   /// sizes and domain lengths for each CPU and recalculates from the given
   /// overall domain length and size.
   void Recalculate();
+
+  /// Returns the extent of nodal points in each dimension on the current CPU.
+  ///
+  /// @return index_t* The extent of nodal points in x and y dimension on the current CPU
+  index_t *Extent() const;
+  
+  /// Returns the extent of nodal points in each dimension on all CPUs.
+  /// Only available on master CPU.
+  ///
+  /// @return multi_index_t The extent of nodal points in each dimension on all CPUs.
+  index_t **Extents() const;
 
   /// Returns the number of cells in each dimension on the current CPU.
   ///
@@ -139,6 +153,15 @@ private:
   
   // _invh multi_real_t The inverse mesh width in each dimension
   multi_real_t _invh;
+
+  /// _extent index_t[4] The NODAL extent (start, stop and x,y)
+  /// to print the total field as VTK without dublicates
+  index_t *_extent;
+  
+  /// _extents index_t ** TThe NODAL extent (start, stop and x,y)
+  /// to print the total field as VTK without dublicates FOR ALL PROCESSES
+  /// Only calculated for the master process
+  index_t **_extents;
 };
 //------------------------------------------------------------------------------
 #endif // __GEOMETRY_HPP

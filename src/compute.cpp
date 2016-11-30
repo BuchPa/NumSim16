@@ -93,18 +93,15 @@ const real_t &Compute::GetTime() const {
 }
 
 const Grid *Compute::GetU() const {
-  _comm->collect(_fullgrid, _u);
-  return _fullgrid;
+  return _u;
 }
 
 const Grid *Compute::GetV() const {
-  _comm->collect(_fullgrid, _v);
-  return _fullgrid;
+  return _v;
 }
 
 const Grid *Compute::GetP() const {
-  _comm->collect(_fullgrid, _p);
-  return _fullgrid;
+  return _p;
 }
 
 const Grid *Compute::GetRHS() const{

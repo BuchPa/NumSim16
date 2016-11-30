@@ -10,8 +10,8 @@
 
 Geometry::Geometry() {
   // Init number of INNER cells in each dimension
-  _bsize[0] = 8;
-  _bsize[1] = 8;
+  _bsize[0] = 4;
+  _bsize[1] = 4;
   
   // Init length of driven cavity
   _blength[0] = 1.0;
@@ -24,12 +24,28 @@ Geometry::Geometry() {
   // Unused in driven cavity problem
   _pressure    = real_t(0.0);
 
+  // Create extent
+  _extent = new index_t[4];
+
   this->Recalculate();
 }
 
 Geometry::Geometry (const Communicator* comm)
   : Geometry() {
   _comm = comm;
+}
+
+Geometry::~Geometry(){
+  // Fully delete _extents
+  if (_comm->isMaster()) {
+    for(int i_rank=0; i_rank < _comm->ThreadCnt(); ++i_rank)
+      delete[] _extents[i_rank];
+    
+    delete[] _extents;
+  }
+  
+  // Delete extent
+  delete[] _extent;
 }
 
 void Geometry::Load(const char *file){
@@ -92,6 +108,29 @@ void Geometry::Recalculate() {
   // Set _size to size INCL ghost layers
   _size[0] += 2;
   _size[1] += 2;
+
+  // Calculate lower extent in x and y direction
+  _extent[0] = _comm->ThreadIdx()[0] * _size[0];
+  _extent[2] = _comm->ThreadIdx()[1] * _size[1];
+  
+  // Calculate upper extent in x and y direction
+  _extent[1] = (_comm->ThreadIdx()[0] + 1) * _size[0];
+  _extent[3] = (_comm->ThreadIdx()[1] + 1) * _size[1];
+  
+  // Communicate extents
+  _extents = _comm->CollectExtent(_extent);
+
+  // Increase by one layer of border cells for the overall domain grid
+  _bsize[0] += 2;
+  _bsize[1] += 2;
+}
+
+index_t *Geometry::Extent() const{
+  return _extent;
+}
+
+index_t **Geometry::Extents() const{
+  return _extents;
 }
 
 const multi_index_t &Geometry::Size() const {

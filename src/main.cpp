@@ -48,7 +48,7 @@ using namespace std::chrono;
 /// Console parameters starting with TEST are meant to be used to test specific
 /// subsystems of the programs.
 int main(int argc, char **argv) {
-  
+
   // Create communicator
   Communicator comm(&argc, &argv);
 
@@ -105,12 +105,12 @@ int main(int argc, char **argv) {
     }
 
     if (strcmp(test_case, "TEST_ITERATOR") == 0) {
-      test_iterator();
+      test_iterator(&comm);
       return 0;
     }
 
     if (strcmp(test_case, "TEST_GEOMETRY") == 0) {
-      test_geometry();
+      test_geometry(&comm);
       return 0;
     }
 
@@ -120,12 +120,12 @@ int main(int argc, char **argv) {
     }
 
     if (strcmp(test_case, "TEST_GRID") == 0) {
-      test_grid();
+      test_grid(&comm);
       return 0;
     }
     
     if (strcmp(test_case, "TEST_INTERPOLATE") == 0) {
-      test_interpolate();
+      test_interpolate(&comm);
       return 0;
     }
     
@@ -142,7 +142,7 @@ int main(int argc, char **argv) {
   }
   
   // Create a VTK generator
-  VTK vtk(geom.Mesh(), geom.Size());
+  VTK vtk(&geom, &comm);
 
   const Grid *visugrid;
   bool run = true;
@@ -184,7 +184,7 @@ int main(int argc, char **argv) {
     #endif // USE_DEBUG_VISU
 
     // Create a VTK File in the folder VTK (must exist)
-    vtk.Init("VTK/field");
+    vtk.Init("VTK/", "field");
     vtk.AddField("Velocity", comp.GetU(), comp.GetV());
     vtk.AddScalar("Pressure", comp.GetP());
     vtk.AddScalar("Stream", comp.GetStream());

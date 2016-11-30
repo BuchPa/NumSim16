@@ -29,8 +29,8 @@ public:
   bool isBottom () const;
   
   bool isMaster() const;
-  
-  void collect(Grid* fullgrid, Grid* partial) const;
+
+  index_t** CollectExtent(index_t extent [4]) const;
   
 private:
   multi_index_t _tidx;
