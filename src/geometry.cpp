@@ -8,7 +8,8 @@
 #include <cstring> // string
 #include <cstdlib> // read/write
 
-Geometry::Geometry() {
+Geometry::Geometry (const Communicator* comm)
+  : _comm(comm) {
   // Init number of INNER cells in each dimension
   _bsize[0] = 4;
   _bsize[1] = 4;
@@ -28,11 +29,6 @@ Geometry::Geometry() {
   _extent = new index_t[4];
 
   this->Recalculate();
-}
-
-Geometry::Geometry (const Communicator* comm)
-  : Geometry() {
-  _comm = comm;
 }
 
 Geometry::~Geometry(){

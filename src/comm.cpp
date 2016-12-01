@@ -273,7 +273,7 @@ void Communicator::SetDimensions() {
       break;
 
     case 2:
-      _tdim = {1, 2};
+      _tdim = {2, 1};
       switch(_rank) {
         case 0:
           _tidx = {0,0};

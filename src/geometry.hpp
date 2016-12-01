@@ -40,9 +40,6 @@ public:
   ///    -------------
   ///      u=0, v=0
   
-  /// Constructs a new Geometry.
-  Geometry();
-  
   /// Constructs a new Geometry considering the given Communicator.
   ///
   ///  @param comm Communicator The communicator to work with
