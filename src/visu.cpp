@@ -117,8 +117,8 @@ void setpixelrgb(SDL_Surface *screen, int x, int y, uint8_t r, uint8_t g,
 //------------------------------------------------------------------------------
 uint32_t Renderer::_count = 0;
 //------------------------------------------------------------------------------
-Renderer::Renderer(const multi_real_t &length, const multi_real_t &h)
-    : _length(length), _h(h) {
+Renderer::Renderer(const multi_real_t &length, const multi_real_t &h, const Communicator *comm)
+    : _length(length), _h(h), _comm(comm) {
   if (_count == 0)
     SDL_Init(SDL_INIT_VIDEO);
   _count++;
@@ -153,6 +153,7 @@ void Renderer::Init(const index_t &width, const index_t &height,
   _screen = SDL_GetWindowSurface(_window); // SDL_SetVideoMode(_width,_height,
                                            // 32, SDL_HWSURFACE |
                                            // SDL_DOUBLEBUF);
+  SDL_SetWindowPosition(_window, 70 + _width * _comm->ThreadIdx()[0], 30 + (_comm->ThreadIdx()[1] - _comm->ThreadDim()[1] - 1) * _height);
 }
 //------------------------------------------------------------------------------
 void Renderer::SetSlice(const index_t &xdim, const index_t &ydim,
@@ -165,15 +166,16 @@ void Renderer::SetSlice(const index_t &xdim, const index_t &ydim,
 //------------------------------------------------------------------------------
 int Renderer::Check() {
   SDL_Event event;
+  
+  int new_state = 100;
+  
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
     case SDL_QUIT:
-      return -1;
+      new_state = -1;
     case SDL_WINDOWEVENT:
       if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
-        _state = -1;
-        SDL_DestroyWindow(_window);
-        _window = NULL;
+        new_state = -1;
       }
       break;
     case SDL_MOUSEBUTTONDOWN:
@@ -183,59 +185,60 @@ int Renderer::Check() {
     case SDL_KEYDOWN:
       switch (event.key.keysym.sym) {
       case SDLK_ESCAPE:
-        return -1;
+        new_state = -1;
+        break;
       case SDLK_0:
         _min = std::numeric_limits<real_t>::max();
         _max = std::numeric_limits<real_t>::min();
-        _state = 0;
+        new_state = 0;
         break;
       case SDLK_1:
         _min = std::numeric_limits<real_t>::max();
         _max = std::numeric_limits<real_t>::min();
-        _state = 1;
+        new_state = 1;
         break;
       case SDLK_2:
         _min = std::numeric_limits<real_t>::max();
         _max = std::numeric_limits<real_t>::min();
-        _state = 2;
+        new_state = 2;
         break;
       case SDLK_3:
         _min = std::numeric_limits<real_t>::max();
         _max = std::numeric_limits<real_t>::min();
-        _state = 3;
+        new_state = 3;
         break;
       case SDLK_4:
         _min = std::numeric_limits<real_t>::max();
         _max = std::numeric_limits<real_t>::min();
-        _state = 4;
+        new_state = 4;
         break;
       case SDLK_5:
         _min = std::numeric_limits<real_t>::max();
         _max = std::numeric_limits<real_t>::min();
-        _state = 5;
+        new_state = 5;
         break;
       case SDLK_6:
         _min = std::numeric_limits<real_t>::max();
         _max = std::numeric_limits<real_t>::min();
-        _state = 6;
+        new_state = 6;
         break;
       case SDLK_7:
         _min = std::numeric_limits<real_t>::max();
         _max = std::numeric_limits<real_t>::min();
-        _state = 7;
+        new_state = 7;
         break;
       case SDLK_8:
         _min = std::numeric_limits<real_t>::max();
         _max = std::numeric_limits<real_t>::min();
-        _state = 8;
+        new_state = 8;
         break;
       case SDLK_9:
         _min = std::numeric_limits<real_t>::max();
         _max = std::numeric_limits<real_t>::min();
-        _state = 9;
+        new_state = 9;
         break;
       case SDLK_RETURN:
-        return 10;
+        new_state = 10;
       default:
         break;
       };
@@ -244,6 +247,18 @@ int Renderer::Check() {
       break;
     };
   }
+  
+  if (_comm->gatherMin(new_state) < 0.) {
+    _state = -1;
+  } else {
+    int state_max = floor(_comm->gatherMax((new_state != 100) ? new_state : -1));
+    if (state_max >= 0) {
+      _state = state_max;
+      _min = std::numeric_limits<real_t>::max();
+      _max = std::numeric_limits<real_t>::min();
+    }
+  }
+  
   return _state;
 }
 //------------------------------------------------------------------------------
@@ -299,6 +314,11 @@ int Renderer::Render(const Grid *grid, const real_t &min, const real_t &max) {
       treshold[0] += _h[_x];
     }
   }
+  
+  // Snyc min and max
+  _min = _comm->gatherMin(_min);
+  _max = _comm->gatherMax(_max);
+  
   if (SDL_MUSTLOCK(_screen))
     SDL_UnlockSurface(_screen);
   SDL_UpdateWindowSurface(_window);

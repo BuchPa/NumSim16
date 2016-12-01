@@ -18,6 +18,7 @@
 #include "typedef.hpp"
 #include "grid.hpp"
 #include "SDL2/SDL.h"
+#include "comm.hpp"
 //------------------------------------------------------------------------------
 #ifndef __VISU_HPP
 #define __VISU_HPP
@@ -39,7 +40,7 @@ const char States[][42] = {
 class Renderer {
 public:
   /// Constructs a Renderer
-  Renderer(const multi_real_t &length, const multi_real_t &h);
+  Renderer(const multi_real_t &length, const multi_real_t &h, const Communicator *comm);
   ~Renderer();
 
   /// Initializes the Renderer
@@ -77,6 +78,8 @@ private:
   index_t _click_x;
   index_t _click_y;
   int _idx;
+  
+  const Communicator *_comm;
 
   static uint32_t _count;
 };
@@ -86,13 +89,14 @@ private:
  * function.
  *      It is visualizing 2D slices through the grid data with colors.
  */
-/*! \fn Renderer::Renderer (const multi_real_t& h, const multi_real_t& length)
+/*! \fn Renderer::Renderer (const multi_real_t& h, const multi_real_t& length, const Communicator *comm)
  *      Constructs a Renderer with a given mesh width \p h and total size \p
  * length
  *      of the grid.
  *
  *      \param  h               mesh width to use
  *      \param  length  total size of the area
+ *      \param  comm    Communicator class
  */
 /*!     \fn     void Renderer::Init (const index_t& width, const index_t&
  * height, const int& idx = 0)

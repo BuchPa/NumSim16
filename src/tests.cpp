@@ -142,7 +142,7 @@ void test_interpolate(Communicator *comm) {
   Iterator it(&geo);
   
   // Create and initialize the visualization
-  Renderer visu(geo.Length(), geo.Mesh());
+  Renderer visu(geo.Length(), geo.Mesh(), comm);
   visu.Init(800, 800);
   
   visu.Render(&grid, 0.0, 1.0);
@@ -302,7 +302,7 @@ void test_solver(const Geometry *geom, const Communicator *comm){
   Grid rhs(geom, 0.0);
   
   // Create and initialize the visualization
-  Renderer visu(geom->Length(), geom->Mesh());
+  Renderer visu(geom->Length(), geom->Mesh(), comm);
   visu.Init(floor(800. * geom->Length()[0] / geom->TotalLength()[0]),
             floor(800. * geom->Length()[1] / geom->TotalLength()[1]));
   
@@ -320,11 +320,8 @@ void test_solver(const Geometry *geom, const Communicator *comm){
   int iter = 0;
   
   
-  while((key!=-1)){
+  while((key!=-1)&&(key!=10)){
     key = visu.Check();
-    key = comm->gatherMin(key);
-    
-    printf("rank: %d, comm: %d, iter: %d\n", comm->ThreadNum(), key, iter);
     
     real_t tmp_res (0.0);
     real_t res (0.0);
