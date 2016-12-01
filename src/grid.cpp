@@ -41,6 +41,8 @@ Grid::Grid(const Geometry *geom)
   // Calculate grid size and create data
   const multi_index_t size = _geom->Size();
   _data = new real_t[(size[0])*(size[1])];
+  _bufferX = new real_t[(size[0])];
+  _bufferY = new real_t[(size[1])];
   
   // Init data with zeros
   this->Initialize(real_t(0.0));
