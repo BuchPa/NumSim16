@@ -153,7 +153,9 @@ void Renderer::Init(const index_t &width, const index_t &height,
   _screen = SDL_GetWindowSurface(_window); // SDL_SetVideoMode(_width,_height,
                                            // 32, SDL_HWSURFACE |
                                            // SDL_DOUBLEBUF);
-  SDL_SetWindowPosition(_window, 70 + _width * _comm->ThreadIdx()[0], 30 + (_comm->ThreadIdx()[1] - _comm->ThreadDim()[1] - 1) * _height);
+  
+  SDL_SetWindowPosition( _window, 70 + _width  * _comm->ThreadIdx()[0], 
+                                  30 + _height * (_comm->ThreadDim()[1] - _comm->ThreadIdx()[1] - 1) );
 }
 //------------------------------------------------------------------------------
 void Renderer::SetSlice(const index_t &xdim, const index_t &ydim,
