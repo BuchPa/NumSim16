@@ -2,6 +2,8 @@
 #include "geometry.hpp"
 #include "parameter.hpp"
 
+using namespace std;
+
 /// Tests functions/methods of Compute.
 void test_compute();
 
@@ -29,4 +31,4 @@ void test_load(const Parameter *param, const Geometry *geom);
 /// Tests functions/methods of Solver.
 ///
 /// @param geom Geometry The Geometry instance to test
-void test_solver(const Geometry *geom);
+void test_solver(const Geometry *geom, const Communicator *comm);

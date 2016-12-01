@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
     }
     
     if (strcmp(test_case, "TEST_SOLVER") == 0) {
-      test_solver(&geom);
+      test_solver(&geom, &comm);
       return 0;
     }
     

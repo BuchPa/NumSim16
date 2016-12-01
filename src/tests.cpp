@@ -285,17 +285,17 @@ void test_load(const Parameter *param, const Geometry *geom){
   mprintf("Mesh: (%f, %f)\n", geom->Mesh()[0], geom->Mesh()[1]);
 }
 
-void test_solver(const Geometry *geom){
+void test_solver(const Geometry *geom, const Communicator *comm){
   multi_index_t size = geom->Size();
   Grid *grid = new Grid(geom);
   
   InteriorIterator init(geom);
   
   for(init.First(); init.Valid(); init.Next()){
-    grid->Cell(init) = std::max(0.0,-(init.Pos()[0] - 0.25 * size[0]) *
-                                     (init.Pos()[0] - 0.75 * size[0]) -
-                                     (init.Pos()[1] - 0.25 * size[1]) *
-                                     (init.Pos()[1] - 0.75 * size[1]) );
+    grid->Cell(init) = max(0.0,-(init.Pos()[0] - 0.25 * size[0]) *
+                                (init.Pos()[0] - 0.75 * size[0]) -
+                                (init.Pos()[1] - 0.25 * size[1]) *
+                                (init.Pos()[1] - 0.75 * size[1]) );
   }
   
   // Create Right hand side
@@ -303,8 +303,12 @@ void test_solver(const Geometry *geom){
   
   // Create and initialize the visualization
   Renderer visu(geom->Length(), geom->Mesh());
-  visu.Init(800, 800);
-  real_t maxGrid = grid->AbsMax();
+  visu.Init(floor(800. * geom->Length()[0] / geom->TotalLength()[0]),
+            floor(800. * geom->Length()[1] / geom->TotalLength()[1]));
+  
+  // Communicate max
+  real_t my_maxGrid = grid->AbsMax();
+  real_t maxGrid    = comm->gatherMax(my_maxGrid);
   
   // Create solver
   RedOrBlackSOR *solver = new RedOrBlackSOR(geom,  real_t(1.7));
@@ -314,12 +318,35 @@ void test_solver(const Geometry *geom){
   
   int key = 0;
   int iter = 0;
-  while((key != 10)&&(key!=-1)){
+  
+  
+  while((key!=-1)){
     key = visu.Check();
+    key = comm->gatherMin(key);
     
-    real_t res = solver->RedCycle(grid, &rhs);
-    mprintf("RedRes: %f\n", res);
-    res += solver->BlackCycle(grid, &rhs);
+    printf("rank: %d, comm: %d, iter: %d\n", comm->ThreadNum(), key, iter);
+    
+    real_t tmp_res (0.0);
+    real_t res (0.0);
+    
+    tmp_res = solver->RedCycle(grid, &rhs);
+    res     = max(res, tmp_res);
+    
+    // Communicate/exchange pressure values at boundaries between subdomain
+    comm->copyBoundary(grid);
+    
+    // Second half interation
+    tmp_res = solver->BlackCycle(grid, &rhs);
+    res     = max(res, tmp_res);
+    
+    // Communicate/exchange pressure values at boundaries between subdomain
+    comm->copyBoundary(grid);
+    
+    // Communicate maximal residual with other processes
+    res = comm->gatherMax(res);
+    
+    // Set boundary values in each iter, because it changes with each iter
+    geom->Update_P(grid);
     
     mprintf("Iter:    %d\n", iter);
     mprintf("Max val: %f (%f)\n", grid->Max(), maxGrid);
@@ -330,6 +357,8 @@ void test_solver(const Geometry *geom){
     
     iter++;
   }
+  
+  
   
   delete grid;
   delete solver;
