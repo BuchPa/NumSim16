@@ -185,6 +185,9 @@ void Compute::TimeStep(bool printInfo) {
   real_t  res(_epslimit + 0.1);
   real_t  tmp_res(0.0);
   while((it < _param->IterMax()) && (res >= _epslimit))  {
+    // Reset residual
+    res = real_t(0.0);
+    
     // First half iteration
     tmp_res = _solver->RedCycle(_p, _rhs);
     res     = max(res, tmp_res);
