@@ -12,8 +12,8 @@ Communicator::Communicator (int* argc, char*** argv){
 
   this->SetDimensions();
 
-  bool odd_dim1 = _tdim[0]%2;
-  bool odd_dim2 = _tdim[1]%2;
+  bool odd_dim1 = _tidx[0]%2;
+  bool odd_dim2 = _tidx[1]%2;
   
   _evenodd = odd_dim1 ^ odd_dim2;
 }
