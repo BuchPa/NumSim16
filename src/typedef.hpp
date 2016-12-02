@@ -50,6 +50,11 @@ enum MPI_TAG : int {
   MPI_TAG_BOUNDARY, MPI_TAG_EXTENT
 };
 
+struct arrayBuffer {
+  real_t* buffer;
+  int size;
+};
+
 //------------------------------------------------------------------------------
 
 /// Template for array/vector types
