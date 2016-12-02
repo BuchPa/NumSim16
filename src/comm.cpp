@@ -65,6 +65,7 @@ void Communicator::copyBoundary (Grid* grid) const{
   this->copyTopBoundary(grid);
   MPI_Barrier(MPI_COMM_WORLD);
   this->copyBottomBoundary(grid);
+  MPI_Barrier(MPI_COMM_WORLD);
 }
 
 bool Communicator::isLeft () const{
