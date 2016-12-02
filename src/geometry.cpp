@@ -298,6 +298,9 @@ void Geometry::Update_P(Grid *p) const{
 
 multi_index_t Geometry::GetSubdomainSize() {
   switch (_comm->ThreadCnt()) {
+    case 1:
+      return {_bsize[0], _bsize[1]};
+
     case 2:
       return {_bsize[0] / 2, _bsize[1]};
 
@@ -311,6 +314,9 @@ multi_index_t Geometry::GetSubdomainSize() {
 
 multi_real_t Geometry::GetSubdomainLength() {
   switch (_comm->ThreadCnt()) {
+    case 1:
+      return {_blength[0], _blength[1]};
+      
     case 2:
       return {_blength[0] / 2.0, _blength[1]};
 

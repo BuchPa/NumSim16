@@ -289,6 +289,18 @@ void Communicator::SetDimensions() {
       }
       break;
 
+    case 1:
+      _tdim = {1, 1};
+      switch(_rank) {
+        case 0:
+          _tidx = {0,0};
+          break;
+
+        default:
+          throw std::runtime_error(std::string("Invalid process number: " + std::to_string(_rank)));
+      }
+      break;
+
     default:
       throw std::runtime_error(std::string("Invalid number of processes: " + std::to_string(_size)));
   }
