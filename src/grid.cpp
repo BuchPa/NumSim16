@@ -260,7 +260,7 @@ real_t* Grid::GetTopBoundary(bool offset) const {
 }
 
 real_t* Grid::GetBottomBoundary(bool offset) const {
-  BoundaryIterator it(_geom, 4);
+  BoundaryIterator it(_geom, 1);
   index_t idx = 0;
 
   while (it.Valid()) {
