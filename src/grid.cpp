@@ -272,7 +272,7 @@ real_t* Grid::GetBottomBoundary(bool offset) const {
     it.Next();
   }
 
-  return _bufferY;
+  return _bufferX;
 }
 
 void Grid::WriteLeftBoundary(real_t* data) {
