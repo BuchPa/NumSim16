@@ -25,7 +25,7 @@ endif (NOT CMAKE_BUILD_TYPE)
 
 # set compiler
 set (CMAKE_CC_COMPILER "/usr/bin/gcc")
-set (CMAKE_CXX_COMPILER "/usr/bin/mpicxx.mpich2")
+set (CMAKE_CXX_COMPILER "/usr/bin/mpicxx.mpich")
 
 # set some good compiler flags
 set (GOOD_FLAGS "-Wall -Wextra -pedantic -O3 -std=c++11")
