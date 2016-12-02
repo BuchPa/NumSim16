@@ -3,9 +3,10 @@ Numerische Simulation 2016/2017
 
 ## Requirements
 * gcc for C++ version 11 or greater
-* cmake
-* gprof for performance analysis
-* doxygen documentation tools for generating documentation
+* scons
+* mpich or mpich2
+* gprof (performance analysis only)
+* doxygen (documentation only)
 
 ## Installation
 1. ```git clone https://github.com/BuchPa/NumSim16.git```
@@ -13,11 +14,10 @@ Numerische Simulation 2016/2017
 3. ```mkdir VTK```
 
 ## Compile
-1. ```cmake CMakeLists.txt```
-2. ```make```
+1. ```scons debug=-1 -j #NP``` where #NP is replaced with the number of processors
 
 ## Run
-1. ```./numsim```
+1. ```mpirun.mpich -np #NP ./build/NumSim``` where #NP is replaced with the number of processors
 
 ## Parameters
 ### Geometry parameters
