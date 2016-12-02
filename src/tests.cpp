@@ -291,11 +291,17 @@ void test_solver(const Geometry *geom, const Communicator *comm){
   
   InteriorIterator init(geom);
   
-  for(init.First(); init.Valid(); init.Next()){
-    grid->Cell(init) = max(0.0,-(init.Pos()[0] - 0.25 * size[0]) *
-                                (init.Pos()[0] - 0.75 * size[0]) -
-                                (init.Pos()[1] - 0.25 * size[1]) *
-                                (init.Pos()[1] - 0.75 * size[1]) );
+  if (comm->isMaster()) {
+    for(init.First(); init.Valid(); init.Next()){
+      grid->Cell(init) = max(0.0,-(init.Pos()[0] - 0.25 * size[0]) *
+                                  (init.Pos()[0] - 0.75 * size[0]) -
+                                  (init.Pos()[1] - 0.25 * size[1]) *
+                                  (init.Pos()[1] - 0.75 * size[1]) );
+    }
+  } else {
+    for(init.First(); init.Valid(); init.Next()){
+      grid->Cell(init) = 0.0;
+    }
   }
   
   // Create Right hand side

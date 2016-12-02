@@ -211,7 +211,7 @@ void Grid::Print() const{
   mprintf("\n");
 }
 
-real_t* Grid::GetLeftBoundary(bool offset) const {
+arrayBuffer Grid::GetLeftBoundary(bool offset) const {
   BoundaryIterator it(_geom, 4);
   index_t idx = 0;
 
@@ -224,10 +224,14 @@ real_t* Grid::GetLeftBoundary(bool offset) const {
     it.Next();
   }
 
-  return _bufferY;
+  arrayBuffer aBuffer;
+  aBuffer.buffer = _bufferY;
+  aBuffer.size   = idx-1;
+
+  return aBuffer;
 }
 
-real_t* Grid::GetRightBoundary(bool offset) const {
+arrayBuffer Grid::GetRightBoundary(bool offset) const {
   BoundaryIterator it(_geom, 2);
   index_t idx = 0;
 
@@ -240,10 +244,14 @@ real_t* Grid::GetRightBoundary(bool offset) const {
     it.Next();
   }
 
-  return _bufferY;
+  arrayBuffer aBuffer;
+  aBuffer.buffer = _bufferY;
+  aBuffer.size   = idx-1;
+
+  return aBuffer;
 }
 
-real_t* Grid::GetTopBoundary(bool offset) const {
+arrayBuffer Grid::GetTopBoundary(bool offset) const {
   BoundaryIterator it(_geom, 3);
   index_t idx = 0;
 
@@ -255,11 +263,15 @@ real_t* Grid::GetTopBoundary(bool offset) const {
     }
     it.Next();
   }
+  
+  arrayBuffer aBuffer;
+  aBuffer.buffer = _bufferX;
+  aBuffer.size   = idx-1;
 
-  return _bufferX;
+  return aBuffer;
 }
 
-real_t* Grid::GetBottomBoundary(bool offset) const {
+arrayBuffer Grid::GetBottomBoundary(bool offset) const {
   BoundaryIterator it(_geom, 1);
   index_t idx = 0;
 
@@ -272,7 +284,11 @@ real_t* Grid::GetBottomBoundary(bool offset) const {
     it.Next();
   }
 
-  return _bufferX;
+  arrayBuffer aBuffer;
+  aBuffer.buffer = _bufferX;
+  aBuffer.size   = idx-1;
+
+  return aBuffer;
 }
 
 void Grid::WriteLeftBoundary(real_t* data) {

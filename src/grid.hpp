@@ -140,10 +140,10 @@ public:
   /// Prints the grid values to the console.
   void Print() const;
 
-  real_t* GetLeftBoundary(bool offset) const;
-  real_t* GetRightBoundary(bool offset) const;
-  real_t* GetTopBoundary(bool offset) const;
-  real_t* GetBottomBoundary(bool offset) const;
+  arrayBuffer GetLeftBoundary(bool offset) const;
+  arrayBuffer GetRightBoundary(bool offset) const;
+  arrayBuffer GetTopBoundary(bool offset) const;
+  arrayBuffer GetBottomBoundary(bool offset) const;
 
   void WriteLeftBoundary(real_t* data);
   void WriteRightBoundary(real_t* data);
