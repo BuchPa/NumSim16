@@ -32,6 +32,9 @@ public:
 
   index_t** CollectExtent(index_t extent [4]) const;
   
+  void CopyStreamX(Grid* grid) const;
+  void CopyStreamY(Grid* grid) const;
+  
 private:
   multi_index_t _tidx;
   multi_index_t _tdim;

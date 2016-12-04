@@ -133,22 +133,36 @@ const Grid *Compute::GetVorticity() {
 
 const Grid *Compute::GetStream() {
   Iterator it = Iterator(_geom);
-
-  // Init first cell with a fixed value
-  _stream->Cell(it) = 0.0;
-  it.Next();
-
-  // Calculate integral over first row in x-direction
-  while (it < _geom->Size()[0]) {
-    _stream->Cell(it) = _stream->Cell(it.Left()) - _geom->Mesh()[0] * _v->Cell(it);
+  
+  if (_comm->isBottom()) {
+    // Init first cell with a fixed value
+    _stream->Cell(it) = 0.0;
     it.Next();
-  }
 
+    // Calculate integral over first row in x-direction
+    while (it < _geom->Size()[0]) {
+      _stream->Cell(it) = _stream->Cell(it.Left()) - _geom->Mesh()[0] * _v->Cell(it);
+      it.Next();
+    }
+
+    // Communicate and add stream value in x direction
+    _comm->CopyStreamX(_stream);
+  } else {
+    // Init bottom boundary with zeros
+    while (it < _geom->Size()[0]) {
+      _stream->Cell(it) = real_t(0.0);
+      it.Next();
+    }
+  }
+  
   // Calculate integrals in y-direction
   while (it.Valid()) {
     _stream->Cell(it) = _stream->Cell(it.Down()) + _geom->Mesh()[1] * _u->Cell(it);
     it.Next();
   }
+  
+  // Communicate and add stream value in y direction
+  _comm->CopyStreamY(_stream);
 
   return _stream;
 }

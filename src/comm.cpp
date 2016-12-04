@@ -335,3 +335,67 @@ index_t** Communicator::CollectExtent(index_t extent [4]) const{
   
   return collected;
 }
+
+void Communicator::CopyStreamX(Grid* grid) const{
+  MPI_Status stat;
+  
+  // Get right Boundary
+  real_t* bottomRightCorner = new real_t (grid->GetBottomRightCorner());
+  real_t* incoming          = new real_t(0.0);
+  
+  if (!this->isLeft()) {
+    // Get value from left neighbor
+    index_t leftNeighbor = this->GetLeftNeighbor();
+    MPI_Recv(incoming, 1, MPI_REAL_TYPE, leftNeighbor, MPI_TAG_STREAM, MPI_COMM_WORLD, &stat);
+    
+    // Add to own value
+    bottomRightCorner[0] += incoming[0];
+  }
+  
+  if (!this->isRight()) {
+    // Send to right neighbor
+    index_t rightNeighbor = this->GetRightNeighbor();
+    MPI_Send(bottomRightCorner, 1, MPI_REAL_TYPE, rightNeighbor, MPI_TAG_STREAM, MPI_COMM_WORLD);
+  }
+  
+  // Add to value to whole field after communucation
+  if (!this->isLeft()){
+    grid->AddValInXDir(*incoming);
+  }
+  
+  delete incoming;
+  delete bottomRightCorner;
+}
+
+void Communicator::CopyStreamY(Grid* grid) const{
+  MPI_Status stat;
+  
+  // Get right Boundary
+  arrayBuffer aBuffer = grid->GetTopBoundary(false);
+  real_t* incoming    = new real_t[aBuffer.size];
+  
+  if (!this->isBottom()) {
+    // Get value from left neighbor
+    index_t bottomNeighbor = this->GetBottomNeighbor();
+    MPI_Recv(incoming, aBuffer.size, MPI_REAL_TYPE, bottomNeighbor, MPI_TAG_STREAM, MPI_COMM_WORLD, &stat);
+    
+    // Add own right boundary
+    for(int i=0; i<aBuffer.size; ++i){
+      aBuffer.buffer[i] += incoming[i];
+    }
+  }
+  
+  if (!this->isTop()) {
+    // Send to right neighbor
+    index_t topNeighbor = this->GetTopNeighbor();
+    MPI_Send(aBuffer.buffer, aBuffer.size, MPI_REAL_TYPE, topNeighbor, MPI_TAG_STREAM, MPI_COMM_WORLD);
+  }
+  
+  // Add to value to whole field after communucation
+  if (!this->isBottom()){
+    grid->AddXArrayInYDir(incoming);
+  }
+  
+  delete[] incoming;
+  
+}

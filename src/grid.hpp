@@ -149,6 +149,11 @@ public:
   void WriteRightBoundary(real_t* data);
   void WriteTopBoundary(real_t* data);
   void WriteBottomBoundary(real_t* data);
+  
+  void AddValInXDir(real_t val);
+  void AddXArrayInYDir(real_t* data);
+  
+  real_t GetBottomRightCorner() const;
 
 private:
   /// _data real_t* The raw data of the grid as pointer-array of real_t numbers

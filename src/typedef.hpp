@@ -47,7 +47,7 @@ typedef INDEX_TYPE index_t;
 
 
 enum MPI_TAG : int {
-  MPI_TAG_BOUNDARY, MPI_TAG_EXTENT
+  MPI_TAG_BOUNDARY, MPI_TAG_EXTENT, MPI_TAG_STREAM
 };
 
 struct arrayBuffer {

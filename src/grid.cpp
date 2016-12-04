@@ -330,3 +330,28 @@ void Grid::WriteBottomBoundary(real_t* data) {
     it.Next();
   }
 }
+
+void Grid::AddValInXDir(real_t val){
+  BoundaryIterator it(_geom, 1);
+  
+  // Add value val in x direction to bottom bouondary
+  while (it.Valid()) {
+    this->Cell(it) += val;
+    it.Next();
+  }
+}
+
+void Grid::AddXArrayInYDir(real_t* data){
+  Iterator it = Iterator(_geom);
+  
+  // Add x array
+  while (it.Valid()) {
+    this->Cell(it) += data[it.Pos()[0]];
+    it.Next();
+  }
+}
+
+real_t Grid::GetBottomRightCorner() const{
+  BoundaryIterator boit(_geom, 1);
+  return _data[boit.CornerBottomRight()];
+}
