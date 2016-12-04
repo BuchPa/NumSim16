@@ -101,10 +101,6 @@ void Geometry::Recalculate() {
   _size = this->GetSubdomainSize();
   _length = this->GetSubdomainLength();
 
-  // Set _size to size INCL ghost layers
-  _size[0] += 2;
-  _size[1] += 2;
-
   // Calculate lower extent in x and y direction
   _extent[0] = _comm->ThreadIdx()[0] * _size[0];
   _extent[2] = _comm->ThreadIdx()[1] * _size[1];
@@ -115,6 +111,10 @@ void Geometry::Recalculate() {
   
   // Communicate extents
   _extents = _comm->CollectExtent(_extent);
+  
+  // Set _size to size INCL ghost layers
+  _size[0] += 2;
+  _size[1] += 2;
 
   // Increase by one layer of border cells for the overall domain grid
   _bsize[0] += 2;
