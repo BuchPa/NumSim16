@@ -94,7 +94,7 @@ void VTK::Init(const char *path, const char *file) {
                     "NumberOfComponents=\"3\" />\n");
     fprintf(_phandle, "</PPoints>\n");
     
-    index_t numProc = 0;
+    int numProc = 0;
     
     while (numProc < _comm->ThreadCnt()) {
       // Assemble current filename

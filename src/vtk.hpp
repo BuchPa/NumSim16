@@ -51,17 +51,18 @@ public:
 private:
   const multi_real_t &_h;
   const multi_index_t &_size;
-  multi_real_t _offset;
-  FILE *_handle;
-  
-  ///Parallel stuff
-  const Communicator *_comm;
+
+  // Parallel stuff
   const multi_index_t &_totsize;
+  const Communicator *_comm;
   FILE *_phandle;
   index_t *_extent;
   index_t **_extents;
   index_t _iterXMax;
   index_t _iterYMax;
+
+  multi_real_t _offset;
+  FILE *_handle;
 
   static uint32_t _cnt;
 };
