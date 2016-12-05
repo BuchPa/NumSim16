@@ -24,14 +24,14 @@ class Grid {
 public:
   /// Constructs a grid based on a geometry.
   ///
-  ///  @param geom Geometry The geometry containing information on sizes, etc.
+  /// @param geom Geometry The geometry containing information on sizes, etc.
   Grid(const Geometry *geom);
 
   /// Constructs a grid based on a geometry with an offset.
   ///
-  ///  @param geom Geometry The geometry containing information on sizes, etc.
-  ///  @param offset multi_real_t Distance of staggered grid point to cell's anchor point;
-  ///    (anchor point = lower left corner)
+  /// @param geom Geometry The geometry containing information on sizes, etc.
+  /// @param offset multi_real_t Distance of staggered grid point to cell's anchor point;
+  ///   (anchor point = lower left corner)
   Grid(const Geometry *geom, const multi_real_t &offset);
 
   /// Deconstructs a grid instance.
@@ -53,11 +53,11 @@ public:
   const real_t &Cell(const Iterator &it) const;
 
   /// Interpolate the value at an arbitrary position
-  ///  For notes on how this algorithm works, see the implementation notes on
-  ///  interpolation and the hat function.
+  /// For notes on how this algorithm works, see the implementation notes on
+  /// interpolation and the hat function.
   ///
-  ///  @param pos multi_real_t An arbitrary position within the grid in absolute
-  ///    coordinates.
+  /// @param pos multi_real_t An arbitrary position within the grid in absolute
+  ///   coordinates.
   real_t Interpolate(const multi_real_t &pos) const;
 
   /// Computes the left-sided difference quotient in x-dim at [it].
@@ -140,26 +140,90 @@ public:
   /// Prints the grid values to the console.
   void Print() const;
 
+  /// Returns the values along the left boundary of the grid. If the offset
+  /// flag is given and true, offsets the values by one in x dimension. This
+  /// therefore encompasses the inner boundary of the grid.
+  ///
+  /// @param offset bool If true, offsets the reading of values by one in x
+  ///   dimension
+  /// @return arrayBuffer The values along the left boundary
   arrayBuffer GetLeftBoundary(bool offset) const;
+
+  /// Returns the values along the right boundary of the grid. If the offset
+  /// flag is given and true, offsets the values by one in x dimension. This
+  /// therefore encompasses the inner boundary of the grid.
+  ///
+  /// @param offset bool If true, offsets the reading of values by one in x
+  ///   dimension
+  /// @return arrayBuffer The values along the right boundary
   arrayBuffer GetRightBoundary(bool offset) const;
+
+  /// Returns the values along the top boundary of the grid. If the offset
+  /// flag is given and true, offsets the values by one in y dimension. This
+  /// therefore encompasses the inner boundary of the grid.
+  ///
+  /// @param offset bool If true, offsets the reading of values by one in y
+  ///   dimension
+  /// @return arrayBuffer The values along the top boundary
   arrayBuffer GetTopBoundary(bool offset) const;
+
+  /// Returns the values along the bottom boundary of the grid. If the offset
+  /// flag is given and true, offsets the values by one in y dimension. This
+  /// therefore encompasses the inner boundary of the grid.
+  ///
+  /// @param offset bool If true, offsets the reading of values by one in y
+  ///   dimension
+  /// @return arrayBuffer The values along the bottom boundary
   arrayBuffer GetBottomBoundary(bool offset) const;
 
+  /// Writes the given data to the left boundary of the grid.
+  ///
+  /// @param data real_t* The data to be written
   void WriteLeftBoundary(real_t* data);
+
+  /// Writes the given data to the right boundary of the grid.
+  ///
+  /// @param data real_t* The data to be written
   void WriteRightBoundary(real_t* data);
+
+  /// Writes the given data to the top boundary of the grid.
+  ///
+  /// @param data real_t* The data to be written
   void WriteTopBoundary(real_t* data);
+
+  /// Writes the given data to the bottom boundary of the grid.
+  ///
+  /// @param data real_t* The data to be written
   void WriteBottomBoundary(real_t* data);
   
+  /// Adds the given value to all cells along the bottom boundary.
+  ///
+  /// @param val real_t The value to add
   void AddValInXDir(real_t val);
+
+  /// Adds the given array of values to the cells along the bottom
+  /// boundary. It is assumed that the number of cells matches the
+  /// number of given values, so each value is added to one cell only.
+  ///
+  /// @param data real_t The values to add
   void AddXArrayInYDir(real_t* data);
   
+  /// Returns the value of the grid in the right-most, lower-most cell of
+  /// the grid.
+  ///
+  /// @return real_t The value in the bottom-right corner
   real_t GetBottomRightCorner() const;
 
 private:
   /// _data real_t* The raw data of the grid as pointer-array of real_t numbers
   real_t *_data;
 
+  /// _bufferX real_t* A buffer array used in exchanging boundary values in
+  /// horizontal direction
   real_t *_bufferX;
+
+  /// _bufferY real_t* A buffer array used in exchanging boundary values in
+  /// vertical direction
   real_t *_bufferY;
 
   /// _geom Geometry The geometry instance containing boundary values and such
@@ -168,8 +232,6 @@ private:
   /// _offset multi_real_t The offset from the grid's coordinate system to the
   ///   global coordinate system.
   multi_real_t _offset;
-
-  real_t* GetBoundary(index_t boundaryNr, bool offset) const;
 };
 //------------------------------------------------------------------------------
 #endif // __GRID_HPP

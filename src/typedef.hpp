@@ -45,13 +45,20 @@ typedef REAL_TYPE real_t;
 /// Typedef for integers
 typedef INDEX_TYPE index_t;
 
-
+/// Used in MPI communication to differentiate between various tasks
+/// when calling the MPI functions. E.g. exchanging boundaries uses
+/// a different tag gathering the extent of subdomains.
 enum MPI_TAG : int {
   MPI_TAG_BOUNDARY, MPI_TAG_EXTENT, MPI_TAG_STREAM
 };
 
+/// Used for working with array with variable size. This avoids having to
+/// recalculate the length of the array each time.
 struct arrayBuffer {
+  /// buffer real_t* The data values
   real_t* buffer;
+
+  /// size int The size of the array
   int size;
 };
 
@@ -117,7 +124,12 @@ class Communicator;
 
 //------------------------------------------------------------------------------
 
-// Printf function for master
+/// Works like printf, except only the master process/thread will print to the
+/// standard output.
+/// 
+/// @param format char* The format for printing (e.g. "Value: %d")
+/// @return int The status number after calling printf. If the calling process
+///   isn't the master, returns 1
 inline int mprintf(const char *format, ...){
   
   // Check, if current process is master
