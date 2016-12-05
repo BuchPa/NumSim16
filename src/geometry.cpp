@@ -11,8 +11,8 @@
 Geometry::Geometry (const Communicator* comm)
   : _comm(comm) {
   // Init number of INNER cells in each dimension
-  _bsize[0] = 4;
-  _bsize[1] = 4;
+  _bsize[0] = 48;
+  _bsize[1] = 48;
   
   // Init length of driven cavity
   _blength[0] = 1.0;
@@ -306,10 +306,7 @@ multi_index_t Geometry::GetSubdomainSize() {
         return {_bsize[0] / 2, _bsize[1]};
       } else {
         throw std::runtime_error(std::string("Please adapt the size to the number of processes: " + std::to_string(_comm->ThreadCnt())));
-      } 
-
-    case 2:
-      return {_bsize[0] / 2, _bsize[1]};
+      }
     
     case 3:
       if (_bsize[0] % 3 == 0) {
@@ -323,10 +320,7 @@ multi_index_t Geometry::GetSubdomainSize() {
         return {_bsize[0] / 2, _bsize[1] / 2};
       } else {
         throw std::runtime_error(std::string("Please adapt the size to the number of processes: " + std::to_string(_comm->ThreadCnt())));
-      } 
-    
-     case 4:
-      return {_bsize[0] / 2, _bsize[1] / 2};
+      }
     
     case 6:
       if (_bsize[0] % 3 == 0 && _bsize[1] % 2 == 0) {
