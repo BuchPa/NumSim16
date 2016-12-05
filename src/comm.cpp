@@ -26,6 +26,7 @@ Communicator::~Communicator (){
 const multi_index_t& Communicator::ThreadIdx () const{
   return _tidx;
 }
+
 const multi_index_t& Communicator::ThreadDim () const{
   return _tdim;
 }
@@ -33,6 +34,7 @@ const multi_index_t& Communicator::ThreadDim () const{
 const int& Communicator::ThreadNum () const{
   return _rank;
 }
+
 const int& Communicator::ThreadCnt () const{
   return _size;
 }
@@ -46,11 +48,13 @@ real_t Communicator::gatherSum (const real_t& val) const{
   MPI_Allreduce(&val, &sumval, 1, MPI_REAL_TYPE, MPI_SUM, MPI_COMM_WORLD);
   return sumval;
 }
+
 real_t Communicator::gatherMin (const real_t& val) const{
   real_t minval;
   MPI_Allreduce(&val, &minval, 1, MPI_REAL_TYPE, MPI_MIN, MPI_COMM_WORLD);
   return minval;
 }
+
 real_t Communicator::gatherMax (const real_t& val) const{
   real_t maxval;
   MPI_Allreduce(&val, &maxval, 1, MPI_REAL_TYPE, MPI_MAX, MPI_COMM_WORLD);
@@ -159,6 +163,7 @@ bool Communicator::copyRightBoundary (Grid* grid) const{
 
   return true;
 }
+
 bool Communicator::copyTopBoundary (Grid* grid) const{
   arrayBuffer aBuffer = grid->GetTopBoundary(true);
   MPI_Status stat;
@@ -397,5 +402,4 @@ void Communicator::CopyStreamY(Grid* grid) const{
   }
   
   delete[] incoming;
-  
 }
