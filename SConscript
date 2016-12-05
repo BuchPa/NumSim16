@@ -29,12 +29,12 @@ srcs = ['src/main.cpp',
         'src/vtk.cpp',
         'src/comm.cpp',
         'src/tests.cpp',
+        'src/visu.cpp'
         ]
 
 # check if debug-visualization should be build.
 # if so, append its source file to sources and set preproc. define
 if env['visu'] == 1:
-    srcs.append('src/visu.cpp')
     env.Append(CPPDEFINES=['USE_DEBUG_VISU'])
 
 # give the program a name
