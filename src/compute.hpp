@@ -122,8 +122,8 @@ private:
   /// _vort Grid Contains the vorticity values
   Grid *_vort;
 
-  /// _solver Solver The solver used for iteratively calculating the values
-  ///   for the next timestep
+  /// _solver RedOrBlackSolver The solver used for iteratively calculating the
+  /// values for the next timestep.
   RedOrBlackSOR *_solver;
 
   /// _geom Geometry Holds the geometry information like borders and sizes

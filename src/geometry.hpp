@@ -22,11 +22,11 @@
 //------------------------------------------------------------------------------
 class Geometry {
 public:
-  /// Constructs a geometry instance with default values. Other values can be
-  /// loaded by using the Load method.
+  /// Constructs a geometry instance with default values and working with the
+  /// given communicator. Other values can be loaded by using the Load method.
   ///
   /// Default values are:
-  /// Size: 8 by 8
+  /// Size: 4 by 4
   /// Length: 0.0 to 1.0 and 0.0 to 1.0
   /// Border-Values: 
   ///
@@ -39,10 +39,8 @@ public:
   ///    |           |
   ///    -------------
   ///      u=0, v=0
-  
-  /// Constructs a new Geometry considering the given Communicator.
   ///
-  ///  @param comm Communicator The communicator to work with
+  /// @param comm Communicator The communicator to work with
   Geometry (const Communicator* comm);
 
   /// Destructs the Geometry
@@ -120,7 +118,16 @@ public:
   /// @param p Grid The pressure field p
   void Update_P(Grid *p) const;
 
+  /// Returns the size of the subdomain, derived from the overall domain
+  /// size.
+  ///
+  /// @return multi_index_t The size of the subdomain
   multi_index_t GetSubdomainSize();
+
+  /// Returns the length of the subdomain, derived from the overall domain
+  /// length.
+  ///
+  /// @return multi_real_t The length of the subdomain
   multi_real_t GetSubdomainLength();
 
 private:
@@ -155,7 +162,7 @@ private:
   /// to print the total field as VTK without dublicates
   index_t *_extent;
   
-  /// _extents index_t ** TThe NODAL extent (start, stop and x,y)
+  /// _extents index_t** TThe NODAL extent (start, stop and x,y)
   /// to print the total field as VTK without dublicates FOR ALL PROCESSES
   /// Only calculated for the master process
   index_t **_extents;
