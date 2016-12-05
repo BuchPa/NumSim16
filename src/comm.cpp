@@ -254,6 +254,152 @@ index_t Communicator::GetBottomNeighbor() const {
 
 void Communicator::SetDimensions() {
   switch (_size) {
+    case 16:
+      _tdim = {4, 4};
+      switch(_rank) {
+        case 0:
+          _tidx = {0,0};
+          break;
+
+        case 1:
+          _tidx = {1,0};
+          break;
+
+        case 2:
+          _tidx = {2,0};
+          break;
+
+        case 3:
+          _tidx = {3,0};
+          break;
+    
+        case 4:
+          _tidx = {0,1};
+          break;
+
+        case 5:
+          _tidx = {1,1};
+          break;
+
+        case 6:
+          _tidx = {2,1};
+          break;
+
+        case 7:
+          _tidx = {3,1};
+          break;
+
+        case 8:
+          _tidx = {0,2};
+          break;
+
+        case 9:
+          _tidx = {1,2};
+          break;
+
+        case 10:
+          _tidx = {2,2};
+          break;
+
+        case 11:
+          _tidx = {3,2};
+          break;
+
+        case 12:
+          _tidx = {0,3};
+          break;
+
+        case 13:
+          _tidx = {1,3};
+          break;
+
+        case 14:
+          _tidx = {2,3};
+          break;
+
+        case 15:
+          _tidx = {3,3};
+          break;
+
+        default:
+          throw std::runtime_error(std::string("Invalid process number: " + std::to_string(_rank)));
+      }
+      break;
+
+
+    case 8:
+      _tdim = {4, 2};
+      switch(_rank) {
+        case 0:
+          _tidx = {0,0};
+          break;
+
+        case 1:
+          _tidx = {1,0};
+          break;
+
+        case 2:
+          _tidx = {2,0};
+          break;
+
+        case 3:
+          _tidx = {3,0};
+          break;
+    
+        case 4:
+          _tidx = {0,1};
+          break;
+
+        case 5:
+          _tidx = {1,1};
+          break;
+
+        case 6:
+          _tidx = {2,1};
+          break;
+
+        case 7:
+          _tidx = {3,1};
+          break;
+
+        default:
+          throw std::runtime_error(std::string("Invalid process number: " + std::to_string(_rank)));
+      }
+      break;
+
+    case 6:
+      _tdim = {3, 2};
+      switch(_rank) {
+        case 0:
+          _tidx = {0,0};
+          break;
+
+        case 1:
+          _tidx = {1,0};
+          break;
+
+        case 2:
+          _tidx = {2,0};
+          break;
+
+        case 3:
+          _tidx = {0,1};
+          break;
+
+        case 4:
+          _tidx = {1,1};
+          break;
+
+        case 5:
+          _tidx = {2,1};
+          break;
+
+        default:
+          throw std::runtime_error(std::string("Invalid process number: " + std::to_string(_rank)));
+      }
+      break;
+
+
     case 4:
       _tdim = {2, 2};
       switch(_rank) {
@@ -277,6 +423,27 @@ void Communicator::SetDimensions() {
           throw std::runtime_error(std::string("Invalid process number: " + std::to_string(_rank)));
       }
       break;
+
+    case 3:
+      _tdim = {3, 1};
+      switch(_rank) {
+        case 0:
+          _tidx = {0,0};
+          break;
+
+        case 1:
+          _tidx = {1,0};
+          break;
+
+        case 2:
+          _tidx = {2,0};
+          break;
+
+        default:
+          throw std::runtime_error(std::string("Invalid process number: " + std::to_string(_rank)));
+      }
+      break;
+
 
     case 2:
       _tdim = {2, 1};
