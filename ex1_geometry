@@ -1,4 +1,6 @@
-size = 128 128
+size = 48 48
 length = 1.000000 1.000000
-velocity = -1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0
-pressure = 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+velocity = 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0
+pressure = 0.0 0.0 0.0 0.0
+v_type = d d d d d d d d
+p_type = d d d d

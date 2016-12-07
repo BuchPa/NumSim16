@@ -21,12 +21,14 @@ Geometry::Geometry (const Communicator* comm)
   // Init u/v boundary values and set u for upper boundary to 1 (as default)
   for (int i = 0; i < 8; i++) {
     _velocity[i] = real_t(0.0);
+    _vtype[i] = 'd';
   }
   _velocity[4] = real_t(1.0);
 
   // Init p boundary values
   for (int i = 0; i < 4; i++) {
     _pressure[i] = real_t(0.0);
+    _ptype[i] = 'd';
   }
 
   // Create extent
@@ -52,6 +54,7 @@ void Geometry::Load(const char *file){
   FILE* handle = fopen(file, "r");
 
   double inval[8];
+  char cinval[8];
   char name[20];
 
   while (!feof(handle)) {
@@ -101,9 +104,38 @@ void Geometry::Load(const char *file){
       }
       continue;
     }
+
+    if (strcmp(name, "v_type") == 0) {
+      if (
+        fscanf(
+          handle, " %c %c %c %c %c %c %c %c\n",
+          &cinval[0], &cinval[1], &cinval[2], &cinval[3],
+          &cinval[4], &cinval[5], &cinval[6], &cinval[7]
+        )
+      ) {
+        for (int i = 0; i < 8; i++) {
+          _vtype[i] = cinval[i];
+        }
+      }
+      continue;
+    }
+
+    if (strcmp(name, "p_type") == 0) {
+      if (
+        fscanf(
+          handle, " %c %c %c %c\n",
+          &cinval[0], &cinval[1], &cinval[2], &cinval[3]
+        )
+      ) {
+        for (int i = 0; i < 4; i++) {
+          _vtype[i] = cinval[i];
+        }
+      }
+      continue;
+    }
   }
   fclose(handle);
-  
+
   this->Recalculate();
 }
 

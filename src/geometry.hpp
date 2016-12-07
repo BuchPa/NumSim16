@@ -149,13 +149,21 @@ private:
   /// _h multi_real_t The mesh width in each dimension
   multi_real_t _h;
 
-  /// _velocity array<real_t, 8> The velocity boundary values for the boundaries
+  /// _velocity array_t<real_t, 8> The velocity boundary values for the boundaries
   /// numbered clockwise from the lower boundary with two values each
   array_t<real_t, 8> _velocity;
 
-  /// _pressure array<real_t, 4> The pressure boundary values for the boundaries
+  /// _pressure array_t<real_t, 4> The pressure boundary values for the boundaries
   /// numbered clockwise from the lower boundary with two values each
   array_t<real_t, 4> _pressure;
+
+  /// _vtype array_t<char, 8> The type of boundary (Dirichlet or von Neuman) for
+  /// the velocity boundary values
+  array_t<char, 8> _vtype;
+
+  /// _vtype array_t<char, 8> The type of boundary (Dirichlet or von Neuman) for
+  /// the pressure boundary values
+  array_t<char, 4> _ptype;
   
   // _invh multi_real_t The inverse mesh width in each dimension
   multi_real_t _invh;
