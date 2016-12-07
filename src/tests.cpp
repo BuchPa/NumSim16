@@ -329,6 +329,8 @@ void test_solver(const Geometry *geom){
     iter++;
   }
   
+  
+  
   delete grid;
   delete solver;
 }

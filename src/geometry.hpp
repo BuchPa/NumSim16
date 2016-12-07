@@ -26,7 +26,7 @@ public:
   /// loaded by using the Load method.
   ///
   /// Default values are:
-  /// Size: 8 by 8
+  /// Size: 4 by 4
   /// Length: 0.0 to 1.0 and 0.0 to 1.0
   /// Border-Values: 
   ///
@@ -49,7 +49,7 @@ public:
 
   /// Recalculates the mesh width, inverse mesh width and overhang-size and
   /// saves it in their correspondig private members.
-  void CalculateMesh();
+  void Recalculate();
 
   /// Returns the number of cells in each dimension.
   ///
@@ -100,11 +100,21 @@ private:
   /// _h multi_real_t The mesh width in each dimension
   multi_real_t _h;
 
-  /// _velocity multi_real_t The velocity boundary values
-  multi_real_t _velocity;
+  /// _velocity array_t<real_t, 8> The velocity boundary values for the boundaries
+  /// numbered clockwise from the lower boundary with two values each
+  array_t<real_t, 8> _velocity;
 
-  /// _pressure real_t The pressure boundary value
-  real_t _pressure;
+  /// _pressure array_t<real_t, 4> The pressure boundary values for the boundaries
+  /// numbered clockwise from the lower boundary with two values each
+  array_t<real_t, 4> _pressure;
+
+  /// _vtype array_t<char, 8> The type of boundary (Dirichlet or von Neuman) for
+  /// the velocity boundary values
+  array_t<char, 8> _vtype;
+
+  /// _vtype array_t<char, 8> The type of boundary (Dirichlet or von Neuman) for
+  /// the pressure boundary values
+  array_t<char, 4> _ptype;
   
   // _invh multi_real_t The inverse mesh width in each dimension
   multi_real_t _invh;

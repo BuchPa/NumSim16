@@ -73,10 +73,10 @@ public:
   /// Deconstructs the SOR instance.
   ~SOR();
 
-  /// Performs on cycle of the solver algorithm and returns the residual after
+  /// Performs one cycle of the solver algorithm and returns the residual after
   /// the calculation.
   ///
-  /// @param [in][out] grid Grid The current p values. This grid will be modified with the
+  /// @param grid Grid The current p values. This grid will be modified with the
   ///   new values.
   /// @param rhs Grid The RHS values used in the calculation
   /// @return real_t The accumulated residual

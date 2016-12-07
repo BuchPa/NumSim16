@@ -42,6 +42,15 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   
   _tmp = new Grid(geom);
   
+  // Create visu fields for stream lines and GetVorticity
+  multi_real_t offset_visufields;
+  
+  offset_visufields[0] = geom->Mesh()[0];
+  offset_visufields[1] = geom->Mesh()[1];
+  
+  _stream = new Grid(geom, offset_visufields);
+  _vort   = new Grid(geom, offset_visufields);
+  
   // Init velocity / pressure field
   _geom->Update_U(_u);
   _geom->Update_V(_v);
@@ -51,8 +60,8 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   _t = 0.0;
   
   // Compute cfl time step limitation
-  _cfl = _param->Re() *     (pow(_geom->Mesh()[0],2.0) * pow(_geom->Mesh()[1],2.0))
-                       /( 4*(pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)) );
+  _diff = _param->Re() *     (pow(_geom->Mesh()[0],2.0) * pow(_geom->Mesh()[1],2.0))
+                        /( 4*(pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)) );
   
   // Init _solver
   _solver = new SOR(_geom,_param->Omega());
@@ -73,6 +82,8 @@ Compute::~Compute() {
   delete _rhs;
   
   delete _tmp;
+  delete _stream;
+  delete _vort;
   
   delete _solver;
 }
@@ -109,31 +120,54 @@ const Grid *Compute::GetVelocity() {
   return _tmp;
 }
 
-const Grid *Compute::GetVorticity(){
-  // Not used so far. Return something.
-  return _tmp;
+const Grid *Compute::GetVorticity() {
+  Iterator it = Iterator(_geom);
+
+  while (it.Valid()) {
+    _vort->Cell(it) = _u->dy_r(it) - _v->dx_r(it);
+    it.Next();
+  }
+
+  return _vort;
 }
 
-const Grid *Compute::GetStream(){
-  // Not used so far. Return something.
-  return _tmp;
+const Grid *Compute::GetStream() {
+  Iterator it = Iterator(_geom);
+  
+  // Init first cell with a fixed value
+  _stream->Cell(it) = 0.0;
+  it.Next();
+
+  // Calculate integral over first row in x-direction
+  while (it < _geom->Size()[0]) {
+    _stream->Cell(it) = _stream->Cell(it.Left()) - _geom->Mesh()[0] * _v->Cell(it);
+    it.Next();
+  }
+  
+  // Calculate integrals in y-direction
+  while (it.Valid()) {
+    _stream->Cell(it) = _stream->Cell(it.Down()) + _geom->Mesh()[1] * _u->Cell(it);
+    it.Next();
+  }
+
+  return _stream;
 }
 
 void Compute::TimeStep(bool printInfo) {  
   // Compute candidates for current time step
-  const real_t max_x = _geom->Mesh()[0] / _u->AbsMax();
-  const real_t max_y = _geom->Mesh()[1] / _v->AbsMax();
+  const real_t cfl_x = _geom->Mesh()[0] / _u->AbsMax();
+  const real_t cfl_y = _geom->Mesh()[1] / _v->AbsMax();
   
   // Compute smallest time step from all candidates with some security factor
   // and a minimum timestep
   real_t dt;
   if (DYNAMIC_TIMESTEP) {
-    dt = _param->Tau() * min(_dtlimit, min(min(max_x, max_y), _cfl));
+    dt = _param->Tau() * min(_dtlimit, min(min(cfl_x, cfl_y), _diff));
   } else {
     dt = _dtlimit;
   }
   
-  // Compute temporary velocites F,G
+  // Compute preliminary velocites F,G
   this->MomentumEqu(dt);
   
   // Compute RHS
@@ -165,9 +199,9 @@ void Compute::TimeStep(bool printInfo) {
     
     // Print time step stuff
     printf("  Time step candidates:\n");
-    printf("    x:       %4.3f\n", max_x);
-    printf("    y:       %4.3f\n", max_y);
-    printf("    cfl:     %4.3f\n", _cfl);
+    printf("    cfl_x:   %4.3f\n", cfl_x);
+    printf("    cfl_y:   %4.3f\n", cfl_y);
+    printf("    diff:    %4.3f\n", _diff);
     printf("    dtlimit: %4.3f\n", _dtlimit);
     printf("  Current time step %4.3f\n", dt);
     printf("\n");

@@ -1,0 +1,8 @@
+128x128, 2, 991009ms
+128x128, 4, 544818ms
+128x128, 8, 406615ms
+
+Thread(s) per core:    2
+Core(s) per socket:    4
+Socket(s):             2
+

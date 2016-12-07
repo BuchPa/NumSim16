@@ -91,8 +91,8 @@ private:
   /// _epslimit real_t The limit for the residual.
   real_t _epslimit;
   
-  /// _cfl real_t The CFL limitation on the timestep.
-  real_t _cfl;
+  /// _diff real_t The diffusion limitation on the timestep.
+  real_t _diff;
 
   /// _u Grid The u velocities.
   Grid *_u;
@@ -115,8 +115,14 @@ private:
   /// _tmp Grid A container for interpolating various values.
   Grid *_tmp;
 
-  /// _solver Solver The solver used for iteratively calculating the values
-  ///   for the next timestep
+  /// _stream Grid Contains the stream function values
+  Grid *_stream;
+
+  /// _vort Grid Contains the vorticity values
+  Grid *_vort;
+
+  /// _solver Solver The solver used for iteratively calculating the
+  /// values for the next timestep.
   Solver *_solver;
 
   /// _geom Geometry Holds the geometry information like borders and sizes
