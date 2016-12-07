@@ -18,12 +18,12 @@ Geometry::Geometry (const Communicator* comm)
   _blength[0] = 1.0;
   _blength[1] = 1.0;
   
-  // Set boundary values for upper boundary (u=1, v=0)
-  _velocity[0] = real_t(1.0);
-  _velocity[1] = real_t(0.0);
-  
-  // Unused in driven cavity problem
-  _pressure    = real_t(0.0);
+  // Init boundary values and set u for upper boundary to 1
+  for (int i = 0; i < 8; i++) {
+    _velocity[i] = real_t(0.0);
+    _pressure[i] = real_t(0.0);
+  }
+  _velocity[4] = real_t(1.0);
 
   // Create extent
   _extent = new index_t[4];
@@ -47,7 +47,7 @@ Geometry::~Geometry(){
 void Geometry::Load(const char *file){
   FILE* handle = fopen(file, "r");
 
-  double inval[2];
+  double inval[8];
   char name[20];
 
   while (!feof(handle)) {
@@ -70,16 +70,32 @@ void Geometry::Load(const char *file){
     }
 
     if (strcmp(name, "velocity") == 0) {
-      if (fscanf(handle, " %lf %lf\n", &inval[0], &inval[1])) {
-        _velocity[0] = inval[0];
-        _velocity[1] = inval[1];
+      if (
+        fscanf(
+          handle, " %lf %lf %lf %lf %lf %lf %lf %lf\n",
+          &inval[0], &inval[1], &inval[2], &inval[3],
+          &inval[4], &inval[5], &inval[6], &inval[7]
+        )
+      ) {
+        for (int i = 0; i < 8; i++) {
+          _velocity[i] = inval[i];
+        }
       }
       continue;
     }
 
     if (strcmp(name, "pressure") == 0) {
-      if (fscanf(handle, " %lf\n", &inval[0]))
-        _pressure = inval[0];
+      if (
+        fscanf(
+          handle, " %lf %lf %lf %lf %lf %lf %lf %lf\n",
+          &inval[0], &inval[1], &inval[2], &inval[3],
+          &inval[4], &inval[5], &inval[6], &inval[7]
+        )
+      ) {
+        for (int i = 0; i < 8; i++) {
+          _pressure[i] = inval[i];
+        }
+      }
       continue;
     }
   }
@@ -188,7 +204,7 @@ void Geometry::Update_U(Grid *u) const{
   if (_comm->isTop()) {
     boit.SetBoundary(3);
     while(boit.Valid()){
-      u->Cell(boit) = 2* _velocity[0] - u->Cell(boit.Down());
+      u->Cell(boit) = 2* _velocity[4] - u->Cell(boit.Down());
       boit.Next();
     }
   }
