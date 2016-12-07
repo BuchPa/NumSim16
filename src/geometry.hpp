@@ -153,9 +153,9 @@ private:
   /// numbered clockwise from the lower boundary with two values each
   array_t<real_t, 8> _velocity;
 
-  /// _pressure array<real_t, 8> The pressure boundary values for the boundaries
+  /// _pressure array<real_t, 4> The pressure boundary values for the boundaries
   /// numbered clockwise from the lower boundary with two values each
-  array_t<real_t, 8> _pressure;
+  array_t<real_t, 4> _pressure;
   
   // _invh multi_real_t The inverse mesh width in each dimension
   multi_real_t _invh;

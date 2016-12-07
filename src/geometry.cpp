@@ -18,12 +18,16 @@ Geometry::Geometry (const Communicator* comm)
   _blength[0] = 1.0;
   _blength[1] = 1.0;
   
-  // Init boundary values and set u for upper boundary to 1
+  // Init u/v boundary values and set u for upper boundary to 1 (as default)
   for (int i = 0; i < 8; i++) {
     _velocity[i] = real_t(0.0);
-    _pressure[i] = real_t(0.0);
   }
   _velocity[4] = real_t(1.0);
+
+  // Init p boundary values
+  for (int i = 0; i < 4; i++) {
+    _pressure[i] = real_t(0.0);
+  }
 
   // Create extent
   _extent = new index_t[4];
@@ -87,12 +91,11 @@ void Geometry::Load(const char *file){
     if (strcmp(name, "pressure") == 0) {
       if (
         fscanf(
-          handle, " %lf %lf %lf %lf %lf %lf %lf %lf\n",
-          &inval[0], &inval[1], &inval[2], &inval[3],
-          &inval[4], &inval[5], &inval[6], &inval[7]
+          handle, " %lf %lf %lf %lf\n",
+          &inval[0], &inval[1], &inval[2], &inval[3]
         )
       ) {
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 4; i++) {
           _pressure[i] = inval[i];
         }
       }
@@ -172,11 +175,12 @@ const multi_real_t &Geometry::InvMesh() const{
 void Geometry::Update_U(Grid *u) const{
   BoundaryIterator boit(this, 1);
   
-  // Set lower boundary - zero dirichlet
   if (_comm->isBottom()) {
     boit.SetBoundary(1);
-    while(boit.Valid()){
-      u->Cell(boit) = -1 * u->Cell(boit.Top());
+    while (boit.Valid()) {
+      // For the upper and lower border for u we need to set the difference between
+      // the inner value and twice the boundary value
+      u->Cell(boit) = 2 * _velocity[0] - u->Cell(boit.Top());
       boit.Next();
     }
   }
@@ -184,18 +188,22 @@ void Geometry::Update_U(Grid *u) const{
   // Set right boundary - zero dirichlet
   if (_comm->isRight()) {
     boit.SetBoundary(2);
-    while(boit.Valid()){
-      u->Cell(boit)        = real_t(0.0);
-      u->Cell(boit.Left()) = real_t(0.0);
+    while (boit.Valid()) {
+      // For u we have one halo cell column too many in the right direction, but
+      // for simplicity we still use the same grid side as for v and p. Therefore
+      // our actual boundary is one column to the left
+      u->Cell(boit)        = _velocity[2];
+      // For the right and left border we can set the boundary value directly
+      u->Cell(boit.Left()) = _velocity[2];
       boit.Next();
     }
   }
   
-  // Set left boundary - zero dirichlet
   if (_comm->isLeft()) {
     boit.SetBoundary(4);
-    while(boit.Valid()){
-      u->Cell(boit) = real_t(0.0);
+    while (boit.Valid()) {
+      // For the right and left border we can set the boundary value directly
+      u->Cell(boit) = _velocity[6];
       boit.Next();
     }
   }
@@ -203,8 +211,10 @@ void Geometry::Update_U(Grid *u) const{
   // Set upper boundary - non-zero dirichlet
   if (_comm->isTop()) {
     boit.SetBoundary(3);
-    while(boit.Valid()){
-      u->Cell(boit) = 2* _velocity[4] - u->Cell(boit.Down());
+    while (boit.Valid()) {
+      // For the upper and lower border for u we need to set the difference between
+      // the inner value and twice the boundary value
+      u->Cell(boit) = 2 * _velocity[4] - u->Cell(boit.Down());
       boit.Next();
     }
   }
@@ -213,39 +223,44 @@ void Geometry::Update_U(Grid *u) const{
 void Geometry::Update_V(Grid *v) const{
   BoundaryIterator boit(this, 1);
   
-  // Set right boundary - zero dirichlet
   if (_comm->isRight()) {
     boit.SetBoundary(2);
-    while(boit.Valid()){
-      v->Cell(boit) = -1 * v->Cell(boit.Left());
+    while (boit.Valid()) {
+      // For the left and right border for v we need to set the difference between
+      // the inner value and twice the boundary value
+      v->Cell(boit) = 2 * _velocity[3] - v->Cell(boit.Left());
       boit.Next();
     }
   }
   
-  // Set left boundary - zero dirichlet
   if (_comm->isLeft()) {
     boit.SetBoundary(4);
-    while(boit.Valid()){
-      v->Cell(boit) = -1 * v->Cell(boit.Right());
+    while (boit.Valid()) {
+      // For the left and right border for v we need to set the difference between
+      // the inner value and twice the boundary value
+      v->Cell(boit) = 2 * _velocity[7] - v->Cell(boit.Right());
       boit.Next();
     }
   }
   
-  // Set lower boundary - zero dirichlet
   if (_comm->isBottom()) {
     boit.SetBoundary(1);
-    while(boit.Valid()){
-      v->Cell(boit) = real_t(0.0);
+    while (boit.Valid()) {
+      // For the top and bottom border we can set the boundary value directly
+      v->Cell(boit) = _velocity[1];
       boit.Next();
     }
   }
   
-  // Set upper boundary - zero dirichlet
   if (_comm->isTop()) {
     boit.SetBoundary(3);
-    while(boit.Valid()){
-      v->Cell(boit)        = _velocity[1];
-      v->Cell(boit.Down()) = _velocity[1];
+    while (boit.Valid()) {
+      // For v we have one halo cell row too many in the top direction, but
+      // for simplicity we still use the same grid side as for v and p. Therefore
+      // our actual boundary is one row below
+      v->Cell(boit)        = _velocity[5];
+      // For the top and bottom border we can set the boundary value directly
+      v->Cell(boit.Down()) = _velocity[5];
       boit.Next();
     }
   }
@@ -258,7 +273,7 @@ void Geometry::Update_P(Grid *p) const{
   if (_comm->isRight()) {
     boit.SetBoundary(2);
     while(boit.Valid()){
-      p->Cell(boit) = p->Cell(boit.Left());
+      p->Cell(boit) = _pressure[1];
       boit.Next();
     }
   }
@@ -267,7 +282,7 @@ void Geometry::Update_P(Grid *p) const{
   if (_comm->isLeft()) {
     boit.SetBoundary(4);
     while(boit.Valid()){
-      p->Cell(boit) = p->Cell(boit.Right());
+      p->Cell(boit) = _pressure[3];
       boit.Next();
     }
   }
@@ -276,7 +291,7 @@ void Geometry::Update_P(Grid *p) const{
   if (_comm->isBottom()) {
     boit.SetBoundary(1);
     while(boit.Valid()){
-      p->Cell(boit) = p->Cell(boit.Top());
+      p->Cell(boit) =  _pressure[0];
       boit.Next();
     }
   }
@@ -285,7 +300,7 @@ void Geometry::Update_P(Grid *p) const{
   if (_comm->isTop()) {
     boit.SetBoundary(3);
     while(boit.Valid()){
-      p->Cell(boit) = p->Cell(boit.Down());
+      p->Cell(boit) =  _pressure[2];
       boit.Next();
     }
   }
