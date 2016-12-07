@@ -209,45 +209,56 @@ void Geometry::Update_U(Grid *u) const{
   
   if (_comm->isBottom()) {
     boit.SetBoundary(1);
-    while (boit.Valid()) {
-      // For the upper and lower border for u we need to set the difference between
-      // the inner value and twice the boundary value
-      u->Cell(boit) = 2 * _velocity[0] - u->Cell(boit.Top());
-      boit.Next();
+    if (_vtype[0] == 'd') {
+      for (; boit.Valid(); boit.Next())
+        // For the upper and lower border for u we need to set the difference between
+        // the inner value and twice the boundary value
+        u->Cell(boit) = 2 * _velocity[0] - u->Cell(boit.Top());
+    } else {
+      for (; boit.Valid(); boit.Next())
+        u->Cell(boit) = u->Cell(boit.Top()) - _h[1] * _velocity[0];
     }
   }
   
-  // Set right boundary - zero dirichlet
   if (_comm->isRight()) {
     boit.SetBoundary(2);
-    while (boit.Valid()) {
-      // For u we have one halo cell column too many in the right direction, but
-      // for simplicity we still use the same grid side as for v and p. Therefore
-      // our actual boundary is one column to the left
-      u->Cell(boit)        = _velocity[2];
-      // For the right and left border we can set the boundary value directly
-      u->Cell(boit.Left()) = _velocity[2];
-      boit.Next();
+    if (_vtype[2] == 'd') {
+      for (; boit.Valid(); boit.Next()) {
+        // For u we have one halo cell column too many in the right direction, but
+        // for simplicity we still use the same grid side as for v and p. Therefore
+        // our actual boundary is one column to the left
+        u->Cell(boit)        = _velocity[2];
+        // For the right and left border for u we can set the boundary value directly
+        u->Cell(boit.Left()) = _velocity[2];
+      }
+    } else {
+      for (; boit.Valid(); boit.Next())
+        u->Cell(boit) = u->Cell(boit.Left()) + _h[0] * _velocity[2];
     }
   }
   
   if (_comm->isLeft()) {
     boit.SetBoundary(4);
-    while (boit.Valid()) {
-      // For the right and left border we can set the boundary value directly
-      u->Cell(boit) = _velocity[6];
-      boit.Next();
+    if (_vtype[6] == 'd') {
+      for (; boit.Valid(); boit.Next())
+        // For the right and left border for u for vwe can set the boundary value directly
+        u->Cell(boit) = _velocity[6];
+    } else {
+      for (; boit.Valid(); boit.Next())
+        u->Cell(boit) = u->Cell(boit.Right()) - _h[0] * _velocity[6];
     }
   }
   
-  // Set upper boundary - non-zero dirichlet
   if (_comm->isTop()) {
     boit.SetBoundary(3);
-    while (boit.Valid()) {
-      // For the upper and lower border for u we need to set the difference between
-      // the inner value and twice the boundary value
-      u->Cell(boit) = 2 * _velocity[4] - u->Cell(boit.Down());
-      boit.Next();
+    if (_vtype[4] == 'd') {
+      for (; boit.Valid(); boit.Next())
+        // For the upper and lower border for u we need to set the difference between
+        // the inner value and twice the boundary value
+        u->Cell(boit) = 2 * _velocity[4] - u->Cell(boit.Down());
+    } else {
+      for (; boit.Valid(); boit.Next())
+        u->Cell(boit) = u->Cell(boit.Down()) + _h[1] * _velocity[4];
     }
   }
 }
@@ -257,43 +268,56 @@ void Geometry::Update_V(Grid *v) const{
   
   if (_comm->isRight()) {
     boit.SetBoundary(2);
-    while (boit.Valid()) {
-      // For the left and right border for v we need to set the difference between
-      // the inner value and twice the boundary value
-      v->Cell(boit) = 2 * _velocity[3] - v->Cell(boit.Left());
-      boit.Next();
+    if (_vtype[3] == 'd') {
+      for (; boit.Valid(); boit.Next())
+        // For the left and right border for v we need to set the difference between
+        // the inner value and twice the boundary value
+        v->Cell(boit) = 2 * _velocity[3] - v->Cell(boit.Left());
+    } else {
+      for (; boit.Valid(); boit.Next())
+        v->Cell(boit) = v->Cell(boit.Left()) + _h[1] * _velocity[3];
     }
   }
   
   if (_comm->isLeft()) {
     boit.SetBoundary(4);
-    while (boit.Valid()) {
-      // For the left and right border for v we need to set the difference between
-      // the inner value and twice the boundary value
-      v->Cell(boit) = 2 * _velocity[7] - v->Cell(boit.Right());
-      boit.Next();
+    if (_vtype[7] == 'd') {
+      for (; boit.Valid(); boit.Next())
+        // For the left and right border for v we need to set the difference between
+        // the inner value and twice the boundary value
+        v->Cell(boit) = 2 * _velocity[7] - v->Cell(boit.Right());
+    } else {
+      for (; boit.Valid(); boit.Next())
+        v->Cell(boit) = v->Cell(boit.Right()) - _h[1] * _velocity[7];
     }
   }
   
   if (_comm->isBottom()) {
     boit.SetBoundary(1);
-    while (boit.Valid()) {
-      // For the top and bottom border we can set the boundary value directly
-      v->Cell(boit) = _velocity[1];
-      boit.Next();
+    if (_vtype[1] == 'd') {
+      for (; boit.Valid(); boit.Next())
+        // For the top and bottom borderfor v we can set the boundary value directly
+        v->Cell(boit) = _velocity[1];
+    } else {
+      for (; boit.Valid(); boit.Next())
+        v->Cell(boit) = v->Cell(boit.Top()) - _h[1] * _velocity[1];
     }
   }
   
   if (_comm->isTop()) {
     boit.SetBoundary(3);
-    while (boit.Valid()) {
-      // For v we have one halo cell row too many in the top direction, but
-      // for simplicity we still use the same grid side as for v and p. Therefore
-      // our actual boundary is one row below
-      v->Cell(boit)        = _velocity[5];
-      // For the top and bottom border we can set the boundary value directly
-      v->Cell(boit.Down()) = _velocity[5];
-      boit.Next();
+    if (_vtype[5] == 'd') {
+      for (; boit.Valid(); boit.Next()) {
+        // For v we have one halo cell row too many in the top direction, but
+        // for simplicity we still use the same grid side as for v and p. Therefore
+        // our actual boundary is one row below
+        v->Cell(boit) = _velocity[5];
+        // For the top and bottom border for v we can set the boundary value directly
+        v->Cell(boit.Down()) = _velocity[5];
+      }
+    } else {
+      for (; boit.Valid(); boit.Next())
+        v->Cell(boit) = v->Cell(boit.Down()) + _h[1] * _velocity[5];
     }
   }
 }
@@ -304,36 +328,48 @@ void Geometry::Update_P(Grid *p) const{
   // Set right boundary
   if (_comm->isRight()) {
     boit.SetBoundary(2);
-    while(boit.Valid()){
-      p->Cell(boit) = _pressure[1];
-      boit.Next();
+    if (_ptype[1] == 'd') {
+      for (; boit.Valid(); boit.Next())
+        p->Cell(boit) = _pressure[1];
+    } else {
+      for (; boit.Valid(); boit.Next())
+        p->Cell(boit) = p->Cell(boit.Left()) + _h[1] * _pressure[1];
     }
   }
   
   // Set left boundary
   if (_comm->isLeft()) {
     boit.SetBoundary(4);
-    while(boit.Valid()){
-      p->Cell(boit) = _pressure[3];
-      boit.Next();
+    if (_ptype[3] == 'd') {
+      for (; boit.Valid(); boit.Next())
+        p->Cell(boit) = _pressure[3];
+    } else {
+      for (; boit.Valid(); boit.Next())
+        p->Cell(boit) = p->Cell(boit.Left()) + _h[1] * _pressure[3];
     }
   }
   
   // Set lower boundary
   if (_comm->isBottom()) {
     boit.SetBoundary(1);
-    while(boit.Valid()){
-      p->Cell(boit) =  _pressure[0];
-      boit.Next();
+    if (_ptype[0] == 'd') {
+      for (; boit.Valid(); boit.Next())
+        p->Cell(boit) = _pressure[0];
+    } else {
+      for (; boit.Valid(); boit.Next())
+        p->Cell(boit) = p->Cell(boit.Top()) - _h[0] * _pressure[0];
     }
   }
   
   // Set upper boundary
   if (_comm->isTop()) {
     boit.SetBoundary(3);
-    while(boit.Valid()){
-      p->Cell(boit) =  _pressure[2];
-      boit.Next();
+    if (_ptype[2] == 'd') {
+      for (; boit.Valid(); boit.Next())
+        p->Cell(boit) = _pressure[2];
+    } else {
+      for (; boit.Valid(); boit.Next())
+        p->Cell(boit) = p->Cell(boit.Left()) + _h[0] * _pressure[2];
     }
   }
 
