@@ -1,8 +1,9 @@
 %% Calculate 
 
-numProc = [1,2,4];
+numProc = [1,2,3,4];
 runtime.proc1 = [11176, 10551];
 runtime.proc2 = [7557, 7327];
+runtime.proc3 = [9279, 9228];
 runtime.proc4 = [9802, 9660];
 
 n_proc = numel(numProc);

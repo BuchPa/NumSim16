@@ -11,8 +11,8 @@
 Geometry::Geometry (const Communicator* comm)
   : _comm(comm) {
   // Init number of INNER cells in each dimension
-  _bsize[0] = 4;
-  _bsize[1] = 4;
+  _bsize[0] = 48;
+  _bsize[1] = 48;
   
   // Init length of driven cavity
   _blength[0] = 1.0;
@@ -401,10 +401,46 @@ multi_index_t Geometry::GetSubdomainSize() {
       return {_bsize[0], _bsize[1]};
 
     case 2:
-      return {_bsize[0] / 2, _bsize[1]};
+      if (_bsize[0] % 2 == 0) {
+        return {_bsize[0] / 2, _bsize[1]};
+      } else {
+        throw std::runtime_error(std::string("Please adapt the size to the number of processes: " + std::to_string(_comm->ThreadCnt())));
+      }
+    
+    case 3:
+      if (_bsize[0] % 3 == 0) {
+        return {_bsize[0] / 3, _bsize[1]};
+      } else {
+        throw std::runtime_error(std::string("Please adapt the size to the number of processes: " + std::to_string(_comm->ThreadCnt())));
+      } 
 
     case 4:
-      return {_bsize[0] / 2, _bsize[1] / 2};
+      if (_bsize[0] % 2 == 0 && _bsize[1] % 2 == 0) {
+        return {_bsize[0] / 2, _bsize[1] / 2};
+      } else {
+        throw std::runtime_error(std::string("Please adapt the size to the number of processes: " + std::to_string(_comm->ThreadCnt())));
+      }
+    
+    case 6:
+      if (_bsize[0] % 3 == 0 && _bsize[1] % 2 == 0) {
+        return {_bsize[0] / 3, _bsize[1] / 2};
+      } else {
+        throw std::runtime_error(std::string("Please adapt the size to the number of processes: " + std::to_string(_comm->ThreadCnt())));
+      } 
+
+    case 8:
+      if (_bsize[0] % 4 == 0 && _bsize[1] % 2 == 0) {
+        return {_bsize[0] / 4, _bsize[1] / 2};
+      } else {
+        throw std::runtime_error(std::string("Please adapt the size to the number of processes: " + std::to_string(_comm->ThreadCnt())));
+      } 
+
+    case 16:
+      if (_bsize[0] % 4 == 0 && _bsize[1] % 4 == 0) {
+        return {_bsize[0] / 4, _bsize[1] / 4};
+      } else {
+        throw std::runtime_error(std::string("Please adapt the size to the number of processes: " + std::to_string(_comm->ThreadCnt())));
+      } 
 
     default:
       throw std::runtime_error(std::string("Invalid number of processes: " + std::to_string(_comm->ThreadCnt())));
@@ -419,8 +455,20 @@ multi_real_t Geometry::GetSubdomainLength() {
     case 2:
       return {_blength[0] / 2.0, _blength[1]};
 
+    case 3:
+      return {_blength[0] / 3.0, _blength[1]};
+
     case 4:
       return {_blength[0] / 2.0, _blength[1] / 2.0};
+
+    case 6:
+      return {_blength[0] / 3.0, _blength[1] / 2.0};
+
+    case 8:
+      return {_blength[0] / 4.0, _blength[1] / 2.0};
+
+    case 16:
+      return {_blength[0] / 4.0, _blength[1] / 4.0};
 
     default:
       throw std::runtime_error(std::string("Invalid number of processes: " + std::to_string(_comm->ThreadCnt())));
