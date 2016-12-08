@@ -69,6 +69,10 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   _dtlimit = _param->Dt();
   // Init _epslimit
   _epslimit = _param->Eps();
+  
+  // Init particles with fixed positions [0.5, 0.5]
+  _streakline.push_back(real_t(0.5));
+  _trace.push_back(real_t(0.5));
 }
 
 Compute::~Compute() {
@@ -153,6 +157,14 @@ const Grid *Compute::GetStream() {
   return _stream;
 }
 
+particles_t *Compute::GetParticleTracing(){
+  return &_trace;
+}
+
+particles_t *Compute::GetStreaklines(){
+  return &_streakline;
+}
+
 void Compute::TimeStep(bool printInfo) {  
   // Compute candidates for current time step
   const real_t cfl_x = _geom->Mesh()[0] / _u->AbsMax();
@@ -189,6 +201,10 @@ void Compute::TimeStep(bool printInfo) {
   // Set boundary values
   _geom->Update_U(_u);
   _geom->Update_V(_v);
+  
+  // Update positions of particles for streaklines and particle tracing
+  this->ComputeStreaklines(dt);
+  this->ComputeParticleTracing(dt);
   
   // Compute new time
   _t += dt;
@@ -255,4 +271,37 @@ void Compute::RHS(const real_t &dt){
   for(init.First(); init.Valid(); init.Next()){
     _rhs->Cell(init) = 1.0/dt * ( _F->dx_l(init) + _G->dy_l(init) );
   }
+}
+
+void Compute::ComputeParticleStep(multi_real_t &particle, const real_t &dt){
+  // Get velocities at particle coordinates
+  real_t u = _u->Interpolate(particle);
+  real_t v = _v->Interpolate(particle);
+  
+  // Move particle with velocites
+  particle[0] = particle[0] + dt * u;
+  particle[1] = particle[1] + dt * v;
+}
+
+void Compute::ComputeStreaklines(const real_t &dt){  
+  // Cycle the list of particles
+  for (iter_particles_t it=_streakline.begin(); it!=_streakline.end(); ++it) {
+    this->ComputeParticleStep((*it), dt);
+  }
+  
+  // Add new item
+  multi_real_t lastStep = *(--_streakline.end());
+  this->ComputeParticleStep(lastStep, dt);
+  _streakline.push_back(lastStep);
+}
+
+void Compute::ComputeParticleTracing(const real_t &dt){
+  // Get last known position of the particle to trace
+  multi_real_t lastStep = *(--_trace.end());
+  
+  // Update position
+  this->ComputeParticleStep(lastStep, dt);
+  
+  // Save updated position
+  _trace.push_back(lastStep);
 }

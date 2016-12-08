@@ -47,6 +47,13 @@ public:
   void AddField(const char *title, const Grid *v1, const Grid *v2,
                 const Grid *v3);
 
+  /// Initializes a particle vtk
+  void InitParticles(const char *path);
+  /// Closes the particle vtk
+  void FinishParticles();
+  
+  /// Add a particle data
+  void AddParticles(const char *title, particles_t *particles);
 private:
   const multi_real_t &_h;
   const multi_index_t &_size;

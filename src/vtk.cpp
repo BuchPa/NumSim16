@@ -163,3 +163,51 @@ void VTK::AddField(const char *title, const Grid *v1, const Grid *v2,
   fprintf(_handle, "</DataArray>\n");
 }
 //------------------------------------------------------------------------------
+void VTK::InitParticles(const char *path){
+  if (_handle)
+    return;
+  int flength = strlen(path) + 20;
+  char *filename;
+  filename = new char[flength];
+  if (strlen(path))
+    sprintf(filename, "%s_%i.particles", path, _cnt);
+  else
+    sprintf(filename, "%s_%i.particles", "path", _cnt);
+  _handle = fopen(filename, "w");
+  delete[] filename;
+
+  fprintf(_handle, "<?xml version=\"1.0\"?>\n");
+  fprintf(_handle, "<VTKFile type=\"PolyData\" version=\"0.1\" byte_order=\"LittleEndian\">\n");
+  fprintf(_handle, "<PolyData>\n");
+}
+//------------------------------------------------------------------------------
+void VTK::FinishParticles(){
+  if (!_handle)
+    return;
+
+  fprintf(_handle, "</PolyData>\n");
+  fprintf(_handle, "</VTKFile>\n");
+
+  fclose(_handle);
+
+  _handle = NULL;
+}
+//------------------------------------------------------------------------------
+void VTK::AddParticles(const char *title, particles_t *particles){
+  if (!_handle)
+    return;
+  
+  fprintf(_handle, "<Piece NumberOfPoints=\"%i \" NumberOfVerts=\"0\" NumberOfLines=\"0\" NumberOfStrips=\"0\" NumberOfPolys=\"0\">\n", particles->size());
+  fprintf(_handle, "<Points>\n");
+  fprintf(_handle, "<DataArray type=\"Float64\" format=\"ascii\" "
+                   "NumberOfComponents=\"3\">\n");
+  
+  for (iter_particles_t it=particles->begin(); it!=particles->end(); ++it) {
+    multi_real_t data = *it;
+    fprintf( _handle, "%le %le %le\n", data[0], data[1], (DIM == 3 ? data[2] : 0) );
+  }
+
+  fprintf(_handle, "</DataArray>\n");
+  fprintf(_handle, "</Points>\n");
+  fprintf(_handle, "</Piece>\n");
+}

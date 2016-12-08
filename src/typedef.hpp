@@ -20,11 +20,17 @@
 #include <stdio.h>
 // For throwing puzzling errors at the simple-minded user i.e. make him fear c/c++
 #include <stdexcept>
+// For particles list
+#include<list>
 
 //------------------------------------------------------------------------------
 
 #ifndef __TYPEDEF_HPP
 #define __TYPEDEF_HPP
+
+//------------------------------------------------------------------------------
+
+using std::list;
 
 //------------------------------------------------------------------------------
 
@@ -87,6 +93,12 @@ template <typename _type, uint32_t _dim> struct array_t {
 typedef array_t<real_t, DIM> multi_real_t;
 /// Typedef for d-dimensional array of integer
 typedef array_t<index_t, DIM> multi_index_t;
+
+//------------------------------------------------------------------------------
+
+/// List type for particles
+typedef list<multi_real_t> particles_t;
+typedef list<multi_real_t>::iterator iter_particles_t;
 
 //------------------------------------------------------------------------------
 

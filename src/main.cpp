@@ -185,6 +185,15 @@ int main(int argc, char **argv) {
     vtk.AddScalar("Stream", comp.GetStream());
     vtk.AddScalar("Vorticity", comp.GetVorticity());
     vtk.Finish();
+    
+    // Create VTK File for particles of the streakline
+    // in the folder VTK (must exist)
+    vtk.InitParticles("VTK/streak1");
+    vtk.AddParticles("Streakline", comp.GetStreaklines());
+    vtk.FinishParticles();
+    vtk.InitParticles("VTK/trace1");
+    vtk.AddParticles("Trace", comp.GetParticleTracing());
+    vtk.FinishParticles();
 
     // Run a few steps
     for (uint32_t i = 0; i < 9; ++i)

@@ -77,6 +77,16 @@ public:
   //
   // @return Grid A grid containing the stream lines.
   const Grid *GetStream();
+  
+  /// Returns the position of the traced particles.
+  //
+  // @return list<real_t> A list containing the traced particles at the current timestep.
+  particles_t *GetParticleTracing();
+  
+  /// Returns the position of the streakline particles.
+  //
+  // @return list<real_t> A list containing the particles of a streakline at the current timestep.
+  particles_t *GetStreaklines();
 
 private:
   /// _t real_t The current timestep
@@ -130,6 +140,12 @@ private:
 
   /// _param Parameter Holds parameter information like the reynolds number
   const Parameter *_param;
+  
+  // _streakline particles_t List to hold position of particles for streaklines
+  particles_t _streakline;
+  
+  // _trace particles_t List to hold position of particles for particle tracing
+  particles_t _trace;
 
   /// Compute the new velocites u & v.
   //
@@ -145,6 +161,22 @@ private:
   //
   // @param dt real_t The timestep dt
   void RHS(const real_t &dt);
+  
+  /// Compute the new position of a particle.
+  //
+  // @param particle multi_real_t The coordinates of the particle to move
+  // @param dt real_t The timestep dt
+  void ComputeParticleStep(multi_real_t &particle, const real_t &dt);
+  
+  /// Compute the new position of the streakline particles.
+  //
+  // @param dt real_t The timestep dt
+  void ComputeStreaklines(const real_t &dt);
+  
+  /// Compute the new position of the particles for particle tracing.
+  //
+  // @param dt real_t The timestep dt
+  void ComputeParticleTracing(const real_t &dt);
 };
 //------------------------------------------------------------------------------
 #endif // __COMPUTE_HPP
