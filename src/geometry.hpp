@@ -41,6 +41,9 @@ public:
   ///      u=0, v=0
   Geometry();
 
+  /// Desctructor.
+  ~Geometry();
+
   /// Loads values for the geometry from a file.
   /// See sample file ex1_geometry for how the file should be structured.
   ///
@@ -118,6 +121,10 @@ private:
   
   // _invh multi_real_t The inverse mesh width in each dimension
   multi_real_t _invh;
+
+  /// cells char* A field containing the cell types, e.g. fluid cell, obstacle,
+  /// inflow boundary etc.
+  char* _cells;
 };
 //------------------------------------------------------------------------------
 #endif // __GEOMETRY_HPP

@@ -13,6 +13,9 @@ Geometry::Geometry(){
   _size[0] = 8;
   _size[1] = 8;
   
+  // Init geom data field
+  _cells = new char[_size[0] * _size[1]];
+
   // Init length of driven cavity
   _length[0] = 1.0;
   _length[1] = 1.0;
@@ -33,6 +36,10 @@ Geometry::Geometry(){
   this->Recalculate();
 }
 
+Geometry::~Geometry() {
+  delete[] _cells;
+}
+
 void Geometry::Load(const char *file){
   FILE* handle = fopen(file, "r");
 
@@ -47,6 +54,10 @@ void Geometry::Load(const char *file){
       if (fscanf(handle, " %lf %lf\n", &inval[0], &inval[1])) {
         _size[0] = inval[0];
         _size[1] = inval[1];
+
+        // Resize cell field
+        delete[] _cells;
+        _cells = new char[(_size[0]+2) * (_size[1]+2)];
       }
       continue;
     }
@@ -116,6 +127,10 @@ void Geometry::Load(const char *file){
       }
       continue;
     }
+
+    // None of the cases above matched, so we've probably hit the area declaring cell types
+    // for the grid
+
   }
   fclose(handle);
   

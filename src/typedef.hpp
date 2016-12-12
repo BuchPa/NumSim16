@@ -48,6 +48,20 @@ typedef INDEX_TYPE index_t;
 
 //------------------------------------------------------------------------------
 
+/// An enum for various cell types
+enum CellType {
+  Fluid = ' ',
+  Obstacle = '#',
+  Inflow = 'I',
+  H_Inflow = 'H',
+  V_Inflow = 'V',
+  Outflow = 'O',
+  V_Slip = '|',
+  H_Slip = '-'
+};
+
+//------------------------------------------------------------------------------
+
 /// Template for array/vector types
 template <typename _type, uint32_t _dim> struct array_t {
   // Constructors
