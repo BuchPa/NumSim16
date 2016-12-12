@@ -50,7 +50,7 @@ typedef INDEX_TYPE index_t;
 
 /// An enum for various cell types
 enum CellType {
-  Fluid = ' ',
+  Fluid = '.',
   Obstacle = '#',
   Inflow = 'I',
   H_Inflow = 'H',

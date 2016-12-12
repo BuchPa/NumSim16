@@ -46,6 +46,7 @@ void Geometry::Load(const char *file){
   double inval[8];
   char cinval[8];
   char name[20];
+  char line[1000]; // Todo: Fix finite line length or add documentation for it
 
   while (!feof(handle)) {
     if (!fscanf(handle, "%s =", name)) continue;
@@ -128,12 +129,47 @@ void Geometry::Load(const char *file){
       continue;
     }
 
-    // None of the cases above matched, so we've probably hit the area declaring cell types
-    // for the grid
+    // As soon as we read the "geometry = free" line, we assume the remaining
+    // file content encodes the free geometry
+    if (strcmp(name, "geometry") == 0) {
+      if (fscanf(handle, " %s\n", name)) {
+        index_t j = 0;
+        int result = 0;
 
+        while (!feof(handle)) {
+          result = fscanf(handle, "%s\n", line);
+
+          if (!result) {
+            continue;
+          }
+
+          for (index_t i = 0; i < _size[0]+2; i++) {
+
+            switch (line[i]) {
+              case CellType::Fluid:
+              case CellType::Obstacle:
+              case CellType::Inflow:
+              case CellType::H_Inflow:
+              case CellType::V_Inflow:
+              case CellType::Outflow:
+              case CellType::V_Slip:
+              case CellType::H_Slip:
+                _cells[j * (_size[0]+2) + i] = line[i];
+                break;
+
+              default:
+                break;
+            }
+          }
+
+          j++;
+        }
+      }
+    }
   }
+
   fclose(handle);
-  
+
   this->Recalculate();
 }
 
