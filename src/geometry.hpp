@@ -71,6 +71,16 @@ public:
   /// @see Geometry::Mesh()
   /// @return multi_real_t The inverse mesh width
   const multi_real_t &InvMesh() const;
+  
+  ///  Returns the particles for particle tracing
+  ///
+  /// @return particles_t The particles for particle tracing
+  particles_t ParticleTraces() const;
+  
+  ///  Returns the particles for streaklines
+  ///
+  /// @return particles_t The particles for streaklines
+  particles_t Streaklines() const;
 
   /// Updates the velocity field u at the boundaries by applying the
   /// boundary values to them.
@@ -118,6 +128,12 @@ private:
   
   // _invh multi_real_t The inverse mesh width in each dimension
   multi_real_t _invh;
+  
+  // _trace particles_t List of all particles to trace
+  particles_t _trace;
+  
+  // _streakline particles_t List of all particles to build a streakline
+  particles_t _streakline;
 };
 //------------------------------------------------------------------------------
 #endif // __GEOMETRY_HPP

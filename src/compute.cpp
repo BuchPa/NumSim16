@@ -70,9 +70,19 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   // Init _epslimit
   _epslimit = _param->Eps();
   
-  // Init particles with fixed positions [0.5, 0.5]
-  _streakline.push_back(real_t(0.5));
-  _trace.push_back(real_t(0.5));
+  // Init particles from data loaded in geometry
+  particles_t streaklines = _geom->Streaklines();
+  for (iter_particles_t it = streaklines.begin(); it != streaklines.end(); ++it) {
+    particles_t newList;
+    newList.push_back((*it));
+    _streakline.push_back(newList);
+  }
+  particles_t traces = _geom->ParticleTraces();
+  for (iter_particles_t it = traces.begin(); it != traces.end(); ++it) {
+    particles_t newList;
+    newList.push_back((*it));
+    _trace.push_back(newList);
+  }
 }
 
 Compute::~Compute() {
@@ -157,11 +167,11 @@ const Grid *Compute::GetStream() {
   return _stream;
 }
 
-particles_t *Compute::GetParticleTracing(){
+list<particles_t> *Compute::GetParticleTracing(){
   return &_trace;
 }
 
-particles_t *Compute::GetStreaklines(){
+list<particles_t> *Compute::GetStreaklines(){
   return &_streakline;
 }
 
@@ -203,8 +213,8 @@ void Compute::TimeStep(bool printInfo) {
   _geom->Update_V(_v);
   
   // Update positions of particles for streaklines and particle tracing
-  this->ComputeStreaklines(dt);
-  this->ComputeParticleTracing(dt);
+  this->ComputeStreaklines(dt, printInfo);
+  this->ComputeParticleTracing(dt, printInfo);
   
   // Compute new time
   _t += dt;
@@ -283,25 +293,39 @@ void Compute::ComputeParticleStep(multi_real_t &particle, const real_t &dt){
   particle[1] = particle[1] + dt * v;
 }
 
-void Compute::ComputeStreaklines(const real_t &dt){  
-  // Cycle the list of particles
-  for (iter_particles_t it=_streakline.begin(); it!=_streakline.end(); ++it) {
-    this->ComputeParticleStep((*it), dt);
+void Compute::ComputeStreaklines(const real_t &dt, bool addOne){
+  // Cycle the list of different streaklines
+  for (list<particles_t>::iterator it_streak=_streakline.begin(); it_streak!=_streakline.end(); ++it_streak) {
+    // Cycle the list of particles
+    for (iter_particles_t it=it_streak->begin(); it!=it_streak->end(); ++it) {
+      this->ComputeParticleStep((*it), dt);
+    }
+    
+    // Add new item, if desired
+    if (addOne){
+      multi_real_t lastStep = *(--it_streak->end());
+      this->ComputeParticleStep(lastStep, dt);
+      it_streak->push_back(lastStep);
+    }
   }
-  
-  // Add new item
-  multi_real_t lastStep = *(--_streakline.end());
-  this->ComputeParticleStep(lastStep, dt);
-  _streakline.push_back(lastStep);
 }
 
-void Compute::ComputeParticleTracing(const real_t &dt){
-  // Get last known position of the particle to trace
-  multi_real_t lastStep = *(--_trace.end());
-  
-  // Update position
-  this->ComputeParticleStep(lastStep, dt);
-  
-  // Save updated position
-  _trace.push_back(lastStep);
+void Compute::ComputeParticleTracing(const real_t &dt, bool addOne){
+  // Cycle the list of different streaklines
+  for (list<particles_t>::iterator it_trace=_trace.begin(); it_trace!=_trace.end(); ++it_trace) {
+    // Get last known position of the particle to trace
+    multi_real_t lastStep = *(--it_trace->end());
+    
+    // Update position
+    this->ComputeParticleStep(lastStep, dt);
+    
+    if (addOne) {
+      // Save updated position
+      it_trace->push_back(lastStep);
+    } else {
+      // Replace last element
+      it_trace->erase(--it_trace->end());
+      it_trace->push_back(lastStep);
+    }
+  }
 }

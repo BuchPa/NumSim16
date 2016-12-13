@@ -193,21 +193,24 @@ void VTK::FinishParticles(){
   _handle = NULL;
 }
 //------------------------------------------------------------------------------
-void VTK::AddParticles(const char *title, particles_t *particles){
+void VTK::AddParticles(const char *title, list<particles_t> *particles){
   if (!_handle)
     return;
   
-  fprintf(_handle, "<Piece NumberOfPoints=\"%i \" NumberOfVerts=\"0\" NumberOfLines=\"0\" NumberOfStrips=\"0\" NumberOfPolys=\"0\">\n", particles->size());
-  fprintf(_handle, "<Points>\n");
-  fprintf(_handle, "<DataArray type=\"Float64\" format=\"ascii\" "
-                   "NumberOfComponents=\"3\">\n");
-  
-  for (iter_particles_t it=particles->begin(); it!=particles->end(); ++it) {
-    multi_real_t data = *it;
-    fprintf( _handle, "%le %le %le\n", data[0], data[1], (DIM == 3 ? data[2] : 0) );
-  }
+  // Cycle the list of different streaklines / traces
+  for (list<particles_t>::iterator it_list=particles->begin(); it_list!=particles->end(); ++it_list) {
+    fprintf(_handle, "<Piece NumberOfPoints=\"%i \" NumberOfVerts=\"0\" NumberOfLines=\"0\" NumberOfStrips=\"0\" NumberOfPolys=\"0\">\n", it_list->size());
+    fprintf(_handle, "<Points>\n");
+    fprintf(_handle, "<DataArray type=\"Float64\" format=\"ascii\" "
+                    "NumberOfComponents=\"3\">\n");
 
-  fprintf(_handle, "</DataArray>\n");
-  fprintf(_handle, "</Points>\n");
-  fprintf(_handle, "</Piece>\n");
+    for (iter_particles_t it=it_list->begin(); it!=it_list->end(); ++it) {
+      multi_real_t data = *it;
+      fprintf( _handle, "%le %le %le\n", data[0], data[1], (DIM == 3 ? data[2] : 0) );
+    }
+
+    fprintf(_handle, "</DataArray>\n");
+    fprintf(_handle, "</Points>\n");
+    fprintf(_handle, "</Piece>\n"); 
+  }
 }
