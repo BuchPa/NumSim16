@@ -278,7 +278,7 @@ void Geometry::Update_U(Grid *u) const{
     for (; boit.Valid(); boit.Next())
       u->Cell(boit) = u->Cell(boit.Down()) + _h[1] * _velocity[4];
   }
-  
+
 }
 
 void Geometry::Update_V(Grid *v) const{
@@ -392,4 +392,12 @@ void Geometry::Update_P(Grid *p) const{
   
   Iterator ctr = boit.CornerTopRight();
   p->Cell(ctr) = (p->Cell(ctr.Left()) + p->Cell(ctr.Down()))/2.0; 
+}
+
+char Geometry::CellTypeAt(index_t pos) const {
+  return _cells[pos];
+}
+
+char Geometry::CellTypeAt(index_t xpos, index_t ypos) const {
+  return _cells[ypos * _size[0] + xpos];
 }

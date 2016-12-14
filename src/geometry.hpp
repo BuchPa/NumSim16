@@ -103,6 +103,10 @@ public:
   /// @param p Grid The pressure field p
   void Update_P(Grid *p) const;
 
+  char CellTypeAt(index_t pos) const;
+
+  char CellTypeAt(index_t xpos, index_t ypos) const;
+
 private:
   /// _size multi_index_t The number of cells in each dimension
   multi_index_t _size;

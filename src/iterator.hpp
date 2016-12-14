@@ -188,5 +188,23 @@ private:
   ///   numbered
   index_t _boundary;
 };
+
+//------------------------------------------------------------------------------
+
+/// An iterator that only iterates over the domain boundary cells.
+class ObstacleIterator : public InteriorIterator {
+public:
+  /// Constructs a new ObstacleIterator working with the given geometry and
+  /// iterating over the obstacle cells within the inner domain.
+  ///
+  /// @param geom Geometry The geometry to work with
+  ObstacleIterator(const Geometry *geom);
+
+  /// Sets the iterator to the first element.
+  void First();
+
+  /// Goes to the next element of the iterator, disables it if position is end.
+  void Next();
+};
 //------------------------------------------------------------------------------
 #endif // __ITERATOR_HPP

@@ -295,3 +295,20 @@ Iterator BoundaryIterator::CornerTopRight(){
   
   return it;
 }
+
+ObstacleIterator::ObstacleIterator(const Geometry *geom) : InteriorIterator(geom) {}
+
+void ObstacleIterator::First() {
+  InteriorIterator::First();
+}
+
+void ObstacleIterator::Next() {
+  InteriorIterator::Next();
+  while (this->Valid()) {
+    if (_geom->CellTypeAt(_value) == CellType::Fluid) {
+      InteriorIterator::Next();
+    } else {
+      break;
+    }
+  }
+}
