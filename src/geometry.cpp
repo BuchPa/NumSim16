@@ -179,6 +179,7 @@ void Geometry::Load(const char *file){
           j++;
         }
       }
+    }
   }
 
   fclose(handle);
