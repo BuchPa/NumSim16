@@ -15,6 +15,7 @@ Geometry::Geometry(){
   
   // Init geom data field
   _cells = new char[_size[0] * _size[1]];
+  _nb = new int[4];
 
   // Init length of driven cavity
   _length[0] = 1.0;
@@ -38,6 +39,7 @@ Geometry::Geometry(){
 
 Geometry::~Geometry() {
   delete[] _cells;
+  delete[] _nb;
 }
 
 void Geometry::Load(const char *file){
@@ -279,6 +281,37 @@ void Geometry::Update_U(Grid *u) const{
       u->Cell(boit) = u->Cell(boit.Down()) + _h[1] * _velocity[4];
   }
 
+  ObstacleIterator oit = ObstacleIterator(this);
+
+  for(; oit.Valid(); oit.Next()) {
+    int* c = this->NeighbourCode(oit); 
+    switch ((c[0] << 3) + (c[1] << 2) + (c[2] << 1) + c[3]) {
+      case 13:
+        u->Cell(oit) = -u->Cell(oit.Top());
+        break;
+
+      case 11:
+      case 14:
+      case 3:
+      case 9:
+        u->Cell(oit) = 0;
+        break;
+
+      case 7:
+        u->Cell(oit) = u->Cell(oit.Down());
+        break;
+
+      case 12:
+        u->Cell(oit) = -u->Cell(oit.Top());
+        u->Cell(oit.Left()) = 0;
+        break;
+
+      case 6:
+        u->Cell(oit) = u->Cell(oit.Down());
+        u->Cell(oit.Left()) = 0;
+        break;
+    }
+  }
 }
 
 void Geometry::Update_V(Grid *v) const{
@@ -335,6 +368,37 @@ void Geometry::Update_V(Grid *v) const{
       v->Cell(boit) = v->Cell(boit.Down()) + _h[1] * _velocity[5];
   }
 
+  ObstacleIterator oit = ObstacleIterator(this);
+
+  for(; oit.Valid(); oit.Next()) {
+    int* c = this->NeighbourCode(oit); 
+    switch ((c[0] << 3) + (c[1] << 2) + (c[2] << 1) + c[3]) {
+      case 7:
+      case 13:
+      case 9:
+      case 12:
+        v->Cell(oit) = 0;
+        break;
+
+      case 11:
+        v->Cell(oit) = -v->Cell(oit.Right());
+        break;
+
+      case 14:
+        v->Cell(oit) = -v->Cell(oit.Left());
+        break;
+
+      case 3:
+        v->Cell(oit) = -v->Cell(oit.Right());
+        v->Cell(oit.Down()) = 0;
+        break;
+
+      case 6:
+        v->Cell(oit) = -v->Cell(oit.Left());
+        v->Cell(oit.Down()) = 0;
+        break;
+    }
+  }
 }
 
 void Geometry::Update_P(Grid *p) const{
@@ -392,6 +456,45 @@ void Geometry::Update_P(Grid *p) const{
   
   Iterator ctr = boit.CornerTopRight();
   p->Cell(ctr) = (p->Cell(ctr.Left()) + p->Cell(ctr.Down()))/2.0; 
+
+  ObstacleIterator oit = ObstacleIterator(this);
+
+  for(; oit.Valid(); oit.Next()) {
+    int* c = this->NeighbourCode(oit); 
+    switch ((c[0] << 3) + (c[1] << 2) + (c[2] << 1) + c[3]) {
+      case 13:
+        p->Cell(oit) = p->Cell(oit.Top());
+        break;
+
+      case 11:
+        p->Cell(oit) = p->Cell(oit.Right());
+        break;
+
+      case 7:
+        p->Cell(oit) = p->Cell(oit.Down());
+        break;
+
+      case 14:
+        p->Cell(oit) = p->Cell(oit.Left());
+        break;
+
+      case 3:
+        p->Cell(oit) = 0.5 * (p->Cell(oit.Right()) + p->Cell(oit.Down()));
+        break;
+
+      case 9:
+        p->Cell(oit) = 0.5 * (p->Cell(oit.Right()) + p->Cell(oit.Top()));
+        break;
+
+      case 12:
+        p->Cell(oit) = 0.5 * (p->Cell(oit.Left()) + p->Cell(oit.Top()));
+        break;
+
+      case 6:
+        p->Cell(oit) = 0.5 * (p->Cell(oit.Left()) + p->Cell(oit.Down()));
+        break;
+    }
+  }
 }
 
 char Geometry::CellTypeAt(index_t pos) const {
@@ -400,4 +503,18 @@ char Geometry::CellTypeAt(index_t pos) const {
 
 char Geometry::CellTypeAt(index_t xpos, index_t ypos) const {
   return _cells[ypos * _size[0] + xpos];
+}
+
+int* Geometry::NeighbourCode(index_t pos) const {
+  _nb[0] = pos - _size[0];
+  _nb[1] = pos + 1;
+  _nb[2] = pos + _size[0];
+  _nb[4] = pos - 1;
+
+  _nb[0] = _nb[0] < 0 ? 1 : _cells[_nb[0]] != CellType::Fluid;
+  _nb[1] = _nb[1] % _size[0] == 0 ? 1 : _cells[_nb[1]] != CellType::Fluid;
+  _nb[2] = _nb[2] >= _size[0] * _size[1] ? 1 : _cells[_nb[2]] != CellType::Fluid;
+  _nb[3] = pos % _size[0] == 0 ? 1 : _cells[_nb[3]] != CellType::Fluid;
+
+  return _nb;
 }
