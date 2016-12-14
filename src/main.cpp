@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
   #ifdef USE_DEBUG_VISU
   // Create and initialize the visualization
   Renderer visu(geom.Length(), geom.Mesh());
-  visu.Init(800, 800);
+  visu.Init(800, 800 / (geom.Length()[0] / geom.Length()[1]));
   #endif // USE_DEBUG_VISU
 
   // Check for specific test
