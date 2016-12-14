@@ -129,6 +129,20 @@ void Geometry::Load(const char *file){
       continue;
     }
 
+    if (strcmp(name, "trace") == 0) {
+      if (fscanf(handle, " %lf %lf\n", &inval[0], &inval[1])) {
+        _trace.push_back(multi_real_t({inval[0], inval[1]}));
+      }
+      continue;
+    }
+    
+    if (strcmp(name, "streakline") == 0) {
+      if (fscanf(handle, " %lf %lf\n", &inval[0], &inval[1])) {
+        _streakline.push_back(multi_real_t({inval[0], inval[1]}));
+      }
+      continue;
+    }
+
     // As soon as we read the "geometry = free" line, we assume the remaining
     // file content encodes the free geometry
     if (strcmp(name, "geometry") == 0) {
@@ -165,7 +179,6 @@ void Geometry::Load(const char *file){
           j++;
         }
       }
-    }
   }
 
   fclose(handle);
@@ -201,6 +214,14 @@ const multi_real_t &Geometry::Length() const{
 
 const multi_real_t &Geometry::InvMesh() const{
   return _invh;
+}
+
+particles_t Geometry::ParticleTraces() const{
+  return _trace;
+}
+  
+particles_t Geometry::Streaklines() const{
+  return _streakline;
 }
 
 void Geometry::Update_U(Grid *u) const{

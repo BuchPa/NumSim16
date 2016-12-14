@@ -81,12 +81,12 @@ public:
   /// Returns the position of the traced particles.
   //
   // @return list<real_t> A list containing the traced particles at the current timestep.
-  particles_t *GetParticleTracing();
+  list<particles_t> *GetParticleTracing();
   
   /// Returns the position of the streakline particles.
   //
   // @return list<real_t> A list containing the particles of a streakline at the current timestep.
-  particles_t *GetStreaklines();
+  list<particles_t> *GetStreaklines();
 
 private:
   /// _t real_t The current timestep
@@ -142,10 +142,10 @@ private:
   const Parameter *_param;
   
   // _streakline particles_t List to hold position of particles for streaklines
-  particles_t _streakline;
+  list<particles_t> _streakline;
   
   // _trace particles_t List to hold position of particles for particle tracing
-  particles_t _trace;
+  list<particles_t> _trace;
 
   /// Compute the new velocites u & v.
   //
@@ -171,12 +171,12 @@ private:
   /// Compute the new position of the streakline particles.
   //
   // @param dt real_t The timestep dt
-  void ComputeStreaklines(const real_t &dt);
+  void ComputeStreaklines(const real_t &dt, bool addOne);
   
   /// Compute the new position of the particles for particle tracing.
   //
   // @param dt real_t The timestep dt
-  void ComputeParticleTracing(const real_t &dt);
+  void ComputeParticleTracing(const real_t &dt, bool addOne);
 };
 //------------------------------------------------------------------------------
 #endif // __COMPUTE_HPP
