@@ -155,6 +155,13 @@ public:
   ///   numbered
   /// @param boundary index_t Which boundary to iterate over
   void SetBoundary(const index_t &boundary);
+  
+  /// Gets the currently iterated boundary.
+  ///
+  /// @see BoundaryIterator::BoundaryIterator() for how the boundaries are
+  ///   numbered
+  /// @return boundary index_t Which boundary to iterate over
+  const index_t &Boundary() const;
 
   /// Sets the iterator to the first element.
   void First();

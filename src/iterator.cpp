@@ -193,6 +193,10 @@ void BoundaryIterator::SetBoundary(const index_t &boundary){
   this->First();
 }
 
+const index_t &BoundaryIterator::Boundary() const{
+  return _boundary;
+}
+
 void BoundaryIterator::First(){
   switch(_boundary){
     case 1:

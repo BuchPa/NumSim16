@@ -1,7 +1,6 @@
 #include "typedef.hpp"
 #include "geometry.hpp"
 
-#include "iterator.hpp"
 #include "grid.hpp"
 
 #include <cstdio>  // file methods
@@ -21,17 +20,11 @@ Geometry::Geometry(){
   _length[1] = 1.0;
   
   // Init u/v boundary values and set u for upper boundary to 1 (as default)
-  for (int i = 0; i < 8; i++) {
-    _velocity[i] = real_t(0.0);
-    _vtype[i] = 'd';
-  }
-  _velocity[4] = real_t(1.0);
+  _velocity[0] = 1.0;
+  _velocity[1] = 0.0;
   
   // Init p boundary values
-  for (int i = 0; i < 4; i++) {
-    _pressure[i] = real_t(0.0);
-    _ptype[i] = 'd';
-  }
+  _pressure = 0.0;
   
   this->Recalculate();
 }
@@ -43,8 +36,7 @@ Geometry::~Geometry() {
 void Geometry::Load(const char *file){
   FILE* handle = fopen(file, "r");
 
-  double inval[8];
-  char cinval[8];
+  double inval[2];
   char name[20];
   char line[1000]; // Todo: Fix finite line length or add documentation for it
 
@@ -72,59 +64,16 @@ void Geometry::Load(const char *file){
     }
 
     if (strcmp(name, "velocity") == 0) {
-      if (
-        fscanf(
-          handle, " %lf %lf %lf %lf %lf %lf %lf %lf\n",
-          &inval[0], &inval[1], &inval[2], &inval[3],
-          &inval[4], &inval[5], &inval[6], &inval[7]
-        )
-      ) {
-        for (int i = 0; i < 8; i++) {
-          _velocity[i] = inval[i];
-        }
+      if (fscanf(handle, " %lf %lf\n", &inval[0], &inval[1])) {
+        _velocity[0] = inval[0];
+        _velocity[1] = inval[1];
       }
       continue;
     }
 
     if (strcmp(name, "pressure") == 0) {
-      if (
-        fscanf(
-          handle, " %lf %lf %lf %lf\n",
-          &inval[0], &inval[1], &inval[2], &inval[3]
-        )
-      ) {
-        for (int i = 0; i < 4; i++) {
-          _pressure[i] = inval[i];
-        }
-      }
-      continue;
-    }
-
-    if (strcmp(name, "v_type") == 0) {
-      if (
-        fscanf(
-          handle, " %c %c %c %c %c %c %c %c\n",
-          &cinval[0], &cinval[1], &cinval[2], &cinval[3],
-          &cinval[4], &cinval[5], &cinval[6], &cinval[7]
-        )
-      ) {
-        for (int i = 0; i < 8; i++) {
-          _vtype[i] = cinval[i];
-        }
-      }
-      continue;
-    }
-
-    if (strcmp(name, "p_type") == 0) {
-      if (
-        fscanf(
-          handle, " %c %c %c %c\n",
-          &cinval[0], &cinval[1], &cinval[2], &cinval[3]
-        )
-      ) {
-        for (int i = 0; i < 4; i++) {
-          _vtype[i] = cinval[i];
-        }
+      if (fscanf(handle, " %lf\n", &inval[0])) {
+        _pressure = inval[0];
       }
       continue;
     }
@@ -230,155 +179,150 @@ void Geometry::Update_U(Grid *u) const{
   
   // Set lower boundary
   boit.SetBoundary(1);
- if (_vtype[0] == 'd') {
-    for (; boit.Valid(); boit.Next())
-      // For the upper and lower border for u we need to set the difference between
-      // the inner value and twice the boundary value
-      u->Cell(boit) = 2 * _velocity[0] - u->Cell(boit.Top());
-  } else {
-    for (; boit.Valid(); boit.Next())
-      u->Cell(boit) = u->Cell(boit.Top()) - _h[1] * _velocity[0];
-  }
-
+  this->CycleBoundary_U(u, boit);
+  
   // Set right boundary
   boit.SetBoundary(2);
-  if (_vtype[2] == 'd') {
-    for (; boit.Valid(); boit.Next()) {
-      // For u we have one halo cell column too many in the right direction, but
-      // for simplicity we still use the same grid side as for v and p. Therefore
-      // our actual boundary is one column to the left
-      u->Cell(boit)        = _velocity[2];
-      // For the right and left border for u we can set the boundary value directly
-      u->Cell(boit.Left()) = _velocity[2];
-    }
-  } else {
-    for (; boit.Valid(); boit.Next())
-      u->Cell(boit) = u->Cell(boit.Left()) + _h[0] * _velocity[2];
-  }
-
-  // Set left boundary
-  boit.SetBoundary(4);
-  if (_vtype[6] == 'd') {
-    for (; boit.Valid(); boit.Next())
-      // For the right and left border for u for vwe can set the boundary value directly
-      u->Cell(boit) = _velocity[6];
-  } else {
-    for (; boit.Valid(); boit.Next())
-      u->Cell(boit) = u->Cell(boit.Right()) - _h[0] * _velocity[6];
-  }
- 
+  this->CycleBoundary_U(u, boit);
+    
   // Set upper boundary
   boit.SetBoundary(3);
-  if (_vtype[4] == 'd') {
-    for (; boit.Valid(); boit.Next())
-      // For the upper and lower border for u we need to set the difference between
-      // the inner value and twice the boundary value
-      u->Cell(boit) = 2 * _velocity[4] - u->Cell(boit.Down());
-  } else {
-    for (; boit.Valid(); boit.Next())
-      u->Cell(boit) = u->Cell(boit.Down()) + _h[1] * _velocity[4];
-  }
+  this->CycleBoundary_U(u, boit);
+  
+  // Set left boundary
+  boit.SetBoundary(4);
+  this->CycleBoundary_U(u, boit);
+}
 
+void Geometry::CycleBoundary_U(Grid *u, BoundaryIterator boit) const{
+  for (; boit.Valid(); boit.Next())
+    switch(this->CellTypeAt(boit)){
+      case CellType::Obstacle:
+        this->SetUDirichlet(u, boit, 0.0);
+        break;
+        
+      case CellType::Inflow:
+        this->SetUDirichlet(u, boit, _velocity[0]);
+        break;
+        
+      case CellType::H_Inflow:
+        throw std::runtime_error(std::string("Not implemented!"));
+        break;
+        
+      case CellType::V_Inflow:
+        throw std::runtime_error(std::string("Not implemented!"));
+        break;
+        
+      case CellType::Outflow:
+        this->SetUNeumann(u, boit, 0.0);
+        break;
+        
+      case CellType::V_Slip:
+        if ((boit.Boundary() == 2) || (boit.Boundary() == 4)){
+          this->SetUNeumann(u, boit, 0.0);
+        }else{
+          throw std::runtime_error(std::string("Vertical slip condition is not allowed on the lower/upper boundary"));
+        }
+        break;
+        
+      case CellType::H_Slip:
+        if ((boit.Boundary() == 1) || (boit.Boundary() == 3)){
+          this->SetUDirichlet(u, boit, 0.0);
+        }else{
+          throw std::runtime_error(std::string("Horizontal slip condition is not allowed on the left/right boundary"));
+        }
+        break;
+        
+      default:
+        throw std::runtime_error(std::string("Unknown boundary condition: "+ std::to_string(this->CellTypeAt(boit))));
+        break;
+    }
 }
 
 void Geometry::Update_V(Grid *v) const{
   BoundaryIterator boit(this, 1);
   
+  // Set lower boundary
+  boit.SetBoundary(1);
+  this->CycleBoundary_V(v, boit);
+  
   // Set right boundary
   boit.SetBoundary(2);
-  if (_vtype[3] == 'd') {
-    for (; boit.Valid(); boit.Next())
-      // For the left and right border for v we need to set the difference between
-      // the inner value and twice the boundary value
-      v->Cell(boit) = 2 * _velocity[3] - v->Cell(boit.Left());
-  } else {
-    for (; boit.Valid(); boit.Next())
-      v->Cell(boit) = v->Cell(boit.Left()) + _h[1] * _velocity[3];
-  }
+  this->CycleBoundary_V(v, boit);
+    
+  // Set upper boundary
+  boit.SetBoundary(3);
+  this->CycleBoundary_V(v, boit);
   
   // Set left boundary
   boit.SetBoundary(4);
-  if (_vtype[7] == 'd') {
-    for (; boit.Valid(); boit.Next())
-      // For the left and right border for v we need to set the difference between
-      // the inner value and twice the boundary value
-      v->Cell(boit) = 2 * _velocity[7] - v->Cell(boit.Right());
-  } else {
-    for (; boit.Valid(); boit.Next())
-      v->Cell(boit) = v->Cell(boit.Right()) - _h[1] * _velocity[7];
-  }
-  
-  // Set lower boundary
-  boit.SetBoundary(1);
-  if (_vtype[1] == 'd') {
-    for (; boit.Valid(); boit.Next())
-      // For the top and bottom borderfor v we can set the boundary value directly
-      v->Cell(boit) = _velocity[1];
-  } else {
-    for (; boit.Valid(); boit.Next())
-      v->Cell(boit) = v->Cell(boit.Top()) - _h[1] * _velocity[1];
-  }
-  
-  // Set upper boundary
-  boit.SetBoundary(3);
-  if (_vtype[5] == 'd') {
-    for (; boit.Valid(); boit.Next()) {
-      // For v we have one halo cell row too many in the top direction, but
-      // for simplicity we still use the same grid side as for v and p. Therefore
-      // our actual boundary is one row below
-      v->Cell(boit) = _velocity[5];
-      // For the top and bottom border for v we can set the boundary value directly
-      v->Cell(boit.Down()) = _velocity[5];
-    }
-  } else {
-    for (; boit.Valid(); boit.Next())
-      v->Cell(boit) = v->Cell(boit.Down()) + _h[1] * _velocity[5];
-  }
+  this->CycleBoundary_V(v, boit);
+}
 
+void Geometry::CycleBoundary_V(Grid *v, BoundaryIterator boit) const{
+  for (; boit.Valid(); boit.Next())
+    switch(this->CellTypeAt(boit)){
+      case CellType::Obstacle:
+        this->SetVDirichlet(v, boit, 0.0);
+        break;
+        
+      case CellType::Inflow:
+        this->SetVDirichlet(v, boit, _velocity[1]);
+        break;
+        
+      case CellType::H_Inflow:
+        throw std::runtime_error(std::string("Not implemented!"));
+        break;
+        
+      case CellType::V_Inflow:
+        throw std::runtime_error(std::string("Not implemented!"));
+        break;
+        
+      case CellType::Outflow:
+        this->SetVNeumann(v, boit, 0.0);
+        break;
+        
+      case CellType::V_Slip:
+        if ((boit.Boundary() == 2) || (boit.Boundary() == 4)){
+          this->SetVDirichlet(v, boit, 0.0);
+        }else{
+          throw std::runtime_error(std::string("Vertical slip condition is not allowed on the lower/upper boundary"));
+        }
+        break;
+        
+      case CellType::H_Slip:
+        if ((boit.Boundary() == 1) || (boit.Boundary() == 3)){
+          this->SetVNeumann(v, boit, 0.0);
+        }else{
+          throw std::runtime_error(std::string("Horizontal slip condition is not allowed on the left/right boundary"));
+        }
+        break;
+        
+      default:
+        throw std::runtime_error(std::string("Unknown boundary condition: "+ std::to_string(this->CellTypeAt(boit))));
+        break;
+    }
 }
 
 void Geometry::Update_P(Grid *p) const{
   BoundaryIterator boit(this, 1);
   
+  // Set lower boundary
+  boit.SetBoundary(1);
+  this->CycleBoundary_P(p, boit);
+  
   // Set right boundary
   boit.SetBoundary(2);
-  if (_ptype[1] == 'd') {
-    for (; boit.Valid(); boit.Next())
-      p->Cell(boit) = _pressure[1];
-  } else {
-    for (; boit.Valid(); boit.Next())
-      p->Cell(boit) = p->Cell(boit.Left()) + _h[1] * _pressure[1];
-  }
+  this->CycleBoundary_P(p, boit);
+    
+  // Set upper boundary
+  boit.SetBoundary(3);
+  this->CycleBoundary_P(p, boit);
   
   // Set left boundary
   boit.SetBoundary(4);
-  if (_ptype[3] == 'd') {
-    for (; boit.Valid(); boit.Next())
-      p->Cell(boit) = _pressure[3];
-  } else {
-    for (; boit.Valid(); boit.Next())
-      p->Cell(boit) = p->Cell(boit.Left()) + _h[1] * _pressure[3];
-  }
+  this->CycleBoundary_P(p, boit);
   
-  // Set lower boundary
-  boit.SetBoundary(1);
-  if (_ptype[0] == 'd') {
-    for (; boit.Valid(); boit.Next())
-      p->Cell(boit) = _pressure[0];
-  } else {
-    for (; boit.Valid(); boit.Next())
-      p->Cell(boit) = p->Cell(boit.Top()) - _h[0] * _pressure[0];
-  }
-  
-  // Set upper boundary
-  boit.SetBoundary(3);
-  if (_ptype[2] == 'd') {
-    for (; boit.Valid(); boit.Next())
-      p->Cell(boit) = _pressure[2];
-  } else {
-    for (; boit.Valid(); boit.Next())
-      p->Cell(boit) = p->Cell(boit.Left()) + _h[0] * _pressure[2];
-  }
   
   // Set corners to avg of neighbour cells
   Iterator cbl = boit.CornerBottomLeft();
@@ -392,6 +336,216 @@ void Geometry::Update_P(Grid *p) const{
   
   Iterator ctr = boit.CornerTopRight();
   p->Cell(ctr) = (p->Cell(ctr.Left()) + p->Cell(ctr.Down()))/2.0; 
+}
+
+void Geometry::CycleBoundary_P(Grid *p, BoundaryIterator boit) const{
+  for (; boit.Valid(); boit.Next())
+    switch(this->CellTypeAt(boit)){
+      case CellType::Obstacle:
+        this->SetPNeumann(p, boit, 0.0);
+        break;
+        
+      case CellType::Inflow:
+        this->SetPNeumann(p, boit, 0.0);
+        break;
+        
+      case CellType::H_Inflow:
+        throw std::runtime_error(std::string("Not implemented!"));
+        break;
+        
+      case CellType::V_Inflow:
+        throw std::runtime_error(std::string("Not implemented!"));
+        break;
+        
+      case CellType::Outflow:
+        this->SetPDirichlet(p, boit, 0.0);
+        break;
+        
+      case CellType::V_Slip:
+        this->SetPDirichlet(p, boit, _pressure);
+        break;
+        
+      case CellType::H_Slip:
+        this->SetPDirichlet(p, boit, _pressure);
+        break;
+        
+      default:
+        throw std::runtime_error(std::string("Unknown boundary condition: "+ std::to_string(this->CellTypeAt(boit))));
+        break;
+    }
+}
+
+void Geometry::SetUDirichlet(Grid *u, const BoundaryIterator &boit, const real_t &value) const{
+  switch(boit.Boundary()){
+    // Set lower boundary
+    case 1:
+      u->Cell(boit) = 2 * value - u->Cell(boit.Top());
+      break;
+      
+    // Set right boundary
+    case 2:
+      u->Cell(boit)        = value;
+      u->Cell(boit.Left()) = value;
+      break;
+      
+    // Set upper boundary
+    case 3:
+      u->Cell(boit) = 2 * value - u->Cell(boit.Down());
+      break;
+      
+    // Set left boundary
+    case 4:
+      u->Cell(boit) = value;
+      break;
+      
+    default:
+      throw std::runtime_error(std::string("Failed to operate with given boundary value: "+ std::to_string(boit.Boundary())));
+      break;
+  }
+}
+
+void Geometry::SetUNeumann(Grid *u, const BoundaryIterator &boit, const real_t &value) const{
+  switch(boit.Boundary()){
+    // Set lower boundary
+    case 1:
+      u->Cell(boit) = u->Cell(boit.Top()) - _h[1] * value;
+      break;
+      
+    // Set right boundary
+    case 2:
+      u->Cell(boit.Left()) = u->Cell(boit.Left().Left()) + _h[0] * value;
+      u->Cell(boit)        = u->Cell(boit.Left());
+      break;
+      
+    // Set upper boundary
+    case 3:
+      u->Cell(boit) = u->Cell(boit.Down()) + _h[1] * value;
+      break;
+      
+    // Set left boundary
+    case 4:
+      u->Cell(boit) = u->Cell(boit.Right()) - _h[0] * value;
+      break;
+      
+    default:
+      throw std::runtime_error(std::string("Failed to operate with given boundary value: "+ std::to_string(boit.Boundary())));
+      break;
+  }
+}
+  
+
+void Geometry::SetVDirichlet(Grid *v, const BoundaryIterator &boit, const real_t &value) const{
+  switch(boit.Boundary()){
+    // Set lower boundary
+    case 1:
+      v->Cell(boit) = value;
+      break;
+      
+    // Set right boundary
+    case 2:
+      v->Cell(boit) = 2 * value - v->Cell(boit.Left());
+      break;
+      
+    // Set upper boundary
+    case 3:
+      v->Cell(boit) = value;
+      v->Cell(boit.Down()) = value;
+      break;
+      
+    // Set left boundary
+    case 4:
+      v->Cell(boit) = 2 * value - v->Cell(boit.Right());
+      break;
+      
+    default:
+      throw std::runtime_error(std::string("Failed to operate with given boundary value: "+ std::to_string(boit.Boundary())));
+      break;
+  }
+}
+
+void Geometry::SetVNeumann(Grid *v, const BoundaryIterator &boit, const real_t &value) const{
+  switch(boit.Boundary()){
+    // Set lower boundary
+    case 1:
+      v->Cell(boit) = v->Cell(boit.Top()) - _h[1] * value;
+      break;
+      
+    // Set right boundary
+    case 2:
+      v->Cell(boit) = v->Cell(boit.Left()) + _h[0] * value;
+      break;
+      
+    // Set upper boundary
+    case 3:
+      v->Cell(boit.Down()) = v->Cell(boit.Down().Down()) + _h[1] * value;
+      v->Cell(boit)        = v->Cell(boit.Down());
+      break;
+      
+    // Set left boundary
+    case 4:
+      v->Cell(boit) = v->Cell(boit.Right()) - _h[0] * value;
+      break;
+      
+    default:
+      throw std::runtime_error(std::string("Failed to operate with given boundary value: "+ std::to_string(boit.Boundary())));
+      break;
+  }
+}
+
+void Geometry::SetPDirichlet(Grid *p, const BoundaryIterator &boit, const real_t &value) const{
+  switch(boit.Boundary()){
+    // Set lower boundary
+    case 1:
+      p->Cell(boit) = 2 * value - p->Cell(boit.Top());
+      break;
+      
+    // Set right boundary
+    case 2:
+      p->Cell(boit) = 2 * value - p->Cell(boit.Left());
+      break;
+      
+    // Set upper boundary
+    case 3:
+      p->Cell(boit) = 2 * value - p->Cell(boit.Down());
+      break;
+      
+    // Set left boundary
+    case 4:
+      p->Cell(boit) = 2 * value - p->Cell(boit.Right());
+      break;
+      
+    default:
+      throw std::runtime_error(std::string("Failed to operate with given boundary value: "+ std::to_string(boit.Boundary())));
+      break;
+  }
+}
+
+void Geometry::SetPNeumann(Grid *p, const BoundaryIterator &boit, const real_t &value) const{
+  switch(boit.Boundary()){
+    // Set lower boundary
+    case 1:
+      p->Cell(boit) = p->Cell(boit.Top()) - _h[1] * value;
+      break;
+      
+    // Set right boundary
+    case 2:
+      p->Cell(boit) = p->Cell(boit.Left()) + _h[0] * value;
+      break;
+      
+    // Set upper boundary
+    case 3:
+      p->Cell(boit) = p->Cell(boit.Down()) + _h[1] * value;
+      break;
+      
+    // Set left boundary
+    case 4:
+      p->Cell(boit) = p->Cell(boit.Right()) - _h[0] * value;
+      break;
+      
+    default:
+      throw std::runtime_error(std::string("Failed to operate with given boundary value: "+ std::to_string(boit.Boundary())));
+      break;
+  }
 }
 
 char Geometry::CellTypeAt(index_t pos) const {

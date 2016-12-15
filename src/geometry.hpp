@@ -16,6 +16,7 @@
  */
 
 #include "typedef.hpp"
+#include "iterator.hpp"
 //------------------------------------------------------------------------------
 #ifndef __GEOMETRY_HPP
 #define __GEOMETRY_HPP
@@ -117,21 +118,11 @@ private:
   /// _h multi_real_t The mesh width in each dimension
   multi_real_t _h;
 
-  /// _velocity array_t<real_t, 8> The velocity boundary values for the boundaries
-  /// numbered clockwise from the lower boundary with two values each
-  array_t<real_t, 8> _velocity;
+  /// _velocity multi_real_t The velocity boundary values for the boundaries
+  multi_real_t _velocity;
 
-  /// _pressure array_t<real_t, 4> The pressure boundary values for the boundaries
-  /// numbered clockwise from the lower boundary with two values each
-  array_t<real_t, 4> _pressure;
-
-  /// _vtype array_t<char, 8> The type of boundary (Dirichlet or von Neuman) for
-  /// the velocity boundary values
-  array_t<char, 8> _vtype;
-
-  /// _vtype array_t<char, 8> The type of boundary (Dirichlet or von Neuman) for
-  /// the pressure boundary values
-  array_t<char, 4> _ptype;
+  /// _pressure real_t The pressure boundary values for the boundaries
+  real_t _pressure;
   
   // _invh multi_real_t The inverse mesh width in each dimension
   multi_real_t _invh;
@@ -145,6 +136,66 @@ private:
   
   // _streakline particles_t List of all particles to build a streakline
   particles_t _streakline;
+  
+  /// Cycle the full boundary given by BoundaryIterator boit on Grid u
+  ///
+  /// @param u Grid The velocity field u in x direction
+  /// @param boit BoundaryIterator Boundary to iterate until boit.Valid() equals false
+  void CycleBoundary_U(Grid *u, BoundaryIterator boit) const;
+  
+  /// Cycle the full boundary given by BoundaryIterator boit on Grid v
+  ///
+  /// @param v Grid The velocity field v in y direction
+  /// @param boit BoundaryIterator Boundary to iterate until boit.Valid() equals false
+  void CycleBoundary_V(Grid *v, BoundaryIterator boit) const;
+  
+  /// Cycle the full boundary given by BoundaryIterator boit on Grid p
+  ///
+  /// @param p Grid The pressure field p
+  /// @param boit BoundaryIterator Boundary to iterate until boit.Valid() equals false
+  void CycleBoundary_P(Grid *p, BoundaryIterator boit) const;
+  
+  /// Sets Dirichlet boundary condition for Grid u on boundary boit.Boundary() at position boit to value
+  /// 
+  /// @param u Grid The velocity field u in x direction
+  /// @param boit BoundaryIterator Position to set boundary condition
+  /// @param value real_t Value to set as boundary condition
+  void SetUDirichlet(Grid *u, const BoundaryIterator &boit, const real_t &value) const;
+  
+  /// Sets Neumann boundary condition for Grid u on boundary boit.Boundary() at position boit to value
+  /// 
+  /// @param u Grid The velocity field u in x direction
+  /// @param boit BoundaryIterator Position to set boundary condition
+  /// @param value real_t Value to set as boundary condition
+  void SetUNeumann(Grid *u, const BoundaryIterator &boit, const real_t &value) const;
+  
+  /// Sets Dirichlet boundary condition for Grid u on boundary boit.Boundary() at position boit to value
+  /// 
+  /// @param v Grid The velocity field v in y direction
+  /// @param boit BoundaryIterator Position to set boundary condition
+  /// @param value real_t Value to set as boundary condition
+  void SetVDirichlet(Grid *v, const BoundaryIterator &boit, const real_t &value) const;
+  
+  /// Sets Neumann boundary condition for Grid u on boundary boit.Boundary() at position boit to value
+  /// 
+  /// @param v Grid The velocity field v in y direction
+  /// @param boit BoundaryIterator Position to set boundary condition
+  /// @param value real_t Value to set as boundary condition
+  void SetVNeumann(Grid *v, const BoundaryIterator &boit, const real_t &value) const;
+  
+  /// Sets Dirichlet boundary condition for Grid u on boundary boit.Boundary() at position boit to value
+  /// 
+  /// @param p Grid The pressure field p
+  /// @param boit BoundaryIterator Position to set boundary condition
+  /// @param value real_t Value to set as boundary condition
+  void SetPDirichlet(Grid *p, const BoundaryIterator &boit, const real_t &value) const;
+  
+  /// Sets Neumann boundary condition for Grid u on boundary boit.Boundary() at position boit to value
+  /// 
+  /// @param p Grid The pressure field p
+  /// @param boit BoundaryIterator Position to set boundary condition
+  /// @param value real_t Value to set as boundary condition
+  void SetPNeumann(Grid *p, const BoundaryIterator &boit, const real_t &value) const;
 };
 //------------------------------------------------------------------------------
 #endif // __GEOMETRY_HPP
