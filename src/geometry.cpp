@@ -203,16 +203,19 @@ void Geometry::Update_U(Grid *u) const{
       case 13:
         u->Cell(oit) = -u->Cell(oit.Top());
         break;
+        
+      case 14:
+        u->Cell(oit.Left()) = 0;
+        break;
 
       case 11:
-      case 14:
       case 3:
       case 9:
         u->Cell(oit) = 0;
         break;
 
       case 7:
-        u->Cell(oit) = u->Cell(oit.Down());
+        u->Cell(oit) = -u->Cell(oit.Down());
         break;
 
       case 12:
@@ -221,7 +224,7 @@ void Geometry::Update_U(Grid *u) const{
         break;
 
       case 6:
-        u->Cell(oit) = u->Cell(oit.Down());
+        u->Cell(oit) = -u->Cell(oit.Down());
         u->Cell(oit.Left()) = 0;
         break;
     }
@@ -298,6 +301,9 @@ void Geometry::Update_V(Grid *v) const{
     int* c = this->NeighbourCode(oit); 
     switch ((c[0] << 3) + (c[1] << 2) + (c[2] << 1) + c[3]) {
       case 7:
+        v->Cell(oit.Down()) = 0;
+        break;
+        
       case 13:
       case 9:
       case 12:
