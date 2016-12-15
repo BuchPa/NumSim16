@@ -49,6 +49,10 @@ real_t SOR::Cycle(Grid *grid, const Grid *rhs) const {
   index_t n_avg(0);
   
   for (init.First(); init.Valid(); init.Next()) {
+    // Skip obstacles
+    if (_geom->CellTypeAt(init) != CellType::Fluid)
+      continue;
+    
     real_t localRes = this->localRes(init, grid, rhs);
     grid->Cell(init) = grid->Cell(init) + _omega * _hsquare * localRes;
     
