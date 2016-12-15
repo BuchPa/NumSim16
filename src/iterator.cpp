@@ -300,10 +300,14 @@ Iterator BoundaryIterator::CornerTopRight(){
   return it;
 }
 
-ObstacleIterator::ObstacleIterator(const Geometry *geom) : InteriorIterator(geom) {}
+ObstacleIterator::ObstacleIterator(const Geometry *geom) : InteriorIterator(geom) {
+  ObstacleIterator::First();
+}
 
 void ObstacleIterator::First() {
   InteriorIterator::First();
+  if (_geom->CellTypeAt(_value) == CellType::Fluid)
+    ObstacleIterator::Next();
 }
 
 void ObstacleIterator::Next() {
