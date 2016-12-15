@@ -104,9 +104,27 @@ public:
   /// @param p Grid The pressure field p
   void Update_P(Grid *p) const;
 
+  /// Returns the cell type of the cell at the given iterator position.
+  ///
+  /// @see Enum CellType
+  /// @param pos index_t The position of the iterator
+  /// @return char The cell type at the given position
   char CellTypeAt(index_t pos) const;
 
+  /// Returns the cell type of the cell at the given x/y position.
+  ///
+  /// @see Enum CellType
+  /// @param pos index_t The x/y position
+  /// @return char The cell type at the given position
   char CellTypeAt(index_t xpos, index_t ypos) const;
+
+  /// Returns cell types of the von-Neumann neighborhood of the cell at the
+  /// given iterator position coded into a four-sized int array. The four
+  /// neighbors are numbered counter-clockwise beginning with the lower neighbor.
+  ///
+  /// @param pos index_t The iterator position
+  /// @return int* The cell types of the neighborhood of the given cell
+  int* NeighbourCode(index_t pos) const;
 
 private:
   /// _size multi_index_t The number of cells in each dimension
@@ -136,6 +154,9 @@ private:
   
   // _streakline particles_t List of all particles to build a streakline
   particles_t _streakline;
+  
+  /// _nb int* An array used in calculating the neighborhood of a cell
+  int* _nb;
   
   /// Cycle the full boundary given by BoundaryIterator boit on Grid u
   ///
