@@ -136,6 +136,20 @@ void Geometry::Load(const char *file){
   fclose(handle);
 
   this->Recalculate();
+  
+//   // Print field
+//   index_t lastLine = 0;
+//   Iterator it(this);
+//   
+//   for (it.First(); it.Valid(); it.Next()) {
+//     if (lastLine!=it.Pos()[1]) {
+//       lastLine = it.Pos()[1];
+//       printf("\n");
+//     }
+//     printf("%c", _cells[it]);
+//   }
+//  
+//  throw std::runtime_error(std::string("You shall not pass!"));
 }
 
 void Geometry::Recalculate() {
@@ -673,7 +687,7 @@ int* Geometry::NeighbourCode(index_t pos) const {
   _nb[0] = pos - _size[0];
   _nb[1] = pos + 1;
   _nb[2] = pos + _size[0];
-  _nb[4] = pos - 1;
+  _nb[3] = pos - 1;
 
   _nb[0] = _nb[0] < 0 ? 1 : _cells[_nb[0]] != CellType::Fluid;
   _nb[1] = _nb[1] % _size[0] == 0 ? 1 : _cells[_nb[1]] != CellType::Fluid;
