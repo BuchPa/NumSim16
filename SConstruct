@@ -27,10 +27,10 @@ debug = ARGUMENTS.get('debug', 0)
 # macro similar to mpic++
 
 # parallel
-env.Replace(CXX='mpicxx.mpich')
+# env.Replace(CXX='mpicxx.mpich')
 
 # serial
-#env.Replace(CXX='g++')
+env.Replace(CXX='g++')
 
 # define some general compiler flags
 env.Append(
