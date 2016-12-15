@@ -177,6 +177,12 @@ private:
   //
   // @param dt real_t The timestep dt
   void ComputeParticleTracing(const real_t &dt, bool addOne);
+  
+  /// Returns boolean, whether given particle lays inside the simulated area
+  ///
+  /// @param multi_real_t The particle to be checked
+  /// @return bool Tells whether the given particle lays inside the simulated area
+  bool IsValidParticle(multi_real_t &particle);
 };
 //------------------------------------------------------------------------------
 #endif // __COMPUTE_HPP

@@ -298,12 +298,18 @@ void Compute::ComputeStreaklines(const real_t &dt, bool addOne){
   for (list<particles_t>::iterator it_streak=_streakline.begin(); it_streak!=_streakline.end(); ++it_streak) {
     // Cycle the list of particles
     for (iter_particles_t it=it_streak->begin(); it!=it_streak->end(); ++it) {
-      this->ComputeParticleStep((*it), dt);
+      if (this->IsValidParticle(*it)) {
+        this->ComputeParticleStep((*it), dt);
+      }
     }
     
     // Add new item, if desired
     if (addOne){
       multi_real_t lastStep = *(--it_streak->end());
+      
+      if (!this->IsValidParticle(lastStep))
+        continue;
+      
       this->ComputeParticleStep(lastStep, dt);
       it_streak->push_back(lastStep);
     }
@@ -316,6 +322,9 @@ void Compute::ComputeParticleTracing(const real_t &dt, bool addOne){
     // Get last known position of the particle to trace
     multi_real_t lastStep = *(--it_trace->end());
     
+    if (!this->IsValidParticle(lastStep))
+      continue;
+    
     // Update position
     this->ComputeParticleStep(lastStep, dt);
     
@@ -327,5 +336,18 @@ void Compute::ComputeParticleTracing(const real_t &dt, bool addOne){
       it_trace->erase(--it_trace->end());
       it_trace->push_back(lastStep);
     }
+  }
+}
+
+bool Compute::IsValidParticle(multi_real_t &particle){
+  if (
+      (particle[0] < 0.0) ||
+      (particle[0] > 1.001*_geom->Length()[0]) ||
+      (particle[1] < 0.0) ||
+      (particle[1] > 1.001*_geom->Length()[1])
+     ){
+    return false;
+  }else{
+    return true;
   }
 }
