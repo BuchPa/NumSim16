@@ -553,15 +553,15 @@ void Geometry::SetUNeumann(Grid *u, const BoundaryIterator &boit, const real_t &
   
 void Geometry::SetUParabol(Grid *u, const BoundaryIterator &boit, const real_t &value, real_t &coord) const{
   if (this->CellTypeAt(boit.Down())!=CellType::V_Inflow){//calculate lower boundary value for parabol
-    u->Cell(boit.Down()) = 2 * value / _length[1] * (coord - coord * coord / _length[1]);
+    u->Cell(boit.Down()) = 4 * value / _length[1] * (coord - coord * coord / _length[1]);
   }
 
   coord += _h[1];
-    u->Cell(boit) = 2 * value / _length[1] * (coord - coord * coord / _length[1]);
+    u->Cell(boit) = 4 * value / _length[1] * (coord - coord * coord / _length[1]);
 
   if (this->CellTypeAt(boit.Top())!=CellType::V_Inflow){//calculate upper boundary value for parabol
     coord +=_h[1];
-    u->Cell(boit.Down()) = 2 * value / _length[1] * (coord - coord * coord / _length[1]);
+    u->Cell(boit.Top()) = 4 * value / _length[1] * (coord - coord * coord / _length[1]);
   }
 }
 
