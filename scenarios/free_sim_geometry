@@ -1,4 +1,4 @@
-size = 8 8 
+size = 10 10
 length = 1.0 1.0
 velocity = 0.0 0.0
 pressure = 0.0
