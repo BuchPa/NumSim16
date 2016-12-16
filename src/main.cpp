@@ -27,6 +27,7 @@
 
 #include <iostream> // getchar()
 #include <chrono> // time functions
+#include <string> // string functions
 
 using namespace std::chrono;
 
@@ -71,10 +72,25 @@ int main(int argc, char **argv) {
   Parameter param;
   Geometry geom;
   
-  // Read parameter file
-  param.Load("ex1_parameter");
-  // Read geometry file
-  geom.Load("ex1_geometry");
+  // Check which scenario (if any) we want to simulate
+  std::string scenarioName = "none";
+  for (int i = 0; i < argc; i++) {
+    if (
+      strstr(argv[i], "scenario") != NULL
+      && i < argc - 1
+    ) {
+      scenarioName = argv[i + 1];
+    }
+  }
+
+  // Read parameter and geometry files
+  if (scenarioName != "none") {
+    param.Load(("scenarios/" + scenarioName + "_parameter").c_str());
+    geom.Load(("scenarios/" + scenarioName + "_geometry").c_str());
+  } else {
+    param.Load("scenarios/free_sim_parameter");
+    geom.Load("scenarios/free_sim_geometry");
+  }
   
   // Create the fluid solver
   Compute comp(&geom, &param);

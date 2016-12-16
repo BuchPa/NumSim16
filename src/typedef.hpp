@@ -21,7 +21,7 @@
 // For throwing puzzling errors at the simple-minded user i.e. make him fear c/c++
 #include <stdexcept>
 // For particles list
-#include<list>
+#include <list>
 
 //------------------------------------------------------------------------------
 
