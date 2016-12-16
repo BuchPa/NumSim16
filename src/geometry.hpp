@@ -190,7 +190,15 @@ private:
   /// @param value real_t Value to set as boundary condition
   void SetUNeumann(Grid *u, const BoundaryIterator &boit, const real_t &value) const;
   
-  /// Sets Dirichlet boundary condition for Grid u on boundary boit.Boundary() at position boit to value
+  /// Sets Dirichlet boundary condition for Grid u on boundary boit.Boundary() at position boit to a
+  /// value corresponding to a parabolic inflow with value being maximal velocity.
+  /// @param u Grid The velocity field u in x direction
+  /// @param boit BoundaryIterator Position to set boundary condition
+  /// @param value real_t Value to set as boundary condition
+  /// @coord y coordinate of boit to adapt local velocity to the parabol 
+  void SetUParabol(Grid *u, const BoundaryIterator &boit, const real_t &value, real_t &coord) const;
+  
+/// Sets Dirichlet boundary condition for Grid u on boundary boit.Boundary() at position boit to value
   /// 
   /// @param v Grid The velocity field v in y direction
   /// @param boit BoundaryIterator Position to set boundary condition

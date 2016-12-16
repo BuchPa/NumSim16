@@ -247,6 +247,7 @@ void Geometry::Update_U(Grid *u) const{
 }
 
 void Geometry::CycleBoundary_U(Grid *u, BoundaryIterator boit) const{
+  real_t y = -0.5*_h[1];
   for (; boit.Valid(); boit.Next())
     switch(this->CellTypeAt(boit)){
       case CellType::Obstacle:
@@ -262,7 +263,11 @@ void Geometry::CycleBoundary_U(Grid *u, BoundaryIterator boit) const{
         break;
         
       case CellType::V_Inflow:
+        if ((boit.Boundary() == 4)){
+        this->SetUParabol(u, boit, _velocity[0], y);
+        }else{
         throw std::runtime_error(std::string("Not implemented!"));
+        }
         break;
         
       case CellType::Outflow:
@@ -560,6 +565,19 @@ void Geometry::SetUNeumann(Grid *u, const BoundaryIterator &boit, const real_t &
   }
 }
   
+void Geometry::SetUParabol(Grid *u, const BoundaryIterator &boit, const real_t &value, real_t &coord) const{
+  if (this->CellTypeAt(boit.Down())!=CellType::Obstacle){//calculate lower boundary value for parabol
+    u->Cell(boit.Down()) = 2 * value / _length[1] * (coord - coord * coord / _length[1]);
+  }
+
+  coord += _h[1];
+    u->Cell(boit) = 2 * value / _length[1] * (coord - coord * coord / _length[1]);
+
+  if (this->CellTypeAt(boit.Top())!=CellType::Obstacle){//calculate upper boundary value for parabol
+    coord +=_h[1];
+    u->Cell(boit.Down()) = 2 * value / _length[1] * (coord - coord * coord / _length[1]);
+  }
+}
 
 void Geometry::SetVDirichlet(Grid *v, const BoundaryIterator &boit, const real_t &value) const{
   switch(boit.Boundary()){
