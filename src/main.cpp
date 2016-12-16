@@ -102,8 +102,8 @@ int main(int argc, char **argv) {
   if (
     scenarioName != "none"
     && (
-      !file_exists("scenarios/" + scenarioName + "_parameter")
-      || !file_exists("scenarios/" + scenarioName + "_geometry")
+      !file_exists("scenarios/" + scenarioName + ".param")
+      || !file_exists("scenarios/" + scenarioName + ".geom")
     )
   ) {
     throw std::runtime_error(std::string("Unknown scenario: " + scenarioName));
@@ -111,11 +111,11 @@ int main(int argc, char **argv) {
 
   // Read parameter and geometry files
   if (scenarioName != "none") {
-    param.Load(("scenarios/" + scenarioName + "_parameter").c_str());
-    geom.Load(("scenarios/" + scenarioName + "_geometry").c_str());
+    param.Load(("scenarios/" + scenarioName + ".param").c_str());
+    geom.Load(("scenarios/" + scenarioName + ".geom").c_str());
   } else {
-    param.Load("scenarios/free_sim_parameter");
-    geom.Load("scenarios/free_sim_geometry");
+    param.Load("scenarios/free_sim.param");
+    geom.Load("scenarios/free_sim.geom");
   }
   
   // Create the fluid solver
