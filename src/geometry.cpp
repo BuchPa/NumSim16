@@ -8,9 +8,9 @@
 #include <cstdlib> // read/write
 
 Geometry::Geometry(){
-  // Init number of INNER cells in each dimension
-  _size[0] = 8;
-  _size[1] = 8;
+  // Init number of cells in each dimension
+  _size[0] = 10;
+  _size[1] = 10;
   
   // Init geom data field
   _cells = new char[_size[0] * _size[1]];
@@ -52,7 +52,7 @@ void Geometry::Load(const char *file){
 
         // Resize cell field
         delete[] _cells;
-        _cells = new char[(_size[0]+2) * (_size[1]+2)];
+        _cells = new char[(_size[0]) * (_size[1])];
       }
       continue;
     }
@@ -108,7 +108,7 @@ void Geometry::Load(const char *file){
             continue;
           }
 
-          for (index_t i = 0; i < _size[0]+2; i++) {
+          for (index_t i = 0; i < _size[0]; i++) {
 
             switch (line[i]) {
               case CellType::Fluid:
@@ -119,7 +119,7 @@ void Geometry::Load(const char *file){
               case CellType::Outflow:
               case CellType::V_Slip:
               case CellType::H_Slip:
-                _cells[(_size[1] + 1 - j) * (_size[0]+2) + i] = line[i];
+                _cells[(_size[1] - 1 - j) * (_size[0]) + i] = line[i];
                 break;
 
               default:
@@ -136,34 +136,16 @@ void Geometry::Load(const char *file){
   fclose(handle);
 
   this->Recalculate();
-  
-//   // Print field
-//   index_t lastLine = 0;
-//   Iterator it(this);
-//   
-//   for (it.First(); it.Valid(); it.Next()) {
-//     if (lastLine!=it.Pos()[1]) {
-//       lastLine = it.Pos()[1];
-//       printf("\n");
-//     }
-//     printf("%c", _cells[it]);
-//   }
-//  
-//  throw std::runtime_error(std::string("You shall not pass!"));
 }
 
 void Geometry::Recalculate() {
   // Calculate cell width/height
-  _h[0] = _length[0]/_size[0];
-  _h[1] = _length[1]/_size[1];
+  _h[0] = _length[0] / (_size[0] - 2);
+  _h[1] = _length[1] / (_size[1] - 2);
   
   // Calculate inverse mesh width/height
-  _invh[0] = _size[0]/_length[0];
-  _invh[1] = _size[1]/_length[1];
-  
-  // Set _size to size INCL ghost layers
-  _size[0] += 2;
-  _size[1] += 2;
+  _invh[0] = (_size[0] - 2) / _length[0];
+  _invh[1] = (_size[1] - 2) / _length[1];
 }
 
 const multi_index_t &Geometry::Size() const {
@@ -368,7 +350,11 @@ void Geometry::CycleBoundary_V(Grid *v, BoundaryIterator boit) const{
         break;
         
       case CellType::V_Inflow:
-        throw std::runtime_error(std::string("Not implemented!"));
+        if ((boit.Boundary() == 2) || (boit.Boundary() == 4)){
+          this->SetVDirichlet(v, boit, 0.0);
+        }else{
+          throw std::runtime_error(std::string("Vertical slip condition is not allowed on the lower/upper boundary"));
+        }
         break;
         
       case CellType::Outflow:
@@ -486,7 +472,7 @@ void Geometry::CycleBoundary_P(Grid *p, BoundaryIterator boit) const{
         break;
         
       case CellType::V_Inflow:
-        throw std::runtime_error(std::string("Not implemented!"));
+        this->SetPNeumann(p, boit, 0.0);
         break;
         
       case CellType::Outflow:
