@@ -27,10 +27,22 @@
 
 #include <iostream> // getchar()
 #include <chrono> // time functions
+#include <string> // string functions
+#include <algorithm> // transform()
+#include <fstream> // ifstream
 
 using namespace std::chrono;
 
 #define MEASURE_TIME true
+
+/// Returns if the file exists and can be accessed.
+///
+/// @param name std::string The filename
+/// @return bool If the file exists and is accessible
+bool file_exists(std::string name) {
+  std::ifstream f(name.c_str());
+  return f.good();
+}
 
 /// The entry point into the simulation program. The following console para-
 /// meters are implemented:
@@ -71,10 +83,40 @@ int main(int argc, char **argv) {
   Parameter param;
   Geometry geom;
   
-  // Read parameter file
-  param.Load("ex1_parameter");
-  // Read geometry file
-  geom.Load("ex1_geometry");
+  // Check which scenario (if any) we want to simulate
+  std::string scenarioName = "none";
+  for (int i = 0; i < argc; i++) {
+    std::string dc = argv[i];
+    std::transform(dc.begin(), dc.end(), dc.begin(), ::tolower);
+
+    if (
+      dc == "scenario"
+      && i < argc - 1
+    ) {
+      scenarioName = argv[i + 1];
+      std::transform(scenarioName.begin(), scenarioName.end(),  scenarioName.begin(), ::tolower);
+    }
+  }
+
+  // Check if scenario exist
+  if (
+    scenarioName != "none"
+    && (
+      !file_exists("scenarios/" + scenarioName + "_parameter")
+      || !file_exists("scenarios/" + scenarioName + "_geometry")
+    )
+  ) {
+    throw std::runtime_error(std::string("Unknown scenario: " + scenarioName));
+  }
+
+  // Read parameter and geometry files
+  if (scenarioName != "none") {
+    param.Load(("scenarios/" + scenarioName + "_parameter").c_str());
+    geom.Load(("scenarios/" + scenarioName + "_geometry").c_str());
+  } else {
+    param.Load("scenarios/free_sim_parameter");
+    geom.Load("scenarios/free_sim_geometry");
+  }
   
   // Create the fluid solver
   Compute comp(&geom, &param);

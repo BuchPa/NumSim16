@@ -119,7 +119,7 @@ void Geometry::Load(const char *file){
               case CellType::Outflow:
               case CellType::V_Slip:
               case CellType::H_Slip:
-                _cells[j * (_size[0]+2) + i] = line[i];
+                _cells[(_size[1] + 1 - j) * (_size[0]+2) + i] = line[i];
                 break;
 
               default:
