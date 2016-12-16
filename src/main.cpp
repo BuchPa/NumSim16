@@ -28,10 +28,21 @@
 #include <iostream> // getchar()
 #include <chrono> // time functions
 #include <string> // string functions
+#include <algorithm> // transform()
+#include <fstream> // ifstream
 
 using namespace std::chrono;
 
 #define MEASURE_TIME true
+
+/// Returns if the file exists and can be accessed.
+///
+/// @param name std::string The filename
+/// @return bool If the file exists and is accessible
+bool file_exists(std::string name) {
+  std::ifstream f(name.c_str());
+  return f.good();
+}
 
 /// The entry point into the simulation program. The following console para-
 /// meters are implemented:
@@ -75,12 +86,27 @@ int main(int argc, char **argv) {
   // Check which scenario (if any) we want to simulate
   std::string scenarioName = "none";
   for (int i = 0; i < argc; i++) {
+    std::string dc = argv[i];
+    std::transform(dc.begin(), dc.end(), dc.begin(), ::tolower);
+
     if (
-      strstr(argv[i], "scenario") != NULL
+      dc == "scenario"
       && i < argc - 1
     ) {
       scenarioName = argv[i + 1];
+      std::transform(scenarioName.begin(), scenarioName.end(),  scenarioName.begin(), ::tolower);
     }
+  }
+
+  // Check if scenario exist
+  if (
+    scenarioName != "none"
+    && (
+      !file_exists("scenarios/" + scenarioName + "_parameter")
+      || !file_exists("scenarios/" + scenarioName + "_geometry")
+    )
+  ) {
+    throw std::runtime_error(std::string("Unknown scenario: " + scenarioName));
   }
 
   // Read parameter and geometry files
