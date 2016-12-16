@@ -350,7 +350,11 @@ void Geometry::CycleBoundary_V(Grid *v, BoundaryIterator boit) const{
         break;
         
       case CellType::V_Inflow:
-        throw std::runtime_error(std::string("Not implemented!"));
+        if ((boit.Boundary() == 2) || (boit.Boundary() == 4)){
+          this->SetVDirichlet(v, boit, 0.0);
+        }else{
+          throw std::runtime_error(std::string("Vertical slip condition is not allowed on the lower/upper boundary"));
+        }
         break;
         
       case CellType::Outflow:
@@ -468,7 +472,7 @@ void Geometry::CycleBoundary_P(Grid *p, BoundaryIterator boit) const{
         break;
         
       case CellType::V_Inflow:
-        throw std::runtime_error(std::string("Not implemented!"));
+        this->SetPNeumann(p, boit, 0.0);
         break;
         
       case CellType::Outflow:
