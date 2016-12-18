@@ -8,6 +8,9 @@ cmake_install.cmake
 Makefile
 CMakeFiles/
 
+# Magrathea executable
+Magrathea/magrathea
+
 # scons files and compile targets
 .sconsign.dblite
 
