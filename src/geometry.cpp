@@ -175,20 +175,20 @@ particles_t Geometry::Streaklines() const{
 void Geometry::Update_U(Grid *u) const{
   BoundaryIterator boit(this, 1);
   
-  // Set lower boundary
-  boit.SetBoundary(1);
+  // Set left boundary
+  boit.SetBoundary(4);
   this->CycleBoundary_U(u, boit);
   
   // Set right boundary
   boit.SetBoundary(2);
   this->CycleBoundary_U(u, boit);
     
-  // Set upper boundary
-  boit.SetBoundary(3);
+  // Set lower boundary
+  boit.SetBoundary(1);
   this->CycleBoundary_U(u, boit);
   
-  // Set left boundary
-  boit.SetBoundary(4);
+  // Set upper boundary
+  boit.SetBoundary(3);
   this->CycleBoundary_U(u, boit);
   
   ObstacleIterator oit = ObstacleIterator(this);
@@ -246,9 +246,9 @@ void Geometry::CycleBoundary_U(Grid *u, BoundaryIterator boit) const{
         
       case CellType::V_Inflow:
         if ((boit.Boundary() == 4)){
-        this->SetUParabol(u, boit, _velocity[0], y);
+          this->SetUParabol(u, boit, _velocity[0], y);
         }else{
-        throw std::runtime_error(std::string("Not implemented!"));
+          throw std::runtime_error(std::string("Not implemented!"));
         }
         break;
         
@@ -266,7 +266,7 @@ void Geometry::CycleBoundary_U(Grid *u, BoundaryIterator boit) const{
         
       case CellType::H_Slip:
         if ((boit.Boundary() == 1) || (boit.Boundary() == 3)){
-          this->SetUDirichlet(u, boit, 0.0);
+          this->SetUNeumann(u, boit, 0.0);
         }else{
           throw std::runtime_error(std::string("Horizontal slip condition is not allowed on the left/right boundary"));
         }
@@ -281,20 +281,20 @@ void Geometry::CycleBoundary_U(Grid *u, BoundaryIterator boit) const{
 void Geometry::Update_V(Grid *v) const{
   BoundaryIterator boit(this, 1);
   
-  // Set lower boundary
-  boit.SetBoundary(1);
+  // Set left boundary
+  boit.SetBoundary(4);
   this->CycleBoundary_V(v, boit);
   
   // Set right boundary
   boit.SetBoundary(2);
   this->CycleBoundary_V(v, boit);
     
-  // Set upper boundary
-  boit.SetBoundary(3);
+  // Set lower boundary
+  boit.SetBoundary(1);
   this->CycleBoundary_V(v, boit);
   
-  // Set left boundary
-  boit.SetBoundary(4);
+  // Set upper boundary
+  boit.SetBoundary(3);
   this->CycleBoundary_V(v, boit);
   
   ObstacleIterator oit = ObstacleIterator(this);
@@ -363,7 +363,7 @@ void Geometry::CycleBoundary_V(Grid *v, BoundaryIterator boit) const{
         
       case CellType::V_Slip:
         if ((boit.Boundary() == 2) || (boit.Boundary() == 4)){
-          this->SetVDirichlet(v, boit, 0.0);
+          this->SetVNeumann(v, boit, 0.0);
         }else{
           throw std::runtime_error(std::string("Vertical slip condition is not allowed on the lower/upper boundary"));
         }
@@ -386,22 +386,20 @@ void Geometry::CycleBoundary_V(Grid *v, BoundaryIterator boit) const{
 void Geometry::Update_P(Grid *p) const{
   BoundaryIterator boit(this, 1);
   
-  // Set lower boundary
-  boit.SetBoundary(1);
+  // Set left boundary
+  boit.SetBoundary(4);
   this->CycleBoundary_P(p, boit);
   
   // Set right boundary
   boit.SetBoundary(2);
   this->CycleBoundary_P(p, boit);
-    
+  
+  // Set lower boundary
+  boit.SetBoundary(1);
+  this->CycleBoundary_P(p, boit);
   // Set upper boundary
   boit.SetBoundary(3);
   this->CycleBoundary_P(p, boit);
-  
-  // Set left boundary
-  boit.SetBoundary(4);
-  this->CycleBoundary_P(p, boit);
-  
   
   // Set corners to avg of neighbour cells
   Iterator cbl = boit.CornerBottomLeft();
@@ -552,14 +550,17 @@ void Geometry::SetUNeumann(Grid *u, const BoundaryIterator &boit, const real_t &
 }
   
 void Geometry::SetUParabol(Grid *u, const BoundaryIterator &boit, const real_t &value, real_t &coord) const{
-  if (this->CellTypeAt(boit.Down())!=CellType::V_Inflow){//calculate lower boundary value for parabol
+  
+  // Calculate lower boundary value for parabol, if necessary
+  if (this->CellTypeAt(boit.Down())!=CellType::V_Inflow){
     u->Cell(boit.Down()) = 4 * value / _length[1] * (coord - coord * coord / _length[1]);
   }
 
   coord += _h[1];
-    u->Cell(boit) = 4 * value / _length[1] * (coord - coord * coord / _length[1]);
-
-  if (this->CellTypeAt(boit.Top())!=CellType::V_Inflow){//calculate upper boundary value for parabol
+  u->Cell(boit) = 4 * value / _length[1] * (coord - coord * coord / _length[1]);
+  
+  // Calculate upper boundary value for parabol, if necessary
+  if (this->CellTypeAt(boit.Top())!=CellType::V_Inflow){
     coord +=_h[1];
     u->Cell(boit.Top()) = 4 * value / _length[1] * (coord - coord * coord / _length[1]);
   }

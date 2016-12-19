@@ -1,4 +1,4 @@
-## Wrapping parameters from exercise sheet to Magrathea
+### Wrapping parameters from exercise sheet to Magrathea
 # Parameters
 iMax=160
 jMax=32
@@ -16,13 +16,27 @@ Ui=1.0
 Vi=0.0
 Pi=0.0
 output=./scenarios/free_sim
-# scenario="Karmann"
+
+### Choose a scenario
+
+# Karmann vortex street (-> alpha = angle of the obsacle)
+# scenario="Karman"
+
+# Velocity driven channel (-> Ui is calculated such that pressure difference equals 0.1)
 scenario="Channel"
+Ui=$(bc <<< "${yLength}*${yLength}*0.125*${Re}*0.1/${xLength}")
+
+# Pressure driven channel (-> Choose Pi for appropriate pressure gradient)
 # scenario="PressureChannel"
+
+# Pressure driven channel with step
 # scenario="Step"
 
+### Calculation of analytical velocity such that Pi=0.1 in case of scenario "Channel"
+
+
 # Execution
-if [ $scenario = "Karmann" ];
+if [ $scenario = "Karman" ];
   then pre=4
 elif [ $scenario = "Channel" ];
   then pre=1
