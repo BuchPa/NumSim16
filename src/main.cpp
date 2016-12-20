@@ -31,16 +31,16 @@
 #include <algorithm> // transform()
 #include <fstream> // ifstream
 
-using namespace std::chrono;
+using namespace std;
 
 #define MEASURE_TIME true
 
 /// Returns if the file exists and can be accessed.
 ///
-/// @param name std::string The filename
+/// @param name string The filename
 /// @return bool If the file exists and is accessible
-bool file_exists(std::string name) {
-  std::ifstream f(name.c_str());
+bool file_exists(string name) {
+  ifstream f(name.c_str());
   return f.good();
 }
 
@@ -74,8 +74,8 @@ int main(int argc, char **argv) {
   long start = 0, end = 0;
 
   if (MEASURE_TIME) {
-    start = duration_cast<milliseconds>(
-      system_clock::now().time_since_epoch()
+    start = std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now().time_since_epoch()
     ).count();
   }
 
@@ -84,17 +84,17 @@ int main(int argc, char **argv) {
   Geometry geom;
   
   // Check which scenario (if any) we want to simulate
-  std::string scenarioName = "none";
+  string scenarioName = "none";
   for (int i = 0; i < argc; i++) {
-    std::string dc = argv[i];
-    std::transform(dc.begin(), dc.end(), dc.begin(), ::tolower);
+    string dc = argv[i];
+    transform(dc.begin(), dc.end(), dc.begin(), ::tolower);
 
     if (
       dc == "scenario"
       && i < argc - 1
     ) {
       scenarioName = argv[i + 1];
-      std::transform(scenarioName.begin(), scenarioName.end(),  scenarioName.begin(), ::tolower);
+      transform(scenarioName.begin(), scenarioName.end(),  scenarioName.begin(), ::tolower);
     }
   }
 
@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
       || !file_exists("scenarios/" + scenarioName + ".geom")
     )
   ) {
-    throw std::runtime_error(std::string("Unknown scenario: " + scenarioName));
+    throw runtime_error(std::string("Unknown scenario: " + scenarioName));
   }
 
   // Read parameter and geometry files
@@ -248,8 +248,8 @@ int main(int argc, char **argv) {
   }
 
   if (MEASURE_TIME) {
-    end = duration_cast<milliseconds>(
-      system_clock::now().time_since_epoch()
+    end = std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now().time_since_epoch()
     ).count();
     printf("Overall run time (ms): %ld\n", end - start);
   }
