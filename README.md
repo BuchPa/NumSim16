@@ -47,8 +47,8 @@ The helper program Magrathea can be used to create a customized scenario without
 Since Magrathea only supports a given number of scenarios, you might need to create a geometry file manually in order to simulate your chosen problem. Let's have a look at an example geometry file:
 
 ```
-size = 160 32
-length = 5.000000 1.000000
+size = 10 10
+length = 1.000000 1.000000
 velocity = 25.000000 0.000000
 pressure = 0.000000
 geometry = free
@@ -70,6 +70,8 @@ The flag field determines how the domain looks like. That means what type of bou
 #........#
 ##########
 ```
+
+Please note that the flag field should have the same size as determined by the size parameters. The implementation of the fluid simulation uses halo cells to represent the boundaries. So with a size of 10 by 10 the inner domain is actually 8 by 8 cells big. The cell width is calculated by the inner domain. So here each cell would be 1/8 of the domain length wide.
 
 The dots represent fluid cells. These are basically empty space. The pound sign represent NOSLIP boundaries, which are also used for obstacles. NOSLIP means, that the fluid will stick to the boundary cells so that the velocity is zero exactly at the boundary line. The supported cell types are:
 * '.' : Fluid
