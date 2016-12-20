@@ -11,7 +11,7 @@ Numerische Simulation 2016/2017
 2. ```cd NumSim16```
 3. ```mkdir VTK```
 4. Compile the main program and the helper program Magrathea. See section "Compile" for instructions
-5. ```doxygen``` if you want source code documentation in a navigatable format like HTML. The created documentation can be found in the folder ```doc```.
+5. ```doxygen doxyfile``` if you want source code documentation in a navigatable format like HTML. The created documentation can be found in the folder ```doc```.
 
 ## Compile
 ### Main program
@@ -40,23 +40,26 @@ To clear all cached files of the build process, run the shell script ```clear_cm
 The helper program Magrathea can be used to create a customized scenario without having to edit the geometry and parameter files manually. By default the scenario overwrites the existing scenario ```free_sim```. If you want to save a created scenario, simply copy the two files ```free_sim.geom``` and ```free_sim.param``` and rename them to something you'd like. You can then call the main program with your scenario name.
 
 1. ```chmod +x MagratheaWrapper.sh``` Depending on your operating system, you will need to make the shell script ```MagratheaWrapper``` executable
-2. ```./MagratheaWrapper scenario <name>``` will create a geometry file from a list of prepared scenarios. This is helpful if your desired geometry is a variation on one of the existing scenarios. The implemented scenarios of Magrathea are: Channel, PressureChannel, Karman and Step. Channel and PressureChannel differ by how the channel flow is created by the boundary values. Channel uses a velocity based approach, while PressureChannel uses a pressure driven one.
+2. ```./MagratheaWrapper.sh scenario <name>``` will create a geometry file from a list of prepared scenarios. This is helpful if your desired geometry is a variation on one of the existing scenarios. The implemented scenarios of Magrathea are: Channel, PressureChannel, Karman and Step. Channel and PressureChannel differ by how the channel flow is created by the boundary values. Channel uses a velocity based approach, while PressureChannel uses a pressure driven one.
 3. You can modify the shell script and change the parameter values. Running the shell script again with the modified values will create a variation of the chosen scenario.
 
 ### Creating a geometry file manually
 Since Magrathea only supports a given number of scenarios, you might need to create a geometry file manually in order to simulate your chosen problem. Let's have a look at an example geometry file:
 
-```size = 160 32
+```
+size = 160 32
 length = 5.000000 1.000000
 velocity = 25.000000 0.000000
 pressure = 0.000000
-geometry = free```
+geometry = free
+```
 
 The size and length parameters determine the size of the grid and the length of the domain. The velocity and pressure parameters are used for boundary value calculation. The type of boundary will be determined by the flag field (see below), while the actual values are set here. The parameters velocity encodes the u velocity first, the v one second. The line ```geometry = free``` line is special. It says that everything that follows this line is the flag field.
 
 The flag field determines how the domain looks like. That means what type of boundaries there are and if there are any obstacles inside the domain. Let's have a look at an example flag field:
 
-```##########
+```
+##########
 #........#
 #........#
 #........#
@@ -65,7 +68,8 @@ The flag field determines how the domain looks like. That means what type of bou
 #........#
 #........#
 #........#
-##########```
+##########
+```
 
 The dots represent fluid cells. These are basically empty space. The pound sign represent NOSLIP boundaries, which are also used for obstacles. NOSLIP means, that the fluid will stick to the boundary cells so that the velocity is zero exactly at the boundary line. The supported cell types are:
 * '.' : Fluid
