@@ -39,9 +39,9 @@ To clear all cached files of the build process, run the shell script ```clear_cm
 ### Using Magrathea to create a customized scenario
 The helper program Magrathea can be used to create a customized scenario without having to edit the geometry and parameter files manually. By default the scenario overwrites the existing scenario ```free_sim```. If you want to save a created scenario, simply copy the two files ```free_sim.geom``` and ```free_sim.param``` and rename them to something you'd like. You can then call the main program with your scenario name.
 
-1. ```chmod +x MagratheaWrapper.sh``` Depending on your operating system, you will need to make the shell script ```MagratheaWrapper``` executable
-2. ```./MagratheaWrapper.sh scenario <name>``` will create a geometry file from a list of prepared scenarios. This is helpful if your desired geometry is a variation on one of the existing scenarios. The implemented scenarios of Magrathea are: Channel, PressureChannel, Karman and Step. Channel and PressureChannel differ by how the channel flow is created by the boundary values. Channel uses a velocity based approach, while PressureChannel uses a pressure driven one.
-3. You can modify the shell script and change the parameter values. Running the shell script again with the modified values will create a variation of the chosen scenario.
+1. ```chmod +x MagratheaWrapper.sh```: Depending on your operating system, you will need to make the shell script ```MagratheaWrapper``` executable
+2. Running ```./MagratheaWrapper.sh``` will create a geometry file from a list of prepared scenarios. This is helpful if your desired geometry is a variation on one of the existing scenarios. The implemented scenarios of Magrathea are: Channel, PressureChannel, Karman and Step. Channel and PressureChannel differ by how the channel flow is created by the boundary values. Channel uses a velocity based approach, while PressureChannel uses a pressure driven one.
+3. You will need to modify the shell script in order to choose the scenario and set the parameters to the values you need. Simply change the values of the named parameters and comment-in the correct scenario (as well as comment-out the currently selected one). The parameters are described in section "Parameters".
 
 ### Creating a geometry file manually
 Since Magrathea only supports a given number of scenarios, you might need to create a geometry file manually in order to simulate your chosen problem. Let's have a look at an example geometry file:
@@ -97,6 +97,8 @@ The parameters used in the helper program Magrathea (technically the created geo
 * iterMax : Maximum number of iterations for the solver
 * eps : Tolerance for pressure calculation iterations
 * tau : "Safety" scaling factor for the timestep
+* Ui : U-velocity for velocity inflow boundaries
+* Pi : Pressure difference for pressure inflow boundaries
 
 ## Testing subsystems
 There are tests for the various subsystems of the program. See documentation of the main function for a complete list of them. You can execute the tests by executing the program with one of the test parameters. E.g. ```./numsim TEST_GRID``` performs the tests implemented for the Grid class.
