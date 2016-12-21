@@ -4,7 +4,7 @@ iMax=160
 jMax=32
 xLength=5.0
 yLength=1.0
-tEnd=50
+tEnd=50.0
 tau=0.5
 deltaT=0.5
 eps=0.001
@@ -12,30 +12,29 @@ omega=1.7
 alpha=0.9
 iterMax=500
 Re=10000
-Ui=1.0
-Vi=0.0
-Pi=0.0
 output=./scenarios/free_sim
 
 ### Choose a scenario
 
-# Karmann vortex street (-> alpha = angle of the obsacle)
-# scenario="Karman"
+## Karman vortex street (-> alpha = angle of the obsacle
+##                      -> Choose Pi for appropriate pressure gradient)
+scenario="Karman"
+Pi=0.1
 
-# Velocity driven channel (-> Ui is calculated such that pressure difference equals 0.1)
-scenario="Channel"
-Ui=$(bc <<< "${yLength}*${yLength}*0.125*${Re}*0.1/${xLength}")
+## Velocity driven channel (-> Ui is calculated such that pressure difference equals Pi)
+# scenario="Channel"
+# Pi=0.1
+# Ui=$(bc <<< "${yLength}*${yLength}*0.125*${Re}*${Pi}/${xLength}")
 
-# Pressure driven channel (-> Choose Pi for appropriate pressure gradient)
+## Pressure driven channel (-> Choose Pi for appropriate pressure gradient)
 # scenario="PressureChannel"
+# Pi=0.1
 
-# Pressure driven channel with step
+## Pressure driven channel with step (-> Choose Pi for appropriate pressure gradient)
 # scenario="Step"
+# Pi=0.1
 
-### Calculation of analytical velocity such that Pi=0.1 in case of scenario "Channel"
-
-
-# Execution
+### Execution
 if [ $scenario = "Karman" ];
   then pre=4
 elif [ $scenario = "Channel" ];
