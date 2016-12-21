@@ -12,9 +12,9 @@ omega=1.7
 alpha=0.9
 iterMax=500
 Re=10000
-Ui=1.0
+Ui=0.0
 Vi=0.0
-Pi=0.0
+Pi=0.1
 output=./scenarios/free_sim
 
 ### Choose a scenario
@@ -23,11 +23,11 @@ output=./scenarios/free_sim
 # scenario="Karman"
 
 # Velocity driven channel (-> Ui is calculated such that pressure difference equals 0.1)
-scenario="Channel"
-Ui=$(bc <<< "${yLength}*${yLength}*0.125*${Re}*0.1/${xLength}")
+# scenario="Channel"
+# Ui=$(bc <<< "${yLength}*${yLength}*0.125*${Re}*0.1/${xLength}")
 
 # Pressure driven channel (-> Choose Pi for appropriate pressure gradient)
-# scenario="PressureChannel"
+scenario="PressureChannel"
 
 # Pressure driven channel with step
 # scenario="Step"
