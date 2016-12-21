@@ -28,6 +28,7 @@ To clear all cached files of the build process, run the shell script ```clear_cm
 ### Running the main program
 1. ```./build/NumSim``` using the default scenario "free_sim"
 2. ```./build/NumSim scenario <name>``` where ```<name>``` is replaced by the name of the scenario. The scenario names correspond to the file names in the folder scenarios. The following scenarios come prepared:
+    * ```pressure_channel```: A simple channel flow where the flow is created by a pressure difference between the left inflow boundary and the right outflow one.
     * ```channel```: A simple channel flow where the left border inputs fluid with u velocities in a parabola
     * ```step```: A pressure driven channel flow where a step obstacle restricts the fluid to a narrower channel
         on the left side, causing a standing vortex to form
