@@ -88,6 +88,17 @@ while getopts ":n:m:s:t:d:i:" opt; do
 done
 
 ### Calculate reynolds number for distribution type
+if [ $ReType = "fixed" ];
+  then
+  Re=$ReMean
+elif [ $ReType = "normal" ];
+  then
+  Re="$(./random/random $ReMean $ReSigma)"
+elif [ $ReType = "equi" ];
+  then
+  step = 6 * $ReSigma / $ReNrIter
+  Re = $ReMean - 3 * $ReSigma + $step * $ReIter
+fi
 
 ### Set/calculate certain parameters for certain scenarions
 if [ $scenario = "Karman" ];
@@ -112,4 +123,4 @@ else
 fi
 
 ### All done, now execute Magrathea
-./Magrathea/magrathea -alpha $alpha -dt $deltaT -eps $eps -iter $iterMax -omg $omega -re $Re -tau $tau -tend $tEnd -length "${xLength}x${yLength}" -pressure $Pi -size "${iMax}x${jMax}" -speed "${Ui}x${Vi}" -o $output -pre $pre -remean $ReMean -resigma $ReSigma -reiter $ReIter -renriter $ReNrIter -retype $ReType
+./Magrathea/magrathea -alpha $alpha -dt $deltaT -eps $eps -iter $iterMax -omg $omega -re $Re -tau $tau -tend $tEnd -length "${xLength}x${yLength}" -pressure $Pi -size "${iMax}x${jMax}" -speed "${Ui}x${Vi}" -o $output -pre $pre
