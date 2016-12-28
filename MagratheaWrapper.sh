@@ -1,5 +1,38 @@
-### Wrapping parameters from exercise sheet to Magrathea
-# Parameters
+### This script eases the use of Magrathea, especially in relation to using it
+### for the various excercises of the course for which the whole program was
+### written.
+###
+### Quick usage:
+### ./MagratheaWrapper.sh -n "driven_cavity" -t "normal" -m1500 -s167
+### This will create a simulation package for the driven cavity scenario where
+### the reynolds number is selected from a normal distribution with mean 1500
+### and sigma 167.
+###
+### Using this script will overwrite the files "scenarios/free_sim.param" and
+### "scenarios/free_sim.geom" with the generated simulation and geometry
+### parameters.
+###
+### The following arguments are supported:
+###
+### n: Scenario name. Implemented are "Driven_cavity", "Karman", "Channel",
+###    "PressureChannel" and "Step"
+###
+### t: The type of distribution from which the reynolds number should be
+###    selected. Implemented are "normal" and "equi", which correspond to a
+###    normal and a equidistant distribution. Both these require additional
+###    arguments (see below). All other values of t default to a fixed value.
+###
+### m: The mean of the distribution of the reynolds number
+###
+### s: The sigma of the distribution of the reynolds number
+###
+### d: The number of steps for the equidistant distribution of the reynolds
+###    number
+###
+### i: The current step number for the equidistant distribution of the reynolds
+###    number
+
+### Default parameters
 iMax=160
 jMax=32
 xLength=5.0
@@ -12,37 +45,71 @@ omega=1.7
 alpha=0.9
 iterMax=500
 Re=10000
+ReMean=1500
+ReSigma=167
+ReType=fixed
+ReNrIter=200
+ReIter=1
 output=./scenarios/free_sim
 
-### Choose a scenario
+### Check if the reynolds number should have a fixed value, be selected from a
+### normal distribution or a value from a given equidistant distribution.
+### We also check the scenario name here.
+while getopts ":n:m:s:t:d:i:" opt; do
+  case $opt in
+    n)
+      scenario="$OPTARG"
+    ;;
 
-## Karman vortex street (-> alpha = angle of the obsacle
-##                      -> Choose Pi for appropriate pressure gradient)
-scenario="Karman"
-Pi=0.1
+    m)
+      ReMean="$OPTARG"
+    ;;
 
-## Velocity driven channel (-> Ui is calculated such that pressure difference equals Pi)
-# scenario="Channel"
-# Pi=0.1
-# Ui=$(bc <<< "${yLength}*${yLength}*0.125*${Re}*${Pi}/${xLength}")
+    s)
+      ReSigma="$OPTARG"
+    ;;
 
-## Pressure driven channel (-> Choose Pi for appropriate pressure gradient)
-# scenario="PressureChannel"
-# Pi=0.1
+    t)
+      ReType="$OPTARG"
+    ;;
 
-## Pressure driven channel with step (-> Choose Pi for appropriate pressure gradient)
-# scenario="Step"
-# Pi=0.1
+    d)
+      ReNrIter="$OPTARG"
+    ;;
 
-### Execution
+    i)
+      ReIter="$OPTARG"
+    ;;
+
+    \?)
+      echo "Invalid option -$OPTARG" >&2
+    ;;
+  esac
+done
+
+### Calculate reynolds number for distribution type
+
+### Set/calculate certain parameters for certain scenarions
 if [ $scenario = "Karman" ];
-  then pre=4
+  then
+  pre=4
+  Pi=0.1
 elif [ $scenario = "Channel" ];
-  then pre=1
+  then
+  pre=1
+  Pi=0.1
+  Ui=$(bc <<< "${yLength}*${yLength}*0.125*${Re}*${Pi}/${xLength}")
 elif [ $scenario = "PressureChannel" ];
-  then pre=2
+  then
+  pre=2
+  Pi=0.1
 elif [ $scenario = "Step" ];
-  then pre=3
-else pre=1
+  then
+  pre=3
+  Pi=0.1
+else
+  pre=1
 fi
-./Magrathea/magrathea -alpha $alpha -dt $deltaT -eps $eps -iter $iterMax -omg $omega -re $Re -tau $tau -tend $tEnd -length "${xLength}x${yLength}" -pressure $Pi -size "${iMax}x${jMax}" -speed "${Ui}x${Vi}" -o $output -pre $pre
+
+### All done, now execute Magrathea
+./Magrathea/magrathea -alpha $alpha -dt $deltaT -eps $eps -iter $iterMax -omg $omega -re $Re -tau $tau -tend $tEnd -length "${xLength}x${yLength}" -pressure $Pi -size "${iMax}x${jMax}" -speed "${Ui}x${Vi}" -o $output -pre $pre -remean $ReMean -resigma $ReSigma -reiter $ReIter -renriter $ReNrIter -retype $ReType
