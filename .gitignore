@@ -1,5 +1,5 @@
 # VTK output
-VTK/
+/VTK/
 
 # cmake files and compile targets
 build/
