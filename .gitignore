@@ -26,3 +26,6 @@ doc/
 
 # Ignore temporary files (esp. MATLAB)
 *~
+
+# Ignore Karman VTK folder (1 Gig space)
+Results/Blatt03/Karman/VTK/
