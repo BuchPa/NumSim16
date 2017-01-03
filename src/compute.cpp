@@ -160,7 +160,7 @@ const Grid *Compute::GetStream() {
   
   // Calculate integrals in y-direction
   while (it.Valid()) {
-    if (_geom->CellTypeAt(it) == CellType::Fluid) {
+    if (_geom->CellTypeAt(it) != CellType::Obstacle) {
       _stream->Cell(it) = _stream->Cell(it.Down()) + _geom->Mesh()[1] * _u->Cell(it);
     } else {
       _stream->Cell(it) = _stream->Cell(it.Down());
