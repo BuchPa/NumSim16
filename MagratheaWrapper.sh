@@ -30,7 +30,7 @@
 ###    number
 ###
 ### i: The current step number for the equidistant distribution of the reynolds
-###    number
+###    number. Steps should be numbered starting from zero.
 
 ### Default parameters
 iMax=160
@@ -100,7 +100,7 @@ elif [ $ReType = "equi" ];
   Re = $ReMean - 3 * $ReSigma + $step * $ReIter
 fi
 
-### Set/calculate certain parameters for certain scenarions
+### Set/calculate certain parameters for certain scenarios
 if [ $scenario = "Karman" ];
   then
   pre=4
