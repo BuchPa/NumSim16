@@ -175,8 +175,7 @@ int main (int argc, char **argv) {
 		cnt2++;
 		sscanf(argv[pos+1],"%i",&geom.pre);
 	}
-	printf("%d", geom.pre);
-	return 0;
+
 	switch (geom.pre) {
 	case 1:
 		geom.l_x = 5;
