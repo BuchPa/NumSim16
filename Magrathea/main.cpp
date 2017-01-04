@@ -97,7 +97,7 @@ int main (int argc, char **argv) {
 		printf("    -tau <float>\tIt does things... Planets are complicated dude.\n\t\t\tIt's set to 0.5 and I wouldn't screw with it.\n");
 		printf("    -tend <float>\tSelf-destruction time. Default: 50.0\n");
 		printf("\n\nGeometry:\nIf some of these arguments are given, the \".geom\" file is written.\nThe default world is a driven cavity. Pre-defined worlds must be set before\nchanging other parameters.\n");
-		printf("    -pre <num>\t\tChoose among some ready-made worlds.\n\t\t\t  1: Simple channel\n\t\t\t  2: Pressure driven channel\n\t\t\t  3: Channel with step\n\t\t\t  4: Channel with barrier\n\t\t\tThese worlds might change the default values.\n");
+		printf("    -pre <num>\t\tChoose among some ready-made worlds.\n\t\t\t  1: Simple channel\n\t\t\t  2: Pressure driven channel\n\t\t\t  3: Channel with step\n\t\t\t  4: Channel with barrier\n\t\t\t  6: Driven cavity\n\t\t\tThese worlds might change the default values.\n");
 		printf("    -load <file>\tLoad a TGA picture as geometry. Sounds impossible,\n\t\t\tbut it works.\n");
 		printf("    -length <x>x<y>\tReal real-world world size. Let it set to 1.0x1.0\n\t\t\tunless you do fancy stuff.\n");
 		printf("    -pressure <p>\t...this is our last dance, this is ourselves\n\t\t\tunder pressure, under pressure... Oh, nevermind.\n\t\t\tIt is 0.0.\n");
@@ -175,6 +175,8 @@ int main (int argc, char **argv) {
 		cnt2++;
 		sscanf(argv[pos+1],"%i",&geom.pre);
 	}
+	printf("%d", geom.pre);
+	return 0;
 	switch (geom.pre) {
 	case 1:
 		geom.l_x = 5;
@@ -189,6 +191,12 @@ int main (int argc, char **argv) {
 		geom.s_y = 32;
 		geom.v_x = 0;
 		geom.p = 0.1;
+		break;
+	case 6:
+		geom.l_x = 1.0;
+		geom.l_y = 1.0;
+		geom.s_x = 128;
+		geom.s_y = 128;
 		break;
 	default:
 		break;
@@ -306,6 +314,7 @@ int main (int argc, char **argv) {
 				case 2:
 				case 3:
 				case 4:
+				case 6:
 					fprintf(handle,"#");
 					break;
 				default:
@@ -354,6 +363,12 @@ int main (int argc, char **argv) {
 					}
 					fprintf(handle,"O\n");
 					break;
+				case 6:
+					fprintf(handle,"#");
+					for (int i=0;i<geom.s_x-2;++i)
+						fprintf(handle, ".");
+					fprintf(handle,"#");
+					break;
 				default:
 					fprintf(handle,"#");
 					for (int i=0;i<geom.s_x-2;++i) fprintf(handle,".");
@@ -361,7 +376,10 @@ int main (int argc, char **argv) {
 					break;
 				};
 			}
-			for (int i=0;i<geom.s_x;++i) fprintf(handle,"#");
+			if (geom.pre == 6)
+				for (int i=0;i<geom.s_x;++i) fprintf(handle,"I");
+			else	
+				for (int i=0;i<geom.s_x;++i) fprintf(handle,"#");
 		}
 		fclose(handle);
 	}
