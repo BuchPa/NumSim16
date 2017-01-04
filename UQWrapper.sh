@@ -53,11 +53,11 @@ done
 
 until [ $i -gt `expr $end - 1` ]
   do
-  if [ $type = "normal" ]
+  if [ "$type" = "normal" ]
     then
     ./MagratheaWrapper.sh -n \"DrivenCavity\" -m$mean -s$sigma -t \"normal\"
     ./build/NumSim
-  elif [ $type = "equi" ]
+  elif [ "$type" = "equi" ]
     then
     ./MagratheaWrapper.sh -n \"DrivenCavity\" -m$mean -s$sigma -t \"equi\" -d$end -i$i
     ./build/NumSim
