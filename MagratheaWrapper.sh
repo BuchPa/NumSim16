@@ -88,33 +88,33 @@ while getopts ":n:m:s:t:d:i:" opt; do
 done
 
 ### Calculate reynolds number for distribution type
-if [ $ReType = "fixed" ];
+if [ $ReType = "fixed" ]
   then
   Re=$ReMean
-elif [ $ReType = "normal" ];
+elif [ $ReType = "normal" ]
   then
   Re="$(./random/random $ReMean $ReSigma)"
-elif [ $ReType = "equi" ];
+elif [ $ReType = "equi" ]
   then
   step = 6 * $ReSigma / $ReNrIter
   Re = $ReMean - 3 * $ReSigma + $step * $ReIter
 fi
 
 ### Set/calculate certain parameters for certain scenarios
-if [ $scenario = "Karman" ];
+if [ $scenario = "Karman" ]
   then
   pre=4
   Pi=0.1
-elif [ $scenario = "Channel" ];
+elif [ $scenario = "Channel" ]
   then
   pre=1
   Pi=0.1
   Ui=$(bc <<< "${yLength}*${yLength}*0.125*${Re}*${Pi}/${xLength}")
-elif [ $scenario = "PressureChannel" ];
+elif [ $scenario = "PressureChannel" ]
   then
   pre=2
   Pi=0.1
-elif [ $scenario = "Step" ];
+elif [ $scenario = "Step" ]
   then
   pre=3
   Pi=0.1
