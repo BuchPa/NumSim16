@@ -313,9 +313,9 @@ int main (int argc, char **argv) {
 				case 2:
 				case 3:
 				case 4:
-				case 6:
 					fprintf(handle,"#");
 					break;
+				case 6:
 				default:
 					fprintf(handle,"I");
 					break;
@@ -366,7 +366,7 @@ int main (int argc, char **argv) {
 					fprintf(handle,"#");
 					for (int i=0;i<geom.s_x-2;++i)
 						fprintf(handle, ".");
-					fprintf(handle,"#");
+					fprintf(handle,"#\n");
 					break;
 				default:
 					fprintf(handle,"#");
@@ -375,10 +375,7 @@ int main (int argc, char **argv) {
 					break;
 				};
 			}
-			if (geom.pre == 6)
-				for (int i=0;i<geom.s_x;++i) fprintf(handle,"I");
-			else	
-				for (int i=0;i<geom.s_x;++i) fprintf(handle,"#");
+			for (int i=0;i<geom.s_x;++i) fprintf(handle,"#");
 		}
 		fclose(handle);
 	}
