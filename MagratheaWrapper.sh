@@ -120,6 +120,10 @@ elif [ "$scenario" = "Step" ]
   Pi=0.1
 elif [ "$scenario" = "DrivenCavity" ]
   then
+  jMax=128
+  iMax=128
+  xLength=1.0
+  yLength=1.0
   pre=6
 else
   pre=1
