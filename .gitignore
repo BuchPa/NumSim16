@@ -1,5 +1,5 @@
-# VTK output
-/VTK/
+# CSV output
+/CSV/
 
 # cmake files and compile targets
 build/

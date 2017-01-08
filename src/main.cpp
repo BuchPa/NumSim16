@@ -20,7 +20,7 @@
 #include "geometry.hpp"
 #include "parameter.hpp"
 #include "visu.hpp"
-#include "vtk.hpp"
+#include "csv.hpp"
 #include "iterator.hpp"
 #include "solver.hpp"
 #include "tests.hpp"
@@ -178,8 +178,17 @@ int main(int argc, char **argv) {
     
   }
   
-  // Create a VTK generator
-  VTK vtk(geom.Mesh(), geom.Size());
+  // Choose csv evaluation positions
+  list<multi_real_t> csv_pos;
+  csv_pos.push_back(multi_real_t({120.0/128.0, 5.0/128.0}));
+  csv_pos.push_back(multi_real_t({64.0/128.0, 64.0/128.0}));
+  csv_pos.push_back(multi_real_t({5.0/128.0, 120.0/128.0}));
+  
+  // Create a CSV generator
+  CSV csv(param.Re(), csv_pos);
+  
+  // Create file in the CSV folder (folder must exist)
+  csv.Init("CSV/multirun");
 
   const Grid *visugrid;
   bool run = true;
@@ -220,32 +229,16 @@ int main(int argc, char **argv) {
 
     #endif // USE_DEBUG_VISU
 
-    // Create a VTK File in the folder VTK (must exist)
-    vtk.Init("VTK/field");
-    vtk.AddField("Velocity", comp.GetU(), comp.GetV());
-    vtk.AddScalar("Pressure", comp.GetP());
-    vtk.AddScalar("Stream", comp.GetStream());
-    vtk.AddScalar("Vorticity", comp.GetVorticity());
-    vtk.Finish();
-    
-    // Create VTK File for particles of the streakline
-    // in the folder VTK (must exist)
-    if (comp.GetStreaklines()->size() > 0) {
-      vtk.InitParticles("VTK/streaks");
-      vtk.AddParticles("Streakline", comp.GetStreaklines());
-      vtk.FinishParticles();
-    }
-    if (comp.GetParticleTracing()->size() > 0) {
-      vtk.InitParticles("VTK/traces");
-      vtk.AddParticles("Trace", comp.GetParticleTracing());
-      vtk.FinishParticles();
-    }
+    // Add an entry to the CSV file (must exist)
+    csv.AddEntry(comp.GetTime(), comp.GetU(), comp.GetV(), comp.GetP());
 
     // Run a few steps
     for (uint32_t i = 0; i < 9; ++i)
       comp.TimeStep(false);
     comp.TimeStep(true);
   }
+  
+  csv.Finish();
 
   if (MEASURE_TIME) {
     end = std::chrono::duration_cast<std::chrono::milliseconds>(

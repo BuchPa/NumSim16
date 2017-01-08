@@ -4,7 +4,6 @@
 #include "geometry.hpp"
 #include "parameter.hpp"
 #include "visu.hpp"
-#include "vtk.hpp"
 #include "iterator.hpp"
 #include "solver.hpp"
 

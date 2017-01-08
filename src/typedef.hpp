@@ -123,5 +123,6 @@ class Grid;
 class Parameter;
 class Solver;
 class Compute;
+class CSV;
 
 #endif // __TYPEDEF_HPP

@@ -9,7 +9,7 @@ Numerische Simulation 2016/2017
 ## Installation
 1. ```git clone https://github.com/BuchPa/NumSim16.git```
 2. ```cd NumSim16```
-3. ```mkdir VTK```
+3. ```mkdir CSV```
 4. Compile the main program and the helper program Magrathea. See section "Compile" for instructions
 5. ```doxygen doxyfile``` if you want source code documentation in a navigatable format like HTML. The created documentation can be found in the folder ```doc```.
 
@@ -107,7 +107,3 @@ There are tests for the various subsystems of the program. See documentation of 
 ## Disabling live visualisation
 Run scons again with the parameter visu turned off. E.g. ```scons visu=0```. After that, execute the program like normal.
 
-## Using the output
-The output (as VTK files) can be visualized and analyzed by programs such as paraview. Since the parallel computation creates files for each processor and each frame, the files must be grouped together. Paraview can do this automatically when the correct node in the "Load" function is selected. The naming scheme of the (partial) VTK files is ```field_a_b```, where a is the frame number and b is the process number.
-
-Therefore, to load all frames and stich the data together from each of the process subdomains, select the ```field``` node (usually at the top) when loading files with Paraview.
