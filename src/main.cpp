@@ -118,6 +118,10 @@ int main(int argc, char **argv) {
     geom.Load("scenarios/free_sim.geom");
   }
   
+  // Print info that there will be no console output
+  printf("Multirun version! Progress output is disabled due to performance issues.\n");
+  printf("  Output is written to CSV folder with a timestep width of %5.4f ...\n", param.FixedDt());
+  
   // Create the fluid solver
   Compute comp(&geom, &param);
 
@@ -191,7 +195,8 @@ int main(int argc, char **argv) {
   csv.Init("CSV/multirun");
 
   const Grid *visugrid;
-  bool run = true;
+  bool run   = true;
+  bool print = true;
 
   visugrid = comp.GetVelocity();
 
@@ -228,17 +233,22 @@ int main(int argc, char **argv) {
     };
 
     #endif // USE_DEBUG_VISU
-
-    // Add an entry to the CSV file (must exist)
-    csv.AddEntry(comp.GetTime(), comp.GetU(), comp.GetV(), comp.GetP());
-
-    // Run a few steps
-    for (uint32_t i = 0; i < 9; ++i)
-      comp.TimeStep(false);
-    comp.TimeStep(true);
+    
+    if (print){
+      // Add an entry to the CSV file (must exist)
+      csv.AddEntry(comp.GetTime(), comp.GetU(), comp.GetV(), comp.GetP());
+    }
+    
+    print = comp.TimeStep(false);
   }
   
+  // Add an entry to the CSV file (must exist)
+  csv.AddEntry(comp.GetTime(), comp.GetU(), comp.GetV(), comp.GetP());
+  
+  // Finish CSV
   csv.Finish();
+  
+  printf("Multirun finished!\n");
 
   if (MEASURE_TIME) {
     end = std::chrono::duration_cast<std::chrono::milliseconds>(

@@ -38,6 +38,7 @@ void Parameter::Load(const char *file) {
     else if (strcmp(name,"iter") == 0) _itermax = inval;
     else if (strcmp(name,"eps") == 0) _eps = inval;
     else if (strcmp(name,"tau") == 0) _tau = inval;
+    else if (strcmp(name,"dtfix") == 0) _dt_fixed = inval;
     else printf("Unknown parameter %s\n",name);
   }
   fclose(handle);
@@ -77,4 +78,8 @@ const real_t &Parameter::Eps() const{
 
 const real_t &Parameter::Tau() const{
   return _tau;
+}
+
+const real_t &Parameter::FixedDt() const{
+  return _dt_fixed;
 }

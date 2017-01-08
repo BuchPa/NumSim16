@@ -76,6 +76,11 @@ public:
   ///
   /// @return real_t The value of the tau parameter
   const real_t &Tau() const;
+  
+  /// Returns the fixed timestep width to output to CSV
+  ///
+  /// @return real_t The fixed timestep width to output to CSV
+  const real_t &FixedDt() const;
 
 private:
   /// _re real_t The reynolds number
@@ -101,6 +106,9 @@ private:
 
   /// _tau real_t The tau parameter
   real_t _tau;
+  
+  /// _dt_fixed real_t The fixed timestep width to output to CSV
+  real_t _dt_fixed;
 
   /// _itermax index_t The maximum number of iterations of the solver
   index_t _itermax;

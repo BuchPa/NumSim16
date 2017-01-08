@@ -37,6 +37,7 @@ typedef struct {
     double	alpha;
     double	dt;
     double	tend;
+    double	dtfix;
     double	eps;
     double	tau;
     int	iter;
@@ -65,6 +66,7 @@ int main (int argc, char **argv) {
 	param.omg = 1.7;
 	param.dt = 0;
 	param.tend = 50;
+        param.dtfix = 0.5;
 	param.eps = 0.001;
 	param.tau = 0.5;
 	param.iter = 100;
@@ -96,6 +98,7 @@ int main (int argc, char **argv) {
 		printf("    -re <float>\t\tDefines fluid dynamics. Default: 1000\n");
 		printf("    -tau <float>\tIt does things... Planets are complicated dude.\n\t\t\tIt's set to 0.5 and I wouldn't screw with it.\n");
 		printf("    -tend <float>\tSelf-destruction time. Default: 50.0\n");
+                printf("    -dtfix <float>\tFixed time width to output to CSV data - no joke, rly. Default: 0.5\n");
 		printf("\n\nGeometry:\nIf some of these arguments are given, the \".geom\" file is written.\nThe default world is a driven cavity. Pre-defined worlds must be set before\nchanging other parameters.\n");
 		printf("    -pre <num>\t\tChoose among some ready-made worlds.\n\t\t\t  1: Simple channel\n\t\t\t  2: Pressure driven channel\n\t\t\t  3: Channel with step\n\t\t\t  4: Channel with barrier\n\t\t\t  6: Driven cavity\n\t\t\tThese worlds might change the default values.\n");
 		printf("    -load <file>\tLoad a TGA picture as geometry. Sounds impossible,\n\t\t\tbut it works.\n");
@@ -154,6 +157,11 @@ int main (int argc, char **argv) {
 		cnt++;
 		sscanf(argv[pos+1],"%lf",&param.tend);
 	}
+	pos = getOpt("-dtfix",argc,argv);
+	if (pos) {
+		cnt++;
+		sscanf(argv[pos+1],"%lf",&param.dtfix);
+	}
 	if (cnt) {
 		FILE* handle;
 		char name[100];
@@ -164,6 +172,7 @@ int main (int argc, char **argv) {
 		fprintf(handle,"alpha = %lf\n",param.alpha);
 		fprintf(handle,"dt = %lf\n",param.dt);
 		fprintf(handle,"tend = %lf\n",param.tend);
+		fprintf(handle,"dtfix = %lf\n",param.dtfix);
 		fprintf(handle,"iter = %i\n",param.iter);
 		fprintf(handle,"eps = %lf\n",param.eps);
 		fprintf(handle,"tau = %lf\n",param.tau);

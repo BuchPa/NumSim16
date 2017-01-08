@@ -69,6 +69,9 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   _dtlimit = _param->Dt();
   // Init _epslimit
   _epslimit = _param->Eps();
+  // Init _dt_fixed
+  _dt_fixed     = _param->FixedDt();
+  _inv_dt_fixed = 1.0/_dt_fixed;
   
   // Init particles from data loaded in geometry
   particles_t streaklines = _geom->Streaklines();
@@ -179,7 +182,7 @@ list<particles_t> *Compute::GetStreaklines(){
   return &_streakline;
 }
 
-void Compute::TimeStep(bool printInfo) {  
+bool Compute::TimeStep(bool printInfo) {  
   // Compute candidates for current time step
   const real_t cfl_x = _geom->Mesh()[0] / _u->AbsMax();
   const real_t cfl_y = _geom->Mesh()[1] / _v->AbsMax();
@@ -191,6 +194,14 @@ void Compute::TimeStep(bool printInfo) {
     dt = _param->Tau() * min(_dtlimit, min(min(cfl_x, cfl_y), _diff));
   } else {
     dt = _dtlimit;
+  }
+  
+  // Correct timestep if necessary and decide, if print CSV is necessary
+  bool print = false;
+  uint32_t curstep = (int)(_t*_inv_dt_fixed);
+  if (curstep < (int)((_t+dt)*_inv_dt_fixed)) {
+    dt = (curstep+1)*_dt_fixed - _t;
+    print = true;
   }
   
   // Compute preliminary velocites F,G
@@ -223,26 +234,28 @@ void Compute::TimeStep(bool printInfo) {
   // Compute new time
   _t += dt;
   
-  if (printInfo) {
-    // Print current time
-    printf("Current time: %4.2f\n", _t);
-    
-    // Print time step stuff
-    printf("  Time step candidates:\n");
-    printf("    cfl_x:   %4.3f\n", cfl_x);
-    printf("    cfl_y:   %4.3f\n", cfl_y);
-    printf("    diff:    %4.3f\n", _diff);
-    printf("    dtlimit: %4.3f\n", _dtlimit);
-    printf("  Current time step %4.3f\n", dt);
-    printf("\n");
-    
-    // Solver stuff
-    if( it >= _param->IterMax() ){
-      printf("  DIDN'T converge! itermax reached!\n");
-    } else {
-      printf("  DID converge! eps (%f < %f) reached after % d iterations!\n", res, _epslimit, it);
-    }
-  }
+  return print;
+  
+//   if (printInfo) {
+//     // Print current time
+//     printf("Current time: %4.2f\n", _t);
+//     
+//     // Print time step stuff
+//     printf("  Time step candidates:\n");
+//     printf("    cfl_x:   %4.3f\n", cfl_x);
+//     printf("    cfl_y:   %4.3f\n", cfl_y);
+//     printf("    diff:    %4.3f\n", _diff);
+//     printf("    dtlimit: %4.3f\n", _dtlimit);
+//     printf("  Current time step %4.3f\n", dt);
+//     printf("\n");
+//     
+//     // Solver stuff
+//     if( it >= _param->IterMax() ){
+//       printf("  DIDN'T converge! itermax reached!\n");
+//     } else {
+//       printf("  DID converge! eps (%f < %f) reached after % d iterations!\n", res, _epslimit, it);
+//     }
+//   }
 }
 
 /***************************************************************************

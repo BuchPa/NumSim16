@@ -38,6 +38,7 @@ jMax=32
 xLength=5.0
 yLength=1.0
 tEnd=50.0
+dtFixed=0.5
 tau=0.5
 deltaT=0.5
 eps=0.001
@@ -130,4 +131,4 @@ else
 fi
 
 ### All done, now execute Magrathea
-./Magrathea/magrathea -alpha $alpha -dt $deltaT -eps $eps -iter $iterMax -omg $omega -re $Re -tau $tau -tend $tEnd -length "${xLength}x${yLength}" -pressure $Pi -size "${iMax}x${jMax}" -speed "${Ui}x${Vi}" -o $output -pre $pre
+./Magrathea/magrathea -alpha $alpha -dt $deltaT -eps $eps -iter $iterMax -omg $omega -re $Re -tau $tau -tend $tEnd -dtfix $dtFixed -length "${xLength}x${yLength}" -pressure $Pi -size "${iMax}x${jMax}" -speed "${Ui}x${Vi}" -o $output -pre $pre

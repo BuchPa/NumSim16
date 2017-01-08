@@ -23,7 +23,7 @@ void CSV::Init(const char *path) {
   if (strlen(path))
     sprintf(filename, "%s_%02d.csv", path, n_pos);
   else
-    sprintf(filename, "%s.csv", "multirun");
+    sprintf(filename, "%s_%02d.csv", "multirun", n_pos);
   
   // Check, if file exists
   _handle = fopen(filename, "r");

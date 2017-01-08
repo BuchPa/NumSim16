@@ -35,7 +35,8 @@ public:
   //
   // @param printInfo bool If true, prints information about the current
   //   solver state (residual etc.)
-  void TimeStep(bool printInfo);
+  // @@return bool A boolean, if the current timestep needs to be printed to CSV
+  bool TimeStep(bool printInfo);
 
   /// Returns the simulated time in total.
   //
@@ -103,6 +104,12 @@ private:
   
   /// _diff real_t The diffusion limitation on the timestep.
   real_t _diff;
+  
+  /// _dt_fixed real_t The fixed timestep width to output to CSV
+  real_t _dt_fixed;
+  
+  /// _dt_fixed real_t Inverse of _dt_fixed
+  real_t _inv_dt_fixed;
 
   /// _u Grid The u velocities.
   Grid *_u;
