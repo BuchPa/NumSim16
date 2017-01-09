@@ -36,6 +36,10 @@ srcs = ['src/main.cpp',
 if env['visu'] == 1:
     env.Append(CPPDEFINES=['USE_DEBUG_VISU'])
 
+# check if optimizations should be used
+if env['opt'] == 1:
+    env.Append(CPPDEFINES=['USE_OPTIMIZATIONS'])
+
 # give the program a name
 name = 'NumSim'
 

@@ -118,6 +118,9 @@ protected:
 
   // _itmind index_t Minimal value for _value (inclusive _itmin)
   index_t _itmin;
+
+  real_t _sh_s0;
+  real_t _sh_s1;
 };
 
 //------------------------------------------------------------------------------

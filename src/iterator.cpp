@@ -5,6 +5,8 @@
 
 Iterator::Iterator(const Geometry *geom, const index_t &value)
     : _geom(geom), _value(value), _itmax(_geom->Size()[0]*_geom->Size()[1]-1), _itmin(0){
+  _sh_s0 = _geom->Size()[0];
+  _sh_s1 = _geom->Size()[1];
   this->UpdateValid();
 }
 
@@ -41,7 +43,7 @@ bool Iterator::Valid() const{
 }
 
 Iterator Iterator::Left() const{
-  
+  #ifndef USE_OPTIMIZATIONS
   index_t pos;
   
   // Check, left border reached
@@ -59,10 +61,15 @@ Iterator Iterator::Left() const{
   }
   
   return it;
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  return Iterator(_geom, _value % _geom->Size()[0] == 0 ? _value : _value - 1);
+  #endif
 }
 
 Iterator Iterator::Right() const{
-  
+  #ifndef USE_OPTIMIZATIONS
   index_t pos;
   
   // Check, right border reached
@@ -80,10 +87,15 @@ Iterator Iterator::Right() const{
   }
   
   return it;
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  return Iterator(_geom, (_value+1) % _geom->Size()[0] == 0 ? _value : _value + 1);
+  #endif
 }
 
 Iterator Iterator::Top() const{
-  
+  #ifndef USE_OPTIMIZATIONS
   index_t pos = _value + _geom->Size()[0];
   
   // Check, upper border reached
@@ -99,10 +111,16 @@ Iterator Iterator::Top() const{
   }
   
   return it;
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  index_t pos = _value + _geom->Size()[0];
+  return Iterator(_geom, pos / _geom->Size()[0] >= _geom->Size()[1] ? _value : pos);
+  #endif
 }
 
 Iterator Iterator::Down() const{
-  
+  #ifndef USE_OPTIMIZATIONS
   index_t pos;
   
   // Check, lower border reached
@@ -120,14 +138,15 @@ Iterator Iterator::Down() const{
   }
   
   return it;
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  return Iterator(_geom, _value < _geom->Size()[0] ? _value : _value - _geom->Size()[0]);
+  #endif
 }
 
 void Iterator::UpdateValid(){
-  if((_value <= _itmax)&&(_value >= _itmin)){
-    _valid = true;
-  }else{
-    _valid = false;
-  }
+  _valid = _value <= _itmax && _value >= _itmin;
 }
 
 void Iterator::TestRun(const bool printNeighbours){

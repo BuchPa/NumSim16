@@ -16,6 +16,7 @@
 # add possibility to add a debug visu
 vars = Variables('custom.py')
 vars.Add(BoolVariable('visu', 'Set to 1 for enabling debug visu', 1))
+vars.Add(BoolVariable('opt', 'Set to 1 for enabling optimizations', 0))
 
 env = Environment(variables=vars)
 
