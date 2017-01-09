@@ -48,6 +48,11 @@ typedef INDEX_TYPE index_t;
 
 //------------------------------------------------------------------------------
 
+// Define constant for comparison of timesteps
+const real_t DT_MIN = 1e-6;
+
+//------------------------------------------------------------------------------
+
 /// An enum for various cell types
 enum CellType {
   Fluid = '.',

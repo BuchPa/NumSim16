@@ -201,7 +201,7 @@ int main(int argc, char **argv) {
   visugrid = comp.GetVelocity();
 
   // Run the time steps until the end is reached
-  while ((comp.GetTime() - param.Tend())<-param.Dt() && run) {
+  while ((param.Tend() - comp.GetTime() > DT_MIN) && run) {
 
     #ifdef USE_DEBUG_VISU
 
