@@ -4,7 +4,7 @@
 #include "geometry.hpp"
 
 Iterator::Iterator(const Geometry *geom, const index_t &value)
-    : _geom(geom), _value(value), _itmax(_geom->Size()[0]*_sh_s1-1), _itmin(0){
+    : _geom(geom), _value(value), _itmax(_geom->Size()[0]*_geom->Size()[1]), _itmin(0){
   _sh_s0 = _geom->Size()[0];
   _sh_s1 = _geom->Size()[1];
   this->UpdateValid();
