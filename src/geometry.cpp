@@ -27,12 +27,15 @@ Geometry::Geometry(){
   // Init p boundary values
   _pressure = 0.0;
   
+  _baked_neighbors = new int[_size[0] * _size[1]];
+
   this->Recalculate();
 }
 
 Geometry::~Geometry() {
   delete[] _cells;
   delete[] _nb;
+  delete[] _baked_neighbors;
 }
 
 void Geometry::Load(const char *file){
@@ -136,6 +139,7 @@ void Geometry::Load(const char *file){
   fclose(handle);
 
   this->Recalculate();
+  this->BakeNeighbors();
 }
 
 void Geometry::Recalculate() {
@@ -172,6 +176,15 @@ particles_t Geometry::Streaklines() const{
   return _streakline;
 }
 
+void Geometry::BakeNeighbors() {
+  ObstacleIterator oit = ObstacleIterator(this);
+
+  for(; oit.Valid(); oit.Next()) {
+    int* c = this->NeighbourCode(oit);
+    _baked_neighbors[oit] = (c[0] << 3) + (c[1] << 2) + (c[2] << 1) + c[3];
+  }
+}
+
 void Geometry::Update_U(Grid *u) const{
   BoundaryIterator boit(this, 1);
   
@@ -194,8 +207,7 @@ void Geometry::Update_U(Grid *u) const{
   ObstacleIterator oit = ObstacleIterator(this);
 
   for(; oit.Valid(); oit.Next()) {
-    int* c = this->NeighbourCode(oit); 
-    switch ((c[0] << 3) + (c[1] << 2) + (c[2] << 1) + c[3]) {
+    switch (_baked_neighbors[oit]) {
       case 13:
         u->Cell(oit) = -u->Cell(oit.Top());
         break;
@@ -300,8 +312,7 @@ void Geometry::Update_V(Grid *v) const{
   ObstacleIterator oit = ObstacleIterator(this);
 
   for(; oit.Valid(); oit.Next()) {
-    int* c = this->NeighbourCode(oit); 
-    switch ((c[0] << 3) + (c[1] << 2) + (c[2] << 1) + c[3]) {
+    switch (_baked_neighbors[oit]) {
       case 7:
         v->Cell(oit) = 0;
         v->Cell(oit.Down()) = 0;
@@ -417,8 +428,7 @@ void Geometry::Update_P(Grid *p) const{
   ObstacleIterator oit = ObstacleIterator(this);
 
   for(; oit.Valid(); oit.Next()) {
-    int* c = this->NeighbourCode(oit); 
-    switch ((c[0] << 3) + (c[1] << 2) + (c[2] << 1) + c[3]) {
+    switch (_baked_neighbors[oit]) {
       case 13:
         p->Cell(oit) = p->Cell(oit.Top());
         break;

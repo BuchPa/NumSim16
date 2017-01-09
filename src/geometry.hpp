@@ -157,6 +157,8 @@ private:
   
   /// _nb int* An array used in calculating the neighborhood of a cell
   int* _nb;
+
+  int* _baked_neighbors;
   
   /// Cycle the full boundary given by BoundaryIterator boit on Grid u
   ///
@@ -225,6 +227,8 @@ private:
   /// @param boit BoundaryIterator Position to set boundary condition
   /// @param value real_t Value to set as boundary condition
   void SetPNeumann(Grid *p, const BoundaryIterator &boit, const real_t &value) const;
+
+  void BakeNeighbors();
 };
 //------------------------------------------------------------------------------
 #endif // __GEOMETRY_HPP
