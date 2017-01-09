@@ -11,6 +11,9 @@ CMakeFiles/
 # Magrathea executable
 Magrathea/magrathea
 
+# Magrathea targets
+scenarios/free_sim*
+
 # scons files and compile targets
 .sconsign.dblite
 
