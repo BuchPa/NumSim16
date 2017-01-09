@@ -4,7 +4,7 @@
 #include "geometry.hpp"
 
 Iterator::Iterator(const Geometry *geom, const index_t &value)
-    : _geom(geom), _value(value), _itmax(_geom->Size()[0]*_geom->Size()[1]-1), _itmin(0){
+    : _geom(geom), _value(value), _itmax(_geom->Size()[0]*_sh_s1-1), _itmin(0){
   _sh_s0 = _geom->Size()[0];
   _sh_s1 = _geom->Size()[1];
   this->UpdateValid();
@@ -23,8 +23,8 @@ Iterator::operator const index_t &() const{
 
 multi_index_t Iterator::Pos() const{
   multi_index_t pos;
-  pos[0] = _value % _geom->Size()[0];
-  pos[1] = (int)(_value / _geom->Size()[0]);
+  pos[0] = _value % _sh_s0;
+  pos[1] = (int)(_value / _sh_s0);
   return pos;
 }
 
@@ -47,7 +47,7 @@ Iterator Iterator::Left() const{
   index_t pos;
   
   // Check, left border reached
-  if(_value % _geom->Size()[0] == 0){
+  if(_value % _sh_s0 == 0){
     pos = _value;
   }else{
     pos = _value-1;
@@ -64,7 +64,7 @@ Iterator Iterator::Left() const{
   #endif
 
   #ifdef USE_OPTIMIZATIONS
-  return Iterator(_geom, _value % _geom->Size()[0] == 0 ? _value : _value - 1);
+  return Iterator(_geom, _value % _sh_s0 == 0 ? _value : _value - 1);
   #endif
 }
 
@@ -73,7 +73,7 @@ Iterator Iterator::Right() const{
   index_t pos;
   
   // Check, right border reached
-  if((_value+1) % _geom->Size()[0] == 0){
+  if((_value+1) % _sh_s0 == 0){
     pos = _value;
   }else{
     pos = _value+1;
@@ -90,16 +90,16 @@ Iterator Iterator::Right() const{
   #endif
 
   #ifdef USE_OPTIMIZATIONS
-  return Iterator(_geom, (_value+1) % _geom->Size()[0] == 0 ? _value : _value + 1);
+  return Iterator(_geom, (_value+1) % _sh_s0 == 0 ? _value : _value + 1);
   #endif
 }
 
 Iterator Iterator::Top() const{
   #ifndef USE_OPTIMIZATIONS
-  index_t pos = _value + _geom->Size()[0];
+  index_t pos = _value + _sh_s0;
   
   // Check, upper border reached
-  if(pos / _geom->Size()[0] >= _geom->Size()[1]){
+  if(pos / _sh_s0 >= _sh_s1){
     pos = _value;
   }
   
@@ -114,8 +114,8 @@ Iterator Iterator::Top() const{
   #endif
 
   #ifdef USE_OPTIMIZATIONS
-  index_t pos = _value + _geom->Size()[0];
-  return Iterator(_geom, pos / _geom->Size()[0] >= _geom->Size()[1] ? _value : pos);
+  index_t pos = _value + _sh_s0;
+  return Iterator(_geom, pos / _sh_s0 >= _sh_s1 ? _value : pos);
   #endif
 }
 
@@ -124,10 +124,10 @@ Iterator Iterator::Down() const{
   index_t pos;
   
   // Check, lower border reached
-  if(_value < _geom->Size()[0]){
+  if(_value < _sh_s0){
     pos = _value;
   }else{
-    pos = _value - _geom->Size()[0];
+    pos = _value - _sh_s0;
   }
   
   Iterator it(_geom, pos);
@@ -141,7 +141,7 @@ Iterator Iterator::Down() const{
   #endif
 
   #ifdef USE_OPTIMIZATIONS
-  return Iterator(_geom, _value < _geom->Size()[0] ? _value : _value - _geom->Size()[0]);
+  return Iterator(_geom, _value < _sh_s0 ? _value : _value - _sh_s0);
   #endif
 }
 
@@ -184,15 +184,15 @@ void Iterator::printNeighbours() const{
 InteriorIterator::InteriorIterator(const Geometry *geom)
     : Iterator(geom){
   // Set itermax / itermin for InteriorIterator
-  _itmax = (_geom->Size()[0]*(_geom->Size()[1]-1)-2);
-  _itmin = (_geom->Size()[0]+1);
+  _itmax = (_sh_s0*(_sh_s1-1)-2);
+  _itmin = (_sh_s0+1);
   // Set to first element
   this->First();
 }
 
 void InteriorIterator::Next(){
   _value ++;
-  if((_value + 1) % _geom->Size()[0] == 0){
+  if((_value + 1) % _sh_s0 == 0){
     _value += 2;
   }
   this->UpdateValid();
@@ -220,19 +220,19 @@ void BoundaryIterator::First(){
   switch(_boundary){
     case 1:
       _itmin = 0;
-      _itmax = _geom->Size()[0]-1;
+      _itmax = _sh_s0-1;
       break;
     case 2:
-      _itmin = _geom->Size()[0]-1;
-      _itmax = _geom->Size()[0]*(_geom->Size()[1])-1;
+      _itmin = _sh_s0-1;
+      _itmax = _sh_s0*(_sh_s1)-1;
       break;
     case 3:
-      _itmin = _geom->Size()[0]*(_geom->Size()[1]-1);
-      _itmax = _geom->Size()[0]*(_geom->Size()[1]  )-1;
+      _itmin = _sh_s0*(_sh_s1-1);
+      _itmax = _sh_s0*(_sh_s1  )-1;
       break;
     case 4:
       _itmin = 0;
-      _itmax = _geom->Size()[0]*(_geom->Size()[1]-1);
+      _itmax = _sh_s0*(_sh_s1-1);
       break;
     default:
       throw std::runtime_error(std::string("Failed to operate with current boundary value: " + std::to_string(_value)));
@@ -248,13 +248,13 @@ void BoundaryIterator::Next(){
       _value ++;
       break;
     case 2:
-      _value += _geom->Size()[0];
+      _value += _sh_s0;
       break;
     case 3:
       _value ++;
       break;
     case 4:
-      _value += _geom->Size()[0];
+      _value += _sh_s0;
       break;
     default:
       throw std::runtime_error(std::string("Failed to operate with current boundary value: "+ std::to_string(_value)));
