@@ -150,6 +150,12 @@ private:
   /// _offset multi_real_t The offset from the grid's coordinate system to the
   ///   global coordinate system.
   multi_real_t _offset;
+
+  /// _sh_im0 real_t Shorthand variable for the inverted mesh width in x direction
+  real_t _sh_im0;
+
+  /// _sh_im1 real_t Shorthand variable for the inverted mesh width in y direction
+  real_t _sh_im1;
 };
 //------------------------------------------------------------------------------
 #endif // __GRID_HPP

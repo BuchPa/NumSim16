@@ -42,6 +42,10 @@ Grid::Grid(const Geometry *geom)
   const multi_index_t size = _geom->Size();
   _data = new real_t[(size[0])*(size[1])];
   
+  // Save shorthand variables for inverted mesh width
+  _sh_im0 = 1.0 / _geom->Mesh()[0];
+  _sh_im1 = 1.0 / _geom->Mesh()[1];
+
   // Init data with zeros
   this->Initialize(real_t(0.0));
 }
@@ -52,6 +56,10 @@ Grid::Grid(const Geometry *geom, const multi_real_t &offset)
   // Calculate grid size and create data
   const multi_index_t size = _geom->Size();
   _data = new real_t[(size[0])*(size[1])];
+  
+  // Save shorthand variables for inverted mesh width
+  _sh_im0 = 1.0 / _geom->Mesh()[0];
+  _sh_im1 = 1.0 / _geom->Mesh()[1];
   
   // Init data with zeros
   this->Initialize(real_t(0.0));
@@ -106,61 +114,137 @@ real_t Grid::Interpolate(const multi_real_t &pos) const {
 }
 
 real_t Grid::dx_l(const Iterator &it) const{
+  #ifndef USE_OPTIMIZATIONS
   return (this->Cell(it) - this->Cell(it.Left())) / _geom->Mesh()[0];
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  return (_data[it] - _data[it.Left()]) * _sh_im0;
+  #endif
 }
 
 real_t Grid::dx_r(const Iterator &it) const{
+  #ifndef USE_OPTIMIZATIONS
   return (this->Cell(it.Right()) - this->Cell(it)) / _geom->Mesh()[0];
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  return (_data[it.Right()] - _data[it]) * _sh_im0;
+  #endif
 }
 
 real_t Grid::dy_l(const Iterator &it) const{
+  #ifndef USE_OPTIMIZATIONS
   return (this->Cell(it) - this->Cell(it.Down())) / _geom->Mesh()[1];
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  return (_data[it] - _data[it.Down()]) * _sh_im1;
+  #endif
 }
 
 real_t Grid::dy_r(const Iterator &it) const{
+  #ifndef USE_OPTIMIZATIONS
   return (this->Cell(it.Top()) - this->Cell(it)) / _geom->Mesh()[1];
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  return (_data[it.Top()] - _data[it]) * _sh_im1;
+  #endif
 }
 
 real_t Grid::dxx(const Iterator &it) const{
+  #ifndef USE_OPTIMIZATIONS
   return (this->Cell(it.Right()) + this->Cell(it.Left()) - this->Cell(it) - this->Cell(it))
     / (_geom->Mesh()[0] * _geom->Mesh()[0]);
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  return (_data[it.Right()] + _data[it.Left()] - _data[it] - _data[it]) * _sh_im0 * _sh_im0;
+  #endif
 }
 
 real_t Grid::dyy(const Iterator &it) const{
+  #ifndef USE_OPTIMIZATIONS
   return (this->Cell(it.Top()) + this->Cell(it.Down()) - this->Cell(it) - this->Cell(it))
     / (_geom->Mesh()[1] * _geom->Mesh()[1]);
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  return (_data[it.Top()] + _data[it.Down()] - _data[it] - _data[it]) * _sh_im1 * _sh_im1;
+  #endif
 }
 
 real_t Grid::DC_udu_x(const Iterator &it, const real_t &alpha) const {
+  #ifndef USE_OPTIMIZATIONS
   real_t ft = pow((this->Cell(it) + this->Cell(it.Right())), 2.0)
     - pow((this->Cell(it.Left()) + this->Cell(it)), 2.0);
   real_t st = fabs(this->Cell(it) + this->Cell(it.Right())) * (this->Cell(it) - this->Cell(it.Right()))
     - fabs(this->Cell(it.Left()) + this->Cell(it)) * (this->Cell(it.Left()) - this->Cell(it));
   return (0.25 * (ft + alpha * st)) / _geom->Mesh()[0];
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  real_t ft = pow((_data[it] + _data[it.Right()]), 2.0)
+    - pow(_data[it.Left()] + _data[it], 2.0);
+  real_t st = fabs(_data[it] + _data[it.Right()]) * (_data[it] - _data[it.Right()])
+    - fabs(_data[it.Left()] + _data[it]) * (_data[it.Left()] - _data[it]);
+  return (0.25 * (ft + alpha * st)) * _sh_im0;
+  #endif
 }
 
 real_t Grid::DC_vdu_y(const Iterator &it, const real_t &alpha, const Grid *v) const {
+  #ifndef USE_OPTIMIZATIONS
   real_t ft = (v->Cell(it) + v->Cell(it.Right())) * (this->Cell(it) + this->Cell(it.Top()))
     - (v->Cell(it.Down()) + v->Cell(it.Right().Down())) * (this->Cell(it.Down()) + this->Cell(it));
   real_t st = fabs(v->Cell(it) + v->Cell(it.Right())) * (this->Cell(it) - this->Cell(it.Top()))
     - fabs(v->Cell(it.Down()) + v->Cell(it.Right().Down())) * (this->Cell(it.Down()) - this->Cell(it));
   return (0.25 * (ft + alpha * st)) / _geom->Mesh()[1];
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  real_t ft = (v->Cell(it) + v->Cell(it.Right())) * (_data[it] + _data[it.Top()])
+    - (v->Cell(it.Down()) + v->Cell(it.Right().Down())) * (_data[it.Down()] + _data[it]);
+  real_t st = fabs(v->Cell(it) + v->Cell(it.Right())) * (_data[it] - _data[it.Top()])
+    - fabs(v->Cell(it.Down()) + v->Cell(it.Right().Down())) * (_data[it.Down()] - _data[it]);
+  return (0.25 * (ft + alpha * st)) * _sh_im1;
+  #endif
 }
 
 real_t Grid::DC_udv_x(const Iterator &it, const real_t &alpha, const Grid *u) const {
+  #ifndef USE_OPTIMIZATIONS
   real_t ft = (this->Cell(it) + this->Cell(it.Right())) * (u->Cell(it) + u->Cell(it.Top()))
     - (this->Cell(it.Left()) + this->Cell(it)) * (u->Cell(it.Left()) + u->Cell(it.Left().Top()));
   real_t st = fabs(u->Cell(it) + u->Cell(it.Top())) * (this->Cell(it) - this->Cell(it.Right()))
     - fabs(u->Cell(it.Left()) + u->Cell(it.Left().Top())) * (this->Cell(it.Left()) - this->Cell(it));
   return (0.25 * (ft + alpha * st)) / _geom->Mesh()[0];
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  real_t ft = (_data[it] + _data[it.Right()]) * (u->Cell(it) + u->Cell(it.Top()))
+    - (_data[it.Left()] + _data[it]) * (u->Cell(it.Left()) + u->Cell(it.Left().Top()));
+  real_t st = fabs(u->Cell(it) + u->Cell(it.Top())) * (_data[it] - _data[it.Right()])
+    - fabs(u->Cell(it.Left()) + u->Cell(it.Left().Top())) * (_data[it.Left()] - _data[it]);
+  return (0.25 * (ft + alpha * st)) * _sh_im0;
+  #endif
 }
 
 real_t Grid::DC_vdv_y(const Iterator &it, const real_t &alpha) const {
+  #ifndef USE_OPTIMIZATIONS
   real_t ft = pow((this->Cell(it) + this->Cell(it.Top())), 2.0)
     - pow((this->Cell(it.Down()) + this->Cell(it)), 2.0);
   real_t st = fabs(this->Cell(it) + this->Cell(it.Top())) * (this->Cell(it) - this->Cell(it.Top()))
     - fabs(this->Cell(it.Down()) + this->Cell(it)) * (this->Cell(it.Down()) - this->Cell(it));
   return (0.25 * (ft + alpha * st)) / _geom->Mesh()[1];
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  real_t ft = pow(_data[it] + _data[it.Top()], 2.0)
+    - pow(_data[it.Down()] + _data[it], 2.0);
+  real_t st = fabs(_data[it] + _data[it.Top()]) * (_data[it] - _data[it.Top()])
+    - fabs(_data[it.Down()] + _data[it]) * (_data[it.Down()] - _data[it]);
+  return (0.25 * (ft + alpha * st)) * _sh_im1;
+  #endif
 }
 
 real_t Grid::Max() const{
