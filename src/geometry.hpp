@@ -126,6 +126,12 @@ public:
   /// @return int* The cell types of the neighborhood of the given cell
   int* NeighbourCode(index_t pos) const;
 
+  /// Returns pointer to cells array
+  ///
+  /// @return char* field containing the cell types, e.g. fluid cell, obstacle,
+  ///   inflow boundary etc.
+  const char* GetCells() const;
+
 private:
   /// _size multi_index_t The number of cells in each dimension
   multi_index_t _size;

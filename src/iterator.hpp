@@ -38,6 +38,13 @@ public:
   /// @param geom Geometry The geometry to work with
   /// @param value index_t Starting value
   Iterator(const Geometry *geom, const index_t &value);
+  
+  /// Constructs a new Iterator on a geometry with a defined starting value and the geometry sizes given as parameters
+  ///
+  /// @param value index_t Starting value
+  /// @param xmax index_t Size of the geometry in x direction
+  /// @param ymax index_t Size of the geometry in y direction
+  Iterator(const index_t &value, const index_t &xmax, const index_t &ymax);
 
   /// Returns the current position value.
   ///
@@ -103,9 +110,6 @@ public:
   virtual void printNeighbours() const;
 
 protected:
-  /// _geom Geometry The geometry containing boundary information
-  const Geometry *_geom;
-
   /// _value index_t The current value of the iterator
   index_t _value;
 
@@ -118,9 +122,12 @@ protected:
 
   // _itmind index_t Minimal value for _value (inclusive _itmin)
   index_t _itmin;
-
-  index_t _sh_s0;
-  index_t _sh_s1;
+  
+  // _xmax index_t Size of the geometry in x direction
+  index_t _xmax;
+  
+  // _ymax index_t Size of the geometry in y direction
+  index_t _ymax;
 };
 
 //------------------------------------------------------------------------------
@@ -215,6 +222,10 @@ public:
 
   /// Goes to the next element of the iterator, disables it if position is end.
   void Next();
+private:
+  /// cells char* A field containing the cell types, e.g. fluid cell, obstacle,
+  /// inflow boundary etc.
+  const char* _cells;
 };
 //------------------------------------------------------------------------------
 #endif // __ITERATOR_HPP

@@ -698,6 +698,10 @@ char Geometry::CellTypeAt(index_t xpos, index_t ypos) const {
   return _cells[ypos * _size[0] + xpos];
 }
 
+const char* Geometry::GetCells() const {
+  return _cells;
+}
+
 int* Geometry::NeighbourCode(index_t pos) const {
   _nb[0] = pos - _size[0];
   _nb[1] = pos + 1;

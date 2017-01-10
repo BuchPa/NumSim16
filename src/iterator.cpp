@@ -3,10 +3,13 @@
 
 #include "geometry.hpp"
 
+Iterator::Iterator(const index_t &value, const index_t &xmax, const index_t &ymax)
+    : _value(value), _itmax(xmax*ymax-1), _itmin(0), _xmax(xmax), _ymax(ymax){
+  this->UpdateValid();
+}
+
 Iterator::Iterator(const Geometry *geom, const index_t &value)
-    : _geom(geom), _value(value), _itmax(_geom->Size()[0]*_geom->Size()[1]), _itmin(0){
-  _sh_s0 = _geom->Size()[0];
-  _sh_s1 = _geom->Size()[1];
+    : _value(value), _xmax(geom->Size()[0]), _ymax(geom->Size()[1]), _itmax(geom->Size()[0]*geom->Size()[1]-1), _itmin(0){
   this->UpdateValid();
 }
 
@@ -23,8 +26,8 @@ Iterator::operator const index_t &() const{
 
 multi_index_t Iterator::Pos() const{
   multi_index_t pos;
-  pos[0] = _value % _sh_s0;
-  pos[1] = (int)(_value / _sh_s0);
+  pos[0] = _value % _xmax;
+  pos[1] = (int)(_value / _xmax);
   return pos;
 }
 
@@ -43,110 +46,73 @@ bool Iterator::Valid() const{
 }
 
 Iterator Iterator::Left() const{
-  #ifndef USE_OPTIMIZATIONS
+  
   index_t pos;
   
   // Check, left border reached
-  if(_value % _sh_s0 == 0){
+  if(_value % _xmax == 0){
     pos = _value;
   }else{
     pos = _value-1;
   }
   
-  Iterator it(_geom, pos);
-  
-  // Check valid, if not let the user know
-  if(!it.Valid()){
-    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
-  }
+  Iterator it(pos, _xmax, _ymax);
   
   return it;
-  #endif
-
-  #ifdef USE_OPTIMIZATIONS
-  return Iterator(_geom, _value % _sh_s0 == 0 ? _value : _value - 1);
-  #endif
 }
 
 Iterator Iterator::Right() const{
-  #ifndef USE_OPTIMIZATIONS
+  
   index_t pos;
   
   // Check, right border reached
-  if((_value+1) % _sh_s0 == 0){
+  if((_value+1) % _xmax == 0){
     pos = _value;
   }else{
     pos = _value+1;
   }
   
-  Iterator it(_geom, pos);
-  
-  // Check valid, if not let the user know
-  if(!it.Valid()){
-    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
-  }
+  Iterator it(pos, _xmax, _ymax);
   
   return it;
-  #endif
-
-  #ifdef USE_OPTIMIZATIONS
-  return Iterator(_geom, (_value+1) % _sh_s0 == 0 ? _value : _value + 1);
-  #endif
 }
 
 Iterator Iterator::Top() const{
-  #ifndef USE_OPTIMIZATIONS
-  index_t pos = _value + _sh_s0;
+  
+  index_t pos = _value + _xmax;
   
   // Check, upper border reached
-  if(pos / _sh_s0 >= _sh_s1){
+  if(pos / _xmax >= _ymax){
     pos = _value;
   }
   
-  Iterator it(_geom, pos);
-  
-  // Check valid, if not let the user know
-  if(!it.Valid()){
-    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
-  }
+  Iterator it(pos, _xmax, _ymax);
   
   return it;
-  #endif
-
-  #ifdef USE_OPTIMIZATIONS
-  index_t pos = _value + _sh_s0;
-  return Iterator(_geom, pos / _sh_s0 >= _sh_s1 ? _value : pos);
-  #endif
 }
 
 Iterator Iterator::Down() const{
-  #ifndef USE_OPTIMIZATIONS
+  
   index_t pos;
   
   // Check, lower border reached
-  if(_value < _sh_s0){
+  if(_value < _xmax){
     pos = _value;
   }else{
-    pos = _value - _sh_s0;
+    pos = _value - _xmax;
   }
   
-  Iterator it(_geom, pos);
-  
-  // Check valid, if not reset to value
-  if(!it.Valid()){
-    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
-  }
+  Iterator it(pos, _xmax, _ymax);
   
   return it;
-  #endif
-
-  #ifdef USE_OPTIMIZATIONS
-  return Iterator(_geom, _value < _sh_s0 ? _value : _value - _sh_s0);
-  #endif
 }
 
 void Iterator::UpdateValid(){
-  _valid = _value <= _itmax && _value >= _itmin;
+  if((_value <= _itmax)&&(_value >= _itmin)){
+    _valid = true;
+  }else{
+    _valid = false;
+  }
 }
 
 void Iterator::TestRun(const bool printNeighbours){
@@ -184,15 +150,15 @@ void Iterator::printNeighbours() const{
 InteriorIterator::InteriorIterator(const Geometry *geom)
     : Iterator(geom){
   // Set itermax / itermin for InteriorIterator
-  _itmax = (_sh_s0*(_sh_s1-1)-2);
-  _itmin = (_sh_s0+1);
+  _itmax = (_xmax*(_ymax-1)-2);
+  _itmin = (_xmax+1);
   // Set to first element
   this->First();
 }
 
 void InteriorIterator::Next(){
   _value ++;
-  if((_value + 1) % _sh_s0 == 0){
+  if((_value + 1) % _xmax == 0){
     _value += 2;
   }
   this->UpdateValid();
@@ -220,19 +186,19 @@ void BoundaryIterator::First(){
   switch(_boundary){
     case 1:
       _itmin = 0;
-      _itmax = _sh_s0-1;
+      _itmax = _xmax-1;
       break;
     case 2:
-      _itmin = _sh_s0-1;
-      _itmax = _sh_s0*(_sh_s1)-1;
+      _itmin = _xmax-1;
+      _itmax = _xmax*(_ymax)-1;
       break;
     case 3:
-      _itmin = _sh_s0*(_sh_s1-1);
-      _itmax = _sh_s0*(_sh_s1  )-1;
+      _itmin = _xmax*(_ymax-1);
+      _itmax = _xmax*(_ymax  )-1;
       break;
     case 4:
       _itmin = 0;
-      _itmax = _sh_s0*(_sh_s1-1);
+      _itmax = _xmax*(_ymax-1);
       break;
     default:
       throw std::runtime_error(std::string("Failed to operate with current boundary value: " + std::to_string(_value)));
@@ -248,13 +214,13 @@ void BoundaryIterator::Next(){
       _value ++;
       break;
     case 2:
-      _value += _sh_s0;
+      _value += _xmax;
       break;
     case 3:
       _value ++;
       break;
     case 4:
-      _value += _sh_s0;
+      _value += _xmax;
       break;
     default:
       throw std::runtime_error(std::string("Failed to operate with current boundary value: "+ std::to_string(_value)));
@@ -267,12 +233,7 @@ Iterator BoundaryIterator::CornerBottomLeft(){
   this->SetBoundary(1);
   index_t pos = _itmin;
   
-  Iterator it(_geom, pos);
-  
-  // Check valid, if not let the user know
-  if(!it.Valid()){
-    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
-  }
+  Iterator it(pos, _xmax, _ymax);
   
   return it;
 }
@@ -281,12 +242,7 @@ Iterator BoundaryIterator::CornerBottomRight(){
   this->SetBoundary(1);
   index_t pos = _itmax;
   
-  Iterator it(_geom, pos);
-  
-  // Check valid, if not let the user know
-  if(!it.Valid()){
-    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
-  }
+  Iterator it(pos, _xmax, _ymax);
   
   return it;
 }
@@ -295,12 +251,7 @@ Iterator BoundaryIterator::CornerTopLeft(){
   this->SetBoundary(3);
   index_t pos = _itmin;
   
-  Iterator it(_geom, pos);
-  
-  // Check valid, if not let the user know
-  if(!it.Valid()){
-    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
-  }
+  Iterator it(pos, _xmax, _ymax);
   
   return it;
 }
@@ -309,30 +260,26 @@ Iterator BoundaryIterator::CornerTopRight(){
   this->SetBoundary(3);
   index_t pos = _itmax;
   
-  Iterator it(_geom, pos);
-  
-  // Check valid, if not let the user know
-  if(!it.Valid()){
-    throw std::runtime_error(std::string("Invalid neighbour created: " + std::to_string(it.Value())));
-  }
+  Iterator it(pos, _xmax, _ymax);
   
   return it;
 }
 
-ObstacleIterator::ObstacleIterator(const Geometry *geom) : InteriorIterator(geom) {
+ObstacleIterator::ObstacleIterator(const Geometry *geom) : 
+  InteriorIterator(geom), _cells(geom->GetCells()) {
   ObstacleIterator::First();
 }
 
 void ObstacleIterator::First() {
   InteriorIterator::First();
-  if (_geom->CellTypeAt(_value) == CellType::Fluid)
+  if (_cells[_value] == CellType::Fluid)
     ObstacleIterator::Next();
 }
 
 void ObstacleIterator::Next() {
   InteriorIterator::Next();
   while (this->Valid()) {
-    if (_geom->CellTypeAt(_value) == CellType::Fluid) {
+    if (_cells[_value] == CellType::Fluid) {
       InteriorIterator::Next();
     } else {
       break;
