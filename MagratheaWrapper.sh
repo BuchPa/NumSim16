@@ -97,6 +97,7 @@ elif [ "$ReType" = "normal" ]
   Re="$(./random/random $ReMean $ReSigma)"
 elif [ "$ReType" = "equi" ]
   then
+  ReNrIter=`expr $ReNrIter - 1`
   step=`expr 6 \* $ReSigma / $ReNrIter`
   Re=`expr $ReMean - 3 \* $ReSigma + $step \* $ReIter`
 fi
