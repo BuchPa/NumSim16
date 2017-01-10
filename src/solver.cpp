@@ -14,8 +14,8 @@ Solver::Solver(const Geometry *geom)
                  / ( 2.0*(pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)) );
       _ihsquare = 1.0 / _hsquare;
 
-      _sh_ism0 = pow(_geom->Mesh()[0], 2.0);
-      _sh_ism1 = pow(_geom->Mesh()[1], 2.0);
+      _sh_ism0 = 1.0 / pow(_geom->Mesh()[0], 2.0);
+      _sh_ism1 = 1.0 / pow(_geom->Mesh()[1], 2.0);
     }
 
 Solver::~Solver(){
