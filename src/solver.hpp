@@ -50,6 +50,14 @@ protected:
   /// _hsquare real_t A constant used in the calculation
   real_t _hsquare;
 
+  /// _sh_ism0 real_t Shorthand variables for the inverted square mesh width
+  ///   in x direction.
+  real_t _sh_ism0;
+
+  /// _sh_ism1 real_t Shorthand variables for the inverted square mesh width
+  ///   in y direction.
+  real_t _sh_ism1;
+
   /// Returns the residual at [it] for the pressure-Poisson equation.
   ///
   /// @param it Iterator The position
