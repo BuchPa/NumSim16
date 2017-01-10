@@ -12,6 +12,7 @@ Solver::Solver(const Geometry *geom)
     : _geom(geom){
       _hsquare =         (pow(_geom->Mesh()[0],2.0) * pow(_geom->Mesh()[1],2.0))
                  / ( 2.0*(pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)) );
+      _ihsquare = 1.0 / _hsquare;
 
       _sh_ism0 = pow(_geom->Mesh()[0], 2.0);
       _sh_ism1 = pow(_geom->Mesh()[1], 2.0);
@@ -24,7 +25,7 @@ real_t Solver::localRes(const Iterator &it, const Grid *grid, const Grid *rhs) c
   return (
     (grid->Cell(it.Left()) + grid->Cell(it.Right())) * _sh_ism0
     + (grid->Cell(it.Down()) + grid->Cell(it.Top())) * _sh_ism1
-    - (grid->Cell(it) / _hsquare)
+    - grid->Cell(it) * _ihsquare
     - rhs->Cell(it)
   );
 }

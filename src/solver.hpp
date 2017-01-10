@@ -50,6 +50,9 @@ protected:
   /// _hsquare real_t A constant used in the calculation
   real_t _hsquare;
 
+  /// _ihsquare real_t Inverse of the hsquare constant
+  real_t _ihsquare;
+
   /// _sh_ism0 real_t Shorthand variables for the inverted square mesh width
   ///   in x direction.
   real_t _sh_ism0;
