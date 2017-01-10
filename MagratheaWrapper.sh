@@ -97,9 +97,9 @@ elif [ "$ReType" = "normal" ]
   Re="$(./random/random $ReMean $ReSigma)"
 elif [ "$ReType" = "equi" ]
   then
-  ReNrIter=`expr $ReNrIter - 1`
-  step=`expr 6 \* $ReSigma / $ReNrIter`
-  Re=`expr $ReMean - 3 \* $ReSigma + $step \* $ReIter`
+  ReNrIter=$(bc <<< "${ReNrIter} - 1")
+  step=$(bc <<< "6 * ${ReSigma} / ${ReNrIter}")
+  Re=$(bc <<< "${ReMean} - 3 * ${ReSigma} + ${step} * ${ReIter}")
 fi
 
 ### Set/calculate certain parameters for certain scenarios
