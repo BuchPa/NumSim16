@@ -5,11 +5,13 @@
 
 Iterator::Iterator(const index_t &value, const index_t &xmax, const index_t &ymax)
     : _value(value), _xmax(xmax), _ymax(ymax), _itmax(xmax*ymax-1), _itmin(0){
+  _xmax_mod = _xmax - 1;
   this->UpdateValid();
 }
 
 Iterator::Iterator(const Geometry *geom, const index_t &value)
     : _value(value), _xmax(geom->Size()[0]), _ymax(geom->Size()[1]), _itmax(geom->Size()[0]*geom->Size()[1]-1), _itmin(0){
+  _xmax_mod = _xmax - 1;
   this->UpdateValid();
 }
 
@@ -26,7 +28,7 @@ Iterator::operator const index_t &() const{
 
 multi_index_t Iterator::Pos() const{
   multi_index_t pos;
-  pos[0] = _value % _xmax;
+  pos[0] = _value & _xmax_mod;
   pos[1] = (int)(_value / _xmax);
   return pos;
 }
@@ -46,11 +48,11 @@ bool Iterator::Valid() const{
 }
 
 Iterator Iterator::Left() const{
-  return Iterator(_value % _xmax == 0 ? _value : _value-1, _xmax, _ymax);
+  return Iterator((_value & _xmax_mod) == 0 ? _value : _value-1, _xmax, _ymax);
 }
 
 Iterator Iterator::Right() const{
-  return Iterator((_value+1) % _xmax == 0 ? _value : _value+1, _xmax, _ymax);
+  return Iterator(((_value+1) & _xmax_mod) == 0 ? _value : _value+1, _xmax, _ymax);
 }
 
 Iterator Iterator::Top() const{
@@ -109,7 +111,7 @@ InteriorIterator::InteriorIterator(const Geometry *geom)
 
 void InteriorIterator::Next(){
   _value ++;
-  if((_value + 1) % _xmax == 0){
+  if(((_value + 1) & _xmax_mod) == 0){
     _value += 2;
   }
   this->UpdateValid();

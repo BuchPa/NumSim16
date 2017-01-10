@@ -49,6 +49,7 @@ env.Append(
 # add flags for debug and release build
 if debug == 0:
     env['CXXFLAGS'] += ["-O3"]
+    env['CXXFLAGS'] += ["-flto"]
 else:
     env['CXXFLAGS'] += [
         "-g3",

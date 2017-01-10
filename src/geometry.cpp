@@ -204,40 +204,40 @@ void Geometry::Update_U(Grid *u) const{
   boit.SetBoundary(3);
   this->CycleBoundary_U(u, boit);
   
-  ObstacleIterator oit = ObstacleIterator(this);
-
-  for(; oit.Valid(); oit.Next()) {
-    switch (_baked_neighbors[oit]) {
-      case 13:
-        u->Cell(oit) = -u->Cell(oit.Top());
-        break;
-        
-      case 14:
-        u->Cell(oit) = 0;
-        u->Cell(oit.Left()) = 0;
-        break;
-
-      case 11:
-      case 3:
-      case 9:
-        u->Cell(oit) = 0;
-        break;
-
-      case 7:
-        u->Cell(oit) = -u->Cell(oit.Down());
-        break;
-
-      case 12:
-        u->Cell(oit) = -u->Cell(oit.Top());
-        u->Cell(oit.Left()) = 0;
-        break;
-
-      case 6:
-        u->Cell(oit) = -u->Cell(oit.Down());
-        u->Cell(oit.Left()) = 0;
-        break;
-    }
-  }
+//   ObstacleIterator oit = ObstacleIterator(this);
+// 
+//   for(; oit.Valid(); oit.Next()) {
+//     switch (_baked_neighbors[oit]) {
+//       case 13:
+//         u->Cell(oit) = -u->Cell(oit.Top());
+//         break;
+//         
+//       case 14:
+//         u->Cell(oit) = 0;
+//         u->Cell(oit.Left()) = 0;
+//         break;
+// 
+//       case 11:
+//       case 3:
+//       case 9:
+//         u->Cell(oit) = 0;
+//         break;
+// 
+//       case 7:
+//         u->Cell(oit) = -u->Cell(oit.Down());
+//         break;
+// 
+//       case 12:
+//         u->Cell(oit) = -u->Cell(oit.Top());
+//         u->Cell(oit.Left()) = 0;
+//         break;
+// 
+//       case 6:
+//         u->Cell(oit) = -u->Cell(oit.Down());
+//         u->Cell(oit.Left()) = 0;
+//         break;
+//     }
+//   }
 }
 
 void Geometry::CycleBoundary_U(Grid *u, BoundaryIterator boit) const{
@@ -309,40 +309,40 @@ void Geometry::Update_V(Grid *v) const{
   boit.SetBoundary(3);
   this->CycleBoundary_V(v, boit);
   
-  ObstacleIterator oit = ObstacleIterator(this);
-
-  for(; oit.Valid(); oit.Next()) {
-    switch (_baked_neighbors[oit]) {
-      case 7:
-        v->Cell(oit) = 0;
-        v->Cell(oit.Down()) = 0;
-        break;
-        
-      case 13:
-      case 9:
-      case 12:
-        v->Cell(oit) = 0;
-        break;
-
-      case 11:
-        v->Cell(oit) = -v->Cell(oit.Right());
-        break;
-
-      case 14:
-        v->Cell(oit) = -v->Cell(oit.Left());
-        break;
-
-      case 3:
-        v->Cell(oit) = -v->Cell(oit.Right());
-        v->Cell(oit.Down()) = 0;
-        break;
-
-      case 6:
-        v->Cell(oit) = -v->Cell(oit.Left());
-        v->Cell(oit.Down()) = 0;
-        break;
-    }
-  }
+//   ObstacleIterator oit = ObstacleIterator(this);
+// 
+//   for(; oit.Valid(); oit.Next()) {
+//     switch (_baked_neighbors[oit]) {
+//       case 7:
+//         v->Cell(oit) = 0;
+//         v->Cell(oit.Down()) = 0;
+//         break;
+//         
+//       case 13:
+//       case 9:
+//       case 12:
+//         v->Cell(oit) = 0;
+//         break;
+// 
+//       case 11:
+//         v->Cell(oit) = -v->Cell(oit.Right());
+//         break;
+// 
+//       case 14:
+//         v->Cell(oit) = -v->Cell(oit.Left());
+//         break;
+// 
+//       case 3:
+//         v->Cell(oit) = -v->Cell(oit.Right());
+//         v->Cell(oit.Down()) = 0;
+//         break;
+// 
+//       case 6:
+//         v->Cell(oit) = -v->Cell(oit.Left());
+//         v->Cell(oit.Down()) = 0;
+//         break;
+//     }
+//   }
 }
 
 void Geometry::CycleBoundary_V(Grid *v, BoundaryIterator boit) const{
@@ -425,43 +425,43 @@ void Geometry::Update_P(Grid *p) const{
   Iterator ctr = boit.CornerTopRight();
   p->Cell(ctr) = (p->Cell(ctr.Left()) + p->Cell(ctr.Down()))/2.0; 
 
-  ObstacleIterator oit = ObstacleIterator(this);
-
-  for(; oit.Valid(); oit.Next()) {
-    switch (_baked_neighbors[oit]) {
-      case 13:
-        p->Cell(oit) = p->Cell(oit.Top());
-        break;
-
-      case 11:
-        p->Cell(oit) = p->Cell(oit.Right());
-        break;
-
-      case 7:
-        p->Cell(oit) = p->Cell(oit.Down());
-        break;
-
-      case 14:
-        p->Cell(oit) = p->Cell(oit.Left());
-        break;
-
-      case 3:
-        p->Cell(oit) = 0.5 * (p->Cell(oit.Right()) + p->Cell(oit.Down()));
-        break;
-
-      case 9:
-        p->Cell(oit) = 0.5 * (p->Cell(oit.Right()) + p->Cell(oit.Top()));
-        break;
-
-      case 12:
-        p->Cell(oit) = 0.5 * (p->Cell(oit.Left()) + p->Cell(oit.Top()));
-        break;
-
-      case 6:
-        p->Cell(oit) = 0.5 * (p->Cell(oit.Left()) + p->Cell(oit.Down()));
-        break;
-    }
-  }
+//   ObstacleIterator oit = ObstacleIterator(this);
+// 
+//   for(; oit.Valid(); oit.Next()) {
+//     switch (_baked_neighbors[oit]) {
+//       case 13:
+//         p->Cell(oit) = p->Cell(oit.Top());
+//         break;
+// 
+//       case 11:
+//         p->Cell(oit) = p->Cell(oit.Right());
+//         break;
+// 
+//       case 7:
+//         p->Cell(oit) = p->Cell(oit.Down());
+//         break;
+// 
+//       case 14:
+//         p->Cell(oit) = p->Cell(oit.Left());
+//         break;
+// 
+//       case 3:
+//         p->Cell(oit) = 0.5 * (p->Cell(oit.Right()) + p->Cell(oit.Down()));
+//         break;
+// 
+//       case 9:
+//         p->Cell(oit) = 0.5 * (p->Cell(oit.Right()) + p->Cell(oit.Top()));
+//         break;
+// 
+//       case 12:
+//         p->Cell(oit) = 0.5 * (p->Cell(oit.Left()) + p->Cell(oit.Top()));
+//         break;
+// 
+//       case 6:
+//         p->Cell(oit) = 0.5 * (p->Cell(oit.Left()) + p->Cell(oit.Down()));
+//         break;
+//     }
+//   }
 }
 
 void Geometry::CycleBoundary_P(Grid *p, BoundaryIterator boit) const{

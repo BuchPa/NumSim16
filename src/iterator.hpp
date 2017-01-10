@@ -123,6 +123,9 @@ protected:
   // _ymax index_t Size of the geometry in y direction
   index_t _ymax;
 
+  // _xmax_mod index_t Size of the geometry in x direction for modulus operation with AND operation
+  index_t _xmax_mod;
+
   // _itmax index_t Maximal value for _value (inclusive _itmax)
   index_t _itmax;
 
