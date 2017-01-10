@@ -46,73 +46,24 @@ bool Iterator::Valid() const{
 }
 
 Iterator Iterator::Left() const{
-  
-  index_t pos;
-  
-  // Check, left border reached
-  if(_value % _xmax == 0){
-    pos = _value;
-  }else{
-    pos = _value-1;
-  }
-  
-  Iterator it(pos, _xmax, _ymax);
-  
-  return it;
+  return Iterator(_value % _xmax == 0 ? _value : _value-1, _xmax, _ymax);
 }
 
 Iterator Iterator::Right() const{
-  
-  index_t pos;
-  
-  // Check, right border reached
-  if((_value+1) % _xmax == 0){
-    pos = _value;
-  }else{
-    pos = _value+1;
-  }
-  
-  Iterator it(pos, _xmax, _ymax);
-  
-  return it;
+  return Iterator((_value+1) % _xmax == 0 ? _value : _value+1, _xmax, _ymax);
 }
 
 Iterator Iterator::Top() const{
-  
   index_t pos = _value + _xmax;
-  
-  // Check, upper border reached
-  if(pos / _xmax >= _ymax){
-    pos = _value;
-  }
-  
-  Iterator it(pos, _xmax, _ymax);
-  
-  return it;
+  return Iterator(pos / _xmax >= _ymax ? _value : pos, _xmax, _ymax);
 }
 
 Iterator Iterator::Down() const{
-  
-  index_t pos;
-  
-  // Check, lower border reached
-  if(_value < _xmax){
-    pos = _value;
-  }else{
-    pos = _value - _xmax;
-  }
-  
-  Iterator it(pos, _xmax, _ymax);
-  
-  return it;
+  return Iterator(_value < _xmax ? _value : _value - _xmax, _xmax, _ymax);
 }
 
 void Iterator::UpdateValid(){
-  if((_value <= _itmax)&&(_value >= _itmin)){
-    _valid = true;
-  }else{
-    _valid = false;
-  }
+  _valid = _value <= _itmax && _value >= _itmin;
 }
 
 void Iterator::TestRun(const bool printNeighbours){
