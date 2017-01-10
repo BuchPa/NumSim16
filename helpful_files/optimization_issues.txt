@@ -1,0 +1,10 @@
+Using compilation flags:
+	-O3
+	-flto
+Replacing modulus operation with logical operation (valid for powers-of-two)
+	http://stackoverflow.com/questions/11076216/re-implement-modulo-using-bit-shifts
+Comment out ObstacleStuff (no obstacles for DrivenCavity)
+Saving variables and inverse variables in
+	Solver
+	Iterator
+	Grid
