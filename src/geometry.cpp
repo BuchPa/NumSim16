@@ -710,7 +710,7 @@ int* Geometry::NeighbourCode(index_t pos) const {
 
   _nb[0] = _nb[0] < 0 ? 1 : _cells[_nb[0]] != CellType::Fluid;
   _nb[1] = _nb[1] % _size[0] == 0 ? 1 : _cells[_nb[1]] != CellType::Fluid;
-  _nb[2] = _nb[2] >= _size[0] * _size[1] ? 1 : _cells[_nb[2]] != CellType::Fluid;
+  _nb[2] = _nb[2] >= (int)(_size[0] * _size[1]) ? 1 : _cells[_nb[2]] != CellType::Fluid;
   _nb[3] = pos % _size[0] == 0 ? 1 : _cells[_nb[3]] != CellType::Fluid;
 
   return _nb;

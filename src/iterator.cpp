@@ -4,7 +4,7 @@
 #include "geometry.hpp"
 
 Iterator::Iterator(const index_t &value, const index_t &xmax, const index_t &ymax)
-    : _value(value), _itmax(xmax*ymax-1), _itmin(0), _xmax(xmax), _ymax(ymax){
+    : _value(value), _xmax(xmax), _ymax(ymax), _itmax(xmax*ymax-1), _itmin(0){
   this->UpdateValid();
 }
 

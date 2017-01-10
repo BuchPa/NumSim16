@@ -198,7 +198,7 @@ bool Compute::TimeStep(bool printInfo) {
   
   // Correct timestep if necessary and decide, if print CSV is necessary
   bool print = false;
-  uint32_t curstep = (int)(_t*_inv_dt_fixed);
+  int curstep = (int)(_t*_inv_dt_fixed);
   if (curstep < (int)((_t+dt+DT_MIN)*_inv_dt_fixed)) {
     real_t candidate = (curstep+1)*_dt_fixed - _t;
     if (candidate>DT_MIN) {

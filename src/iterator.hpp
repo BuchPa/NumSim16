@@ -116,18 +116,18 @@ protected:
   /// _valid bool Flag to contain the iterators validity, e.g. if we have
   ///   reached the end of the grid
   bool _valid;
-
-  // _itmax index_t Maximal value for _value (inclusive _itmax)
-  index_t _itmax;
-
-  // _itmind index_t Minimal value for _value (inclusive _itmin)
-  index_t _itmin;
   
   // _xmax index_t Size of the geometry in x direction
   index_t _xmax;
   
   // _ymax index_t Size of the geometry in y direction
   index_t _ymax;
+
+  // _itmax index_t Maximal value for _value (inclusive _itmax)
+  index_t _itmax;
+
+  // _itmind index_t Minimal value for _value (inclusive _itmin)
+  index_t _itmin;
 };
 
 //------------------------------------------------------------------------------
