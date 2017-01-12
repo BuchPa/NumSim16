@@ -20,7 +20,7 @@ fun_ref_u = @(y) scale*y(:).*(y(:)-yLen);
 
 n_sam_plot = [4,8,16,32, 64];
 
-folder = '../Pressure_VTK/';
+folder = '../VTK/';
 
 %% Calculation
 n_sam = numel(samples);
