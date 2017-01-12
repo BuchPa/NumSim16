@@ -18,7 +18,7 @@ fun_ref_p = @(y) pres*ones(size(y(:)));
 
 n_sam_plot = [4,8,16,32,64];
 
-folder = '../Velocity_VTK/';
+folder = '../VTK/';
 
 %% Calculation
 n_sam = numel(samples);
