@@ -8,20 +8,20 @@
 
 using namespace std;
 
-Solver::Solver(const Geometry *geom)
-    : _geom(geom){
-      _hsquare =         (pow(_geom->Mesh()[0],2.0) * pow(_geom->Mesh()[1],2.0))
-                 / ( 2.0*(pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)) );
-      _ihsquare = 1.0 / _hsquare;
+Solver::Solver(const Geometry *geom) : _geom(geom) {
+  _hsquare =  (pow(_geom->Mesh()[0],2.0) * pow(_geom->Mesh()[1],2.0))
+    / ( 2.0 * (pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)));
 
-      _sh_ism0 = 1.0 / pow(_geom->Mesh()[0], 2.0);
-      _sh_ism1 = 1.0 / pow(_geom->Mesh()[1], 2.0);
-    }
+  _ihsquare = 1.0 / _hsquare;
+
+  _sh_ism0 = 1.0 / pow(_geom->Mesh()[0], 2.0);
+  _sh_ism1 = 1.0 / pow(_geom->Mesh()[1], 2.0);
+}
 
 Solver::~Solver(){
 }
 
-real_t Solver::localRes(const Iterator &it, const Grid *grid, const Grid *rhs) const{
+real_t Solver::localRes(const Iterator &it, const Grid *grid, const Grid *rhs) const {
   return (
     (grid->Cell(it.Left()) + grid->Cell(it.Right())) * _sh_ism0
     + (grid->Cell(it.Down()) + grid->Cell(it.Top())) * _sh_ism1
@@ -35,13 +35,14 @@ real_t Solver::localRes(const Iterator &it, const Grid *grid, const Grid *rhs) c
  *                                    SOR                                  *
  ***************************************************************************/
 
-SOR::SOR(const Geometry *geom, const real_t &omega)
-    : Solver(geom), _omega(omega){
-      /// @TODO choose omega mesh width specific -> Script
-      printf("Omega given: %f, omega computed: %f, %f\n", _omega, 2/(1+sin(M_PI*_geom->Mesh()[0])),
-                                                                  2/(1+sin(M_PI*_geom->Mesh()[1]))
-      );
-    }
+SOR::SOR(const Geometry *geom, const real_t &omega) : Solver(geom), _omega(omega) {
+  /// @TODO choose omega mesh width specific -> Script
+  printf("Omega given: %f, omega computed: %f, %f\n",
+    _omega,
+    2/(1+sin(M_PI*_geom->Mesh()[0])),
+    2/(1+sin(M_PI*_geom->Mesh()[1]))
+  );
+}
 
 SOR::~SOR(){
 }

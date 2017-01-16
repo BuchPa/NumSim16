@@ -164,6 +164,10 @@ private:
   /// _nb int* An array used in calculating the neighborhood of a cell
   int* _nb;
 
+  /// _baked_neighbors int* An array of int containing the neighbor codes of cells
+  /// which are used in the calculation of boundary values for free geometries.
+  /// This field is calculated at the beginning in order to avoid having to re-
+  /// calculate the codes on every timestep.
   int* _baked_neighbors;
   
   /// Cycle the full boundary given by BoundaryIterator boit on Grid u
@@ -234,6 +238,10 @@ private:
   /// @param value real_t Value to set as boundary condition
   void SetPNeumann(Grid *p, const BoundaryIterator &boit, const real_t &value) const;
 
+  /// Bakes the neighbor codes used in calculation boundary values for free geometries.
+  /// Baking here means to calculate the values for each cell once and saving the
+  /// value instead of recalculating it every time. This assumes the neighborhood
+  /// of the cell doesn't change its cell types.
   void BakeNeighbors();
 };
 //------------------------------------------------------------------------------

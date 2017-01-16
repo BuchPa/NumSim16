@@ -27,6 +27,8 @@ Geometry::Geometry(){
   // Init p boundary values
   _pressure = 0.0;
   
+  // Calculate and "bake" neighbor codes used in calculating boundary values
+  // for free geometries
   _baked_neighbors = new int[_size[0] * _size[1]];
 
   this->Recalculate();

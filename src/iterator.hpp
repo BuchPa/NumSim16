@@ -39,7 +39,8 @@ public:
   /// @param value index_t Starting value
   Iterator(const Geometry *geom, const index_t &value);
   
-  /// Constructs a new Iterator on a geometry with a defined starting value and the geometry sizes given as parameters
+  /// Constructs a new Iterator on a geometry with a defined starting value
+  /// and the geometry sizes given as parameters.
   ///
   /// @param value index_t Starting value
   /// @param xmax index_t Size of the geometry in x direction
