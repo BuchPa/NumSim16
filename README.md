@@ -3,6 +3,7 @@ Numerische Simulation 2016/2017
 
 ## Requirements
 * g++ for C++ version 11 or greater
+* SDL2 library
 * scons
 * doxygen (documentation only)
 
@@ -10,7 +11,7 @@ Numerische Simulation 2016/2017
 1. ```git clone https://github.com/BuchPa/NumSim16.git```
 2. ```cd NumSim16```
 3. ```mkdir CSV```
-4. Compile the main program and the helper program Magrathea. See section "Compile" for instructions
+4. Compile the main program and the helper programs Magrathea and random. See section "Compile" for instructions
 5. ```doxygen doxyfile``` if you want source code documentation in a navigatable format like HTML. The created documentation can be found in the folder ```doc```.
 
 ## Compile
@@ -24,9 +25,21 @@ To clear all cached files of the build process, run the shell script ```clear_cm
 2. ```make```
 3. ```cd ..```
 
+### random
+1. ```cd random```
+2. ```make```
+3. ```cd ..```
+
+### Build flags
+When executing ```scons``` you can use three different compiler flags, that will alter the behaviour of the compiled program. For example, a non-debug build without live visualization would be done by calling ```scons debug=0 visu=0```.
+
+1. ```debug``` Enables some features or output that make debugging easier. Defaults to 0.
+2. ```opt``` Enables some optimization features and switches certain code blocks to a faster, but less reliable or less readable version. Note that while we strife for correct behaviour, some optimizations, like the ```flto``` compiler flag, may alter the behaviour of the program in subtle ways. If high precision is required, enabling this flag might not be optimal. Defaults to 0.
+3. ```visu``` Enables the live visualization of the various grids. Defaults to 1.
+
 ## Run
 ### Running the main program
-1. ```./build/NumSim``` using the default scenario "free_sim"
+1. ```./build/NumSim``` using the default scenario "free_sim". Note that when the program is first downloaded and compiled, no default scenario might exist. In this case use the check the section for the helper program Magrathea to read on how to create a custom scenario.
 2. ```./build/NumSim scenario <name>``` where ```<name>``` is replaced by the name of the scenario. The scenario names correspond to the file names in the folder scenarios. The following scenarios come prepared:
     * ```pressure_channel```: A simple channel flow where the flow is created by a pressure difference between the left inflow boundary and the right outflow one.
     * ```channel```: A simple channel flow where the left border inputs fluid with u velocities in a parabola
@@ -103,7 +116,3 @@ The parameters used in the helper program Magrathea (technically the created geo
 
 ## Testing subsystems
 There are tests for the various subsystems of the program. See documentation of the main function for a complete list of them. You can execute the tests by executing the program with one of the test parameters. E.g. ```./numsim TEST_GRID``` performs the tests implemented for the Grid class.
-
-## Disabling live visualisation
-Run scons again with the parameter visu turned off. E.g. ```scons visu=0```. After that, execute the program like normal.
-
