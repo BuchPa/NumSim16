@@ -45,7 +45,7 @@ int TGA::Load(char* szFilename) {
 	// Open the specified file
 	fIn.open(szFilename,ios::binary);
 
-	if(fIn==NULL)
+	if(fIn)
 		return IMG_ERR_NO_FILE;
 
 	// Get file size
