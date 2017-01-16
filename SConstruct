@@ -46,6 +46,10 @@ env.Append(
     ]
 )
 
+# add flags for optimizations
+if env["opt"] == 1:
+    env["CXXFLAGS"] += ["-flto"]
+
 # add flags for debug and release build
 if debug == 0:
     env['CXXFLAGS'] += ["-O3"]

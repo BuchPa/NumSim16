@@ -97,9 +97,9 @@ elif [ "$ReType" = "normal" ]
   Re="$(./random/random $ReMean $ReSigma)"
 elif [ "$ReType" = "equi" ]
   then
-  ReNrIter=`expr $ReNrIter - 1`
-  step=`expr 6 \* $ReSigma / $ReNrIter`
-  Re=`expr $ReMean - 3 \* $ReSigma + $step \* $ReIter`
+  ReNrIter=$(bc -l <<< "${ReNrIter} - 1")
+  step=$(bc -l <<< "6 * ${ReSigma} / ${ReNrIter}")
+  Re=$(bc -l <<< "${ReMean} - 3 * ${ReSigma} + ${step} * ${ReIter}")
 fi
 
 ### Set/calculate certain parameters for certain scenarios
@@ -111,7 +111,7 @@ elif [ "$scenario" = "Channel" ]
   then
   pre=1
   Pi=0.1
-  Ui=$(bc <<< "${yLength}*${yLength}*0.125*${Re}*${Pi}/${xLength}")
+  Ui=$(bc -l <<< "${yLength}*${yLength}*0.125*${Re}*${Pi}/${xLength}")
 elif [ "$scenario" = "PressureChannel" ]
   then
   pre=2
