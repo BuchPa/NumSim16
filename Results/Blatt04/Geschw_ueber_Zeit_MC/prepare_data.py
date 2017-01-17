@@ -20,21 +20,15 @@ with open("../CSV/mc_2000.csv") as file:
 		cells = line.split(",")
 		t = float(cells[2])
 		if t not in mean:
-			mean[t] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+			mean[t] = [0.0, 0.0, 0.0]
 		mean[t][0] += float(cells[5])
 		mean[t][1] += float(cells[10])
 		mean[t][2] += float(cells[15])
-		mean[t][3] += float(cells[6])
-		mean[t][4] += float(cells[11])
-		mean[t][5] += float(cells[16])
 
 	for j in mean:
 		mean[j][0] /= N
 		mean[j][1] /= N
 		mean[j][2] /= N
-		mean[j][3] /= N
-		mean[j][4] /= N
-		mean[j][5] /= N
 
 	file.seek(0) # Reset to file beginning
 
@@ -42,16 +36,13 @@ with open("../CSV/mc_2000.csv") as file:
 		cells = line.split(",")
 		t = float(cells[2])
 		if t not in variance:
-			variance[t] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+			variance[t] = [0.0, 0.0, 0.0]
 		variance[t][0] += math.pow(float(cells[5]) - mean[t][0], 2.0)
 		variance[t][1] += math.pow(float(cells[10]) - mean[t][1], 2.0)
 		variance[t][2] += math.pow(float(cells[15]) - mean[t][2], 2.0)
-		variance[t][3] += math.pow(float(cells[6]) - mean[t][3], 2.0)
-		variance[t][4] += math.pow(float(cells[11]) - mean[t][4], 2.0)
-		variance[t][5] += math.pow(float(cells[16]) - mean[t][5], 2.0)
 
 	for j in variance:
-		for i in range(0, 6):
+		for i in range(0, 3):
 			# sigma is the squareroot of the variance
 			variance[j][i] = math.sqrt(variance[j][i] / (N - 1))
 
@@ -68,15 +59,3 @@ with open("u_over_time_p2", "w") as file:
 with open("u_over_time_p3", "w") as file:
 	for j in mean:
 		file.write(str(j) + "\t" + str(mean[j][2]) + "\t" + str(variance[j][2]) + "\n")
-
-with open("v_over_time_p1", "w") as file:
-	for j in mean:
-		file.write(str(j) + "\t" + str(mean[j][3]) + "\t" + str(variance[j][3]) + "\n")
-
-with open("v_over_time_p2", "w") as file:
-	for j in mean:
-		file.write(str(j) + "\t" + str(mean[j][4]) + "\t" + str(variance[j][4]) + "\n")
-
-with open("v_over_time_p3", "w") as file:
-	for j in mean:
-		file.write(str(j) + "\t" + str(mean[j][5]) + "\t" + str(variance[j][5]) + "\n")
