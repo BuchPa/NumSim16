@@ -2,6 +2,8 @@ import collections
 import math
 
 error = [0.0, 0.0, 0.0]
+theory2 = [0.0, 0.0, 0.0]
+theory1 = [0.0, 0.0, 0.0]
 
 # 0: ID
 # 1: Re
@@ -47,7 +49,14 @@ error[0] = abs(error[0] - error[2])
 error[1] = abs(error[1] - error[2])
 error[2] = abs(error[2] - error[2])
 
+theory1[0] = 0.00018*math.pow(50,-1)
+theory1[1] = 0.00018*math.pow(100,-1)
+theory1[2] = 0.00018*math.pow(200,-1)
+
+theory2[0] = 0.009*math.pow(50,-2)
+theory2[1] = 0.009*math.pow(100,-2)
+theory2[2] = 0.009*math.pow(200,-2)
+
 with open("conv_u_p1", "w") as file:
-	file.write(str(50) + "\t" + str(error[0]) + "\n")
-	file.write(str(100) + "\t" + str(error[1]) + "\n")
-	file.write(str(200) + "\t" + str(error[2]) + "\n")
+	file.write(str(50) + "\t" + str(error[0]) + "\t" + str(theory1[0]) + "\t" + str(theory2[0]) + "\n")
+	file.write(str(100) + "\t" + str(error[1]) + "\t" + str(theory1[1]) + "\t" + str(theory2[1]) + "\n")
