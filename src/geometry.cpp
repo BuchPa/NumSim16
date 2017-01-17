@@ -58,6 +58,10 @@ void Geometry::Load(const char *file){
         // Resize cell field
         delete[] _cells;
         _cells = new char[(_size[0]) * (_size[1])];
+
+        // Resize baked neighbors field
+        delete[] _baked_neighbors;
+        _baked_neighbors = new int[_size[0] * _size[1]];
       }
       continue;
     }
