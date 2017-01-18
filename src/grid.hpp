@@ -117,6 +117,9 @@ public:
   /// @param alpha real_t The alpha parameter; a weight for the DC algorithm
   real_t DC_vdv_y(const Iterator &it, const real_t &alpha) const;
 
+  real_t DC_dCu_x(const Iterator &it, const real_t &gamma, const Grid *u) const;
+  real_t DC_dCv_y(const Iterator &it, const real_t &gamma, const Grid *v) const;
+
   /// Returns the maximal value of the grid.
   ///
   /// @return real_t The maximal value

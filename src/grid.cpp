@@ -247,6 +247,22 @@ real_t Grid::DC_vdv_y(const Iterator &it, const real_t &alpha) const {
   #endif
 }
 
+real_t Grid::DC_dCu_x(const Iterator &it, const real_t &gamma, const Grid *u) const {
+  real_t ft = u->Cell(it) * 0.5 * (this->Cell(it.Right()) + this->Cell(it))
+    - u->Cell(it.Left()) * 0.5 * (this->Cell(it) + this->Cell(it.Left()));
+  real_t st = fabs(u->Cell(it)) * 0.5 * (this->Cell(it) - this->Cell(it.Right()))
+    - fabs(u->Cell(it.Left())) * 0.5 * (this->Cell(it.Left()) - this->Cell(it));
+  return (ft + gamma * st) / _geom->Mesh()[0];
+}
+
+real_t Grid::DC_dCv_y(const Iterator &it, const real_t &gamma, const Grid *v) const {
+  real_t ft = v->Cell(it) * 0.5 * (this->Cell(it.Top()) + this->Cell(it))
+    - v->Cell(it.Down()) * 0.5 * (this->Cell(it) + this->Cell(it.Down()));
+  real_t st = fabs(v->Cell(it)) * 0.5 * (this->Cell(it) - this->Cell(it.Top()))
+    - fabs(v->Cell(it.Down())) * 0.5 * (this->Cell(it.Down()) - this->Cell(it));
+  return (ft + gamma * st) / _geom->Mesh()[1];
+}
+
 real_t Grid::Max() const{
   // Create iterator and cycle _data
   Iterator it(_geom);

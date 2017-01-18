@@ -12,6 +12,7 @@ Parameter::Parameter(){
   _re      = 1e3;
   _omega   = 1.7;
   _alpha   = 0.9;
+  _gamma   = 0.5;
   _eps     = 1e-3;
   _tau     = 0.5;
   _itermax = 1e2;
@@ -41,6 +42,7 @@ void Parameter::Load(const char *file) {
     else if (strcmp(name,"tau") == 0) _tau = inval;
     else if (strcmp(name,"dtfix") == 0) _dt_fixed = inval;
     else if (strcmp(name,"d") == 0) _d = inval;
+    else if (strcmp(name,"gamma") == 0) _gamma = inval;
     else printf("Unknown parameter %s\n",name);
   }
   fclose(handle);
@@ -88,4 +90,8 @@ const real_t &Parameter::FixedDt() const{
 
 const real_t &Parameter::D() const {
   return _d;
+}
+
+const real_t &Parameter::Gamma() const {
+  return _gamma;
 }

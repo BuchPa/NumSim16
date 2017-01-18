@@ -296,7 +296,11 @@ void Compute::NewConcentration(const real_t &dt) {
 
   // Cycle to compute c
   for (init.First(); init.Valid(); init.Next()) {
-    _c->Cell(init) = _c->Cell(init) + _param->D() * dt * (_c->dxx(init) + _c->dyy(init));
+    _c->Cell(init) =
+      _c->Cell(init) // Initial value
+      + _param->D() * dt * (_c->dxx(init) + _c->dyy(init)) // diffusion term
+      - dt * _c->DC_dCu_x(init, _param->Gamma(), _u) // x direction convection term
+      - dt * _c->DC_dCv_y(init, _param->Gamma(), _v); // y direction convection term
   }
 
   _geom->Update_P(_c); // we can reuse the pressure methods

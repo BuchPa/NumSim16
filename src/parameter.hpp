@@ -87,6 +87,8 @@ public:
   /// @return real_t The diffusion coefficient
   const real_t &D() const;
 
+  const real_t &Gamma() const;
+
 private:
   /// _re real_t The reynolds number
   real_t _re;
@@ -120,6 +122,9 @@ private:
 
   /// _d real_t The diffusion coefficient
   real_t _d;
+
+  /// _gamma real_t The upwind scheme parameter gamma
+  real_t _gamma;
 };
 //------------------------------------------------------------------------------
 #endif // __PARAMETER_HPP
