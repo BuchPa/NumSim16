@@ -58,6 +58,11 @@ public:
   // @return Grid The grid containing the pressure.
   const Grid *GetP() const;
 
+  /// Returns the pointer to C.
+  //
+  // @return Grid The grid containing the substance concentration.
+  const Grid *GetC() const;
+
   /// Returns the pointer to RHS.
   //
   // @return Grid The grid containing the right-hand-side of the Navier-Stokes
@@ -120,6 +125,9 @@ private:
   /// _p Grid The pressure.
   Grid *_p;
 
+  /// _c Grid The substance concentration
+  Grid *_c;
+
   /// _F Grid Preliminary velocity F, used in calculation.
   Grid *_F;
 
@@ -158,6 +166,12 @@ private:
   //
   // @param dt real_t The timestep dt
   void NewVelocities(const real_t &dt);
+
+  /// Compute the new substance concentration as defined by the convection-
+  /// diffusion-reaction equation.
+  ///
+  /// @param dt real_t The timestep dt
+  void NewConcentration(const real_t &dt);
 
   /// Compute the temporary velocites F & G.
   //

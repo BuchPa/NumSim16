@@ -19,6 +19,7 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   multi_real_t offset_u;
   multi_real_t offset_v;
   multi_real_t offset_p;
+  multi_real_t offset_c;
   
   offset_u[0] = geom->Mesh()[0];
   offset_u[1] = geom->Mesh()[1]/2.0;
@@ -28,6 +29,9 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   
   offset_p[0] = geom->Mesh()[0]/2.0;
   offset_p[1] = geom->Mesh()[1]/2.0;
+
+  offset_c[0] = geom->Mesh()[0]/2.0;
+  offset_c[1] = geom->Mesh()[1]/2.0;
   
   // Create and velocity / pressure field
   _u = new Grid(geom, offset_u);
@@ -37,10 +41,11 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   // Create other fields
   _F   = new Grid(geom);
   _G   = new Grid(geom);
-  
   _rhs = new Grid(geom);
-  
   _tmp = new Grid(geom);
+
+  // Create concentration field
+  _c   = new Grid(geom, offset_c);
   
   // Create visu fields for stream lines and GetVorticity
   multi_real_t offset_visufields;
@@ -55,7 +60,8 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   _geom->Update_U(_u);
   _geom->Update_V(_v);
   _geom->Update_P(_p);
-  
+  _geom->Update_P(_c); // We can reuse the methods for p
+
   // Init time
   _t = 0.0;
   
@@ -92,7 +98,8 @@ Compute::~Compute() {
   delete _u;
   delete _v;
   delete _p;
-  
+  delete _c;
+
   delete _F;
   delete _G;
   
@@ -119,6 +126,10 @@ const Grid *Compute::GetV() const {
 
 const Grid *Compute::GetP() const {
   return _p;
+}
+
+const Grid *Compute::GetC() const {
+  return _c;
 }
 
 const Grid *Compute::GetRHS() const{
@@ -214,7 +225,7 @@ bool Compute::TimeStep(bool printInfo) {
   
   // Compute RHS
   this->RHS(dt);
-  
+
   // Solve Poisson equation (-> p)
   index_t it(0);
   real_t  res(_epslimit + 0.1);
@@ -227,11 +238,14 @@ bool Compute::TimeStep(bool printInfo) {
   
   // Compute new velocites (-> u,v)
   this->NewVelocities(dt);
-  
+
   // Set boundary values
   _geom->Update_U(_u);
   _geom->Update_V(_v);
   
+  // Compute diffusion-convection of substance
+  this->NewConcentration(dt);
+
   // Update positions of particles for streaklines and particle tracing
   this->ComputeStreaklines(dt, printInfo);
   this->ComputeParticleTracing(dt, printInfo);
@@ -275,6 +289,17 @@ void Compute::NewVelocities(const real_t &dt){
     _u->Cell(init) = _F->Cell(init) - dt * _p->dx_r(init);
     _v->Cell(init) = _G->Cell(init) - dt * _p->dy_r(init);
   }
+}
+
+void Compute::NewConcentration(const real_t &dt) {
+  InteriorIterator init(_geom);
+
+  // Cycle to compute c
+  for (init.First(); init.Valid(); init.Next()) {
+    _c->Cell(init) = _c->Cell(init) + _param->D() * dt * (_c->dxx(init) + _c->dyy(init));
+  }
+
+  _geom->Update_P(_c); // we can reuse the pressure methods
 }
 
 void Compute::MomentumEqu(const real_t &dt){

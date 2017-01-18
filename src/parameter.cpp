@@ -17,6 +17,7 @@ Parameter::Parameter(){
   _itermax = 1e2;
   _dt      = 0.1;
   _tend    = 10;
+  _d       = 1e-4;
   
   // Compute inverse Re
   _invre   = 1.0/_re;
@@ -39,6 +40,7 @@ void Parameter::Load(const char *file) {
     else if (strcmp(name,"eps") == 0) _eps = inval;
     else if (strcmp(name,"tau") == 0) _tau = inval;
     else if (strcmp(name,"dtfix") == 0) _dt_fixed = inval;
+    else if (strcmp(name,"d") == 0) _d = inval;
     else printf("Unknown parameter %s\n",name);
   }
   fclose(handle);
@@ -82,4 +84,8 @@ const real_t &Parameter::Tau() const{
 
 const real_t &Parameter::FixedDt() const{
   return _dt_fixed;
+}
+
+const real_t &Parameter::D() const {
+  return _d;
 }

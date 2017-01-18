@@ -82,6 +82,11 @@ public:
   /// @return real_t The fixed timestep width to output to CSV
   const real_t &FixedDt() const;
 
+  /// Returns the diffusion coefficient of the substance.
+  ///
+  /// @return real_t The diffusion coefficient
+  const real_t &D() const;
+
 private:
   /// _re real_t The reynolds number
   real_t _re;
@@ -112,6 +117,9 @@ private:
 
   /// _itermax index_t The maximum number of iterations of the solver
   index_t _itermax;
+
+  /// _d real_t The diffusion coefficient
+  real_t _d;
 };
 //------------------------------------------------------------------------------
 #endif // __PARAMETER_HPP

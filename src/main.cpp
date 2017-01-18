@@ -228,6 +228,9 @@ int main(int argc, char **argv) {
       case 5:
         visugrid = comp.GetVorticity();
         break;
+      case 6:
+        visugrid = comp.GetC();
+        break;
       default:
         break;
     };
