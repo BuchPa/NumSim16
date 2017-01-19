@@ -152,7 +152,8 @@ const Grid *Compute::GetVorticity() {
   Iterator it = Iterator(_geom);
 
   while (it.Valid()) {
-    _vort->Cell(it) = _u->dy_r(it) - _v->dx_r(it);
+    if (_geom->CellTypeAt(it) == CellType::Fluid)
+      _vort->Cell(it) = _u->dy_r(it) - _v->dx_r(it);
     it.Next();
   }
 
@@ -290,8 +291,10 @@ void Compute::NewVelocities(const real_t &dt){
   
   // Cycle to compute u,v
   for(init.First(); init.Valid(); init.Next()){
-    _u->Cell(init) = _F->Cell(init) - dt * _p->dx_r(init);
-    _v->Cell(init) = _G->Cell(init) - dt * _p->dy_r(init);
+    if (_geom->CellTypeAt(init) == CellType::Fluid){
+      _u->Cell(init) = _F->Cell(init) - dt * _p->dx_r(init);
+      _v->Cell(init) = _G->Cell(init) - dt * _p->dy_r(init);
+    }
   }
 }
 
@@ -300,11 +303,13 @@ void Compute::NewConcentration(const real_t &dt) {
 
   // Cycle to compute c
   for (init.First(); init.Valid(); init.Next()) {
-    _c->Cell(init) =
-      _c->Cell(init) // Initial value
-      + _param->D() * dt * (_c->dxx(init) + _c->dyy(init)) // diffusion term
-      - dt * _c->DC_dCu_x(init, _param->Gamma(), _u) // x direction convection term
-      - dt * _c->DC_dCv_y(init, _param->Gamma(), _v); // y direction convection term
+    if (_geom->CellTypeAt(init) == CellType::Fluid){
+      _c->Cell(init) =
+        _c->Cell(init) // Initial value
+        + _param->D() * dt * (_c->dxx(init) + _c->dyy(init)) // diffusion term
+        - dt * _c->DC_dCu_x(init, _param->Gamma(), _u) // x direction convection term
+        - dt * _c->DC_dCv_y(init, _param->Gamma(), _v); // y direction convection term
+    }
   }
 
   _geom->Update_P(_c); // we can reuse the pressure methods
