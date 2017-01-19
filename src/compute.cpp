@@ -256,6 +256,7 @@ bool Compute::TimeStep(bool printInfo) {
   
   if (printInfo) {
     // Print current time
+    printf("###############################################################\n");
     printf("Current time: %4.2f\n", _t);
     
     // Print time step stuff
@@ -268,11 +269,11 @@ bool Compute::TimeStep(bool printInfo) {
     printf("\n");
     
     // Print, if output is written in this timestep
-    printf("  Output is written in this timestep: %s\n", print ? "Ye" : "No");
+    printf("  Output is written in this timestep: %s\n", print ? "Yes" : "No");
     printf("\n");
     
     // Solver stuff
-    if( it >= _param->IterMax() ){
+    if (it >= _param->IterMax()) {
       printf("  DIDN'T converge! itermax reached!\n");
     } else {
       printf("  DID converge! eps (%f < %f) reached after % d iterations!\n", res, _epslimit, it);

@@ -35,6 +35,7 @@
 using namespace std;
 
 #define MEASURE_TIME true
+#define SILENT_STEPS 5
 #define OUTPUT_CSV false
 #define OUTPUT_VTK true
 
@@ -204,40 +205,48 @@ int main(int argc, char **argv) {
 
   visugrid = comp.GetVelocity();
 
+  // Let's count the number of timesteps
+  int stepNr = 1;
+
   // Run the time steps until the end is reached
   while ((param.Tend() - comp.GetTime() > DT_MIN) && run) {
 
     #ifdef USE_DEBUG_VISU
 
-    // Render and check if window is closed
-    switch (visu.Render(visugrid)) {
-      case -1:
-        run = false;
-        break;
-      case 0:
-        visugrid = comp.GetVelocity();
-        break;
-      case 1:
-        visugrid = comp.GetU();
-        break;
-      case 2:
-        visugrid = comp.GetV();
-        break;
-      case 3:
-        visugrid = comp.GetP();
-        break;
-      case 4:
-        visugrid = comp.GetStream();
-        break;
-      case 5:
-        visugrid = comp.GetVorticity();
-        break;
-      case 6:
-        visugrid = comp.GetC();
-        break;
-      default:
-        break;
-    };
+    // Check if we are on a non-silent step and if so,
+    // call the render function and check the key events handled by the
+    // renderer. For certain input numbers we either quit the run or we
+    // display a different grid.
+    if (stepNr % SILENT_STEPS == 0) {
+      switch (visu.Render(visugrid)) {
+        case -1:
+          run = false;
+          break;
+        case 0:
+          visugrid = comp.GetVelocity();
+          break;
+        case 1:
+          visugrid = comp.GetU();
+          break;
+        case 2:
+          visugrid = comp.GetV();
+          break;
+        case 3:
+          visugrid = comp.GetP();
+          break;
+        case 4:
+          visugrid = comp.GetStream();
+          break;
+        case 5:
+          visugrid = comp.GetVorticity();
+          break;
+        case 6:
+          visugrid = comp.GetC();
+          break;
+        default:
+          break;
+      };
+    }
 
     #endif // USE_DEBUG_VISU
     
@@ -276,7 +285,9 @@ int main(int argc, char **argv) {
       
     } //end if (print)
     
-    print = comp.TimeStep(true);
+    print = comp.TimeStep(stepNr % SILENT_STEPS == 0);
+
+    stepNr++;
   }
   
   // Print CSV output in the folder CSV (must exist)
