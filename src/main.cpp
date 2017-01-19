@@ -21,6 +21,7 @@
 #include "parameter.hpp"
 #include "visu.hpp"
 #include "csv.hpp"
+#include "vtk.hpp"
 #include "iterator.hpp"
 #include "solver.hpp"
 #include "tests.hpp"
@@ -34,6 +35,8 @@
 using namespace std;
 
 #define MEASURE_TIME true
+#define OUTPUT_CSV false
+#define OUTPUT_VTK true
 
 /// Returns if the file exists and can be accessed.
 ///
@@ -118,10 +121,6 @@ int main(int argc, char **argv) {
     geom.Load("scenarios/free_sim.geom");
   }
   
-  // Print info that there will be no console output
-  printf("Multirun version! Progress output is disabled due to performance issues.\n");
-  printf("  Output is written to CSV folder with a timestep width of %5.4f ...\n", param.FixedDt());
-  
   // Create the fluid solver
   Compute comp(&geom, &param);
 
@@ -191,8 +190,13 @@ int main(int argc, char **argv) {
   // Create a CSV generator
   CSV csv(param.Re(), csv_pos);
   
-  // Create file in the CSV folder (folder must exist)
-  csv.Init("CSV/multirun");
+  // Create a VTK generator
+  VTK vtk(geom.Mesh(), geom.Size());
+  
+  if (OUTPUT_CSV) {
+    // Create file in the CSV folder (folder must exist)
+    csv.Init("CSV/multirun");
+  }
 
   const Grid *visugrid;
   bool run   = true;
@@ -238,18 +242,76 @@ int main(int argc, char **argv) {
     #endif // USE_DEBUG_VISU
     
     if (print){
-      // Add an entry to the CSV file (must exist)
-      csv.AddEntry(comp.GetTime(), comp.GetU(), comp.GetV(), comp.GetP());
-    }
+      
+      // Print CSV output in the folder CSV (must exist)
+      if (OUTPUT_CSV) {
+        // Add an entry to the CSV file (must exist)
+        csv.AddEntry(comp.GetTime(), comp.GetU(), comp.GetV(), comp.GetP());
+      }
+      
+      // Print VTK output in the folder VTK (must exist)
+      if (OUTPUT_VTK) {
+        vtk.Init("VTK/field");
+        vtk.AddField("Velocity", comp.GetU(), comp.GetV());
+        vtk.AddScalar("Pressure", comp.GetP());
+        vtk.AddScalar("Stream", comp.GetStream());
+        vtk.AddScalar("Vorticity", comp.GetVorticity());
+        vtk.Finish();
+        
+        // Create VTK File for particles of the streakline
+        // in the folder VTK (must exist)
+        if (comp.GetStreaklines()->size() > 0) {
+          vtk.InitParticles("VTK/streaks");
+          vtk.AddParticles("Streakline", comp.GetStreaklines());
+          vtk.FinishParticles();
+        }
+        
+        // Create VTK File for particles of the streakline
+        if (comp.GetParticleTracing()->size() > 0) {
+          vtk.InitParticles("VTK/traces");
+          vtk.AddParticles("Trace", comp.GetParticleTracing());
+          vtk.FinishParticles();
+        }
+      }
+      
+    } //end if (print)
     
-    print = comp.TimeStep(false);
+    print = comp.TimeStep(true);
   }
   
-  // Add an entry to the CSV file (must exist)
-  csv.AddEntry(comp.GetTime(), comp.GetU(), comp.GetV(), comp.GetP());
+  // Print CSV output in the folder CSV (must exist)
+  if (OUTPUT_CSV) {
+    // Add an entry to the CSV file (must exist)
+    csv.AddEntry(comp.GetTime(), comp.GetU(), comp.GetV(), comp.GetP());
+    
+    // Finish CSV
+    csv.Finish();
+  }
   
-  // Finish CSV
-  csv.Finish();
+  // Print VTK output in the folder VTK (must exist)
+  if (OUTPUT_VTK) {
+    vtk.Init("VTK/field");
+    vtk.AddField("Velocity", comp.GetU(), comp.GetV());
+    vtk.AddScalar("Pressure", comp.GetP());
+    vtk.AddScalar("Stream", comp.GetStream());
+    vtk.AddScalar("Vorticity", comp.GetVorticity());
+    vtk.Finish();
+    
+    // Create VTK File for particles of the streakline
+    // in the folder VTK (must exist)
+    if (comp.GetStreaklines()->size() > 0) {
+      vtk.InitParticles("VTK/streaks");
+      vtk.AddParticles("Streakline", comp.GetStreaklines());
+      vtk.FinishParticles();
+    }
+    
+    // Create VTK File for particles of the streakline
+    if (comp.GetParticleTracing()->size() > 0) {
+      vtk.InitParticles("VTK/traces");
+      vtk.AddParticles("Trace", comp.GetParticleTracing());
+      vtk.FinishParticles();
+    }
+  }
   
   printf("Multirun finished!\n");
 

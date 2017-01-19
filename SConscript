@@ -27,6 +27,7 @@ srcs = ['src/main.cpp',
         'src/parameter.cpp',
         'src/solver.cpp',
         'src/csv.cpp',
+        'src/vtk.cpp',
         'src/tests.cpp',
         'src/visu.cpp'
         ]
