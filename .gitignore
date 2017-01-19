@@ -1,6 +1,9 @@
 # CSV output
 /CSV/
 
+# VTK output
+/VTK/
+
 # cmake files and compile targets
 build/
 CMakeCache.txt
