@@ -248,19 +248,39 @@ real_t Grid::DC_vdv_y(const Iterator &it, const real_t &alpha) const {
 }
 
 real_t Grid::DC_dCu_x(const Iterator &it, const real_t &gamma, const Grid *u) const {
+  #ifndef USE_OPTIMIZATIONS
   real_t ft = u->Cell(it) * 0.5 * (this->Cell(it.Right()) + this->Cell(it))
     - u->Cell(it.Left()) * 0.5 * (this->Cell(it) + this->Cell(it.Left()));
   real_t st = fabs(u->Cell(it)) * 0.5 * (this->Cell(it) - this->Cell(it.Right()))
     - fabs(u->Cell(it.Left())) * 0.5 * (this->Cell(it.Left()) - this->Cell(it));
   return (ft + gamma * st) / _geom->Mesh()[0];
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  real_t ft = u->Cell(it) * 0.5 * (_data[it.Right()] + _data[it])
+    - u->Cell(it.Left()) * 0.5 * (_data[it] + _data[it.Left()]);
+  real_t st = fabs(u->Cell(it)) * 0.5 * (_data[it] - _data[it.Right()])
+    - fabs(u->Cell(it.Left())) * 0.5 * (_data[it.Left()] - _data[it]);
+  return (ft + gamma * st) * _sh_im0;
+  #endif
 }
 
 real_t Grid::DC_dCv_y(const Iterator &it, const real_t &gamma, const Grid *v) const {
+  #ifndef USE_OPTIMIZATIONS
   real_t ft = v->Cell(it) * 0.5 * (this->Cell(it.Top()) + this->Cell(it))
     - v->Cell(it.Down()) * 0.5 * (this->Cell(it) + this->Cell(it.Down()));
   real_t st = fabs(v->Cell(it)) * 0.5 * (this->Cell(it) - this->Cell(it.Top()))
     - fabs(v->Cell(it.Down())) * 0.5 * (this->Cell(it.Down()) - this->Cell(it));
   return (ft + gamma * st) / _geom->Mesh()[1];
+  #endif
+
+  #ifdef USE_OPTIMIZATIONS
+  real_t ft = v->Cell(it) * 0.5 * (_data[it.Top()] + _data[it])
+    - v->Cell(it.Down()) * 0.5 * (_data[it] + _data[it.Down()]);
+  real_t st = fabs(v->Cell(it)) * 0.5 * (_data[it] - _data[it.Top()])
+    - fabs(v->Cell(it.Down())) * 0.5 * (_data[it.Down()] - _data[it]);
+  return (ft + gamma * st) * _sh_im1;
+  #endif
 }
 
 real_t Grid::Max() const{
