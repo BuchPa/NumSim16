@@ -104,6 +104,12 @@ public:
   /// @param p Grid The pressure field p
   void Update_P(Grid *p) const;
 
+  /// Updates the concentration field c at the boundaries by applying the
+  /// boundary values to them.
+  ///
+  /// @param c Grid The concentration field c
+  void Update_C(Grid *c) const;
+
   /// Returns the cell type of the cell at the given iterator position.
   ///
   /// @see Enum CellType
@@ -147,6 +153,9 @@ private:
 
   /// _pressure real_t The pressure boundary values for the boundaries
   real_t _pressure;
+
+  /// _concentration real_t The concentration boundary values for the boundaries
+  real_t _concentration;
   
   // _invh multi_real_t The inverse mesh width in each dimension
   multi_real_t _invh;
@@ -187,6 +196,12 @@ private:
   /// @param p Grid The pressure field p
   /// @param boit BoundaryIterator Boundary to iterate until boit.Valid() equals false
   void CycleBoundary_P(Grid *p, BoundaryIterator boit) const;
+  
+  /// Cycle the full boundary given by BoundaryIterator boit on Grid c
+  ///
+  /// @param c Grid The concentration field c
+  /// @param boit BoundaryIterator Boundary to iterate until boit.Valid() equals false
+  void CycleBoundary_C(Grid *c, BoundaryIterator boit) const;
   
   /// Sets Dirichlet boundary condition for Grid u on boundary boit.Boundary() at position boit to value
   /// 
