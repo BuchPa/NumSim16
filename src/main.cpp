@@ -264,6 +264,7 @@ int main(int argc, char **argv) {
         vtk.AddScalar("Pressure", comp.GetP());
         vtk.AddScalar("Stream", comp.GetStream());
         vtk.AddScalar("Vorticity", comp.GetVorticity());
+        vtk.AddScalar("Substance", comp.GetC());
         vtk.Finish();
         
         // Create VTK File for particles of the streakline
@@ -305,6 +306,7 @@ int main(int argc, char **argv) {
     vtk.AddScalar("Pressure", comp.GetP());
     vtk.AddScalar("Stream", comp.GetStream());
     vtk.AddScalar("Vorticity", comp.GetVorticity());
+    vtk.AddScalar("Substance", comp.GetC());
     vtk.Finish();
     
     // Create VTK File for particles of the streakline
