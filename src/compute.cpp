@@ -56,11 +56,11 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   _stream = new Grid(geom, offset_visufields);
   _vort   = new Grid(geom, offset_visufields);
   
-  // Init velocity / pressure field
-  _geom->Update_U(_u);
-  _geom->Update_V(_v);
-  _geom->Update_P(_p);
-  _geom->Update_P(_c); // We can reuse the methods for p
+  // Init velocity / pressure / concentration fields
+  geom->Update_U(_u);
+  geom->Update_V(_v);
+  geom->Update_P(_p);
+  geom->Init_C(_c);
 
   // Init time
   _t = 0.0;
@@ -313,7 +313,7 @@ void Compute::NewConcentration(const real_t &dt) {
     }
   }
 
-  _geom->Update_P(_c); // we can reuse the pressure methods
+  _geom->Update_C(_c);
 }
 
 void Compute::MomentumEqu(const real_t &dt){

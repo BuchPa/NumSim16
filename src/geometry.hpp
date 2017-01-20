@@ -138,6 +138,11 @@ public:
   ///   inflow boundary etc.
   const char* GetCells() const;
 
+  /// Initialises the concentration grid with starting values.
+  ///
+  /// @param c Grid* The grid containing the concentration
+  void Init_C(Grid *c) const;
+
 private:
   /// _size multi_index_t The number of cells in each dimension
   multi_index_t _size;
