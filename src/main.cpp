@@ -212,7 +212,6 @@ int main(int argc, char **argv) {
   while ((param.Tend() - comp.GetTime() > DT_MIN) && run) {
 
     #ifdef USE_DEBUG_VISU
-
     // Check if we are on a non-silent step and if so,
     // call the render function and check the key events handled by the
     // renderer. For certain input numbers we either quit the run or we
@@ -271,14 +270,14 @@ int main(int argc, char **argv) {
         // in the folder VTK (must exist)
         if (comp.GetStreaklines()->size() > 0) {
           vtk.InitParticles("VTK/streaks");
-          vtk.AddParticles("Streakline", comp.GetStreaklines());
+          vtk.AddParticles(comp.GetStreaklines());
           vtk.FinishParticles();
         }
         
         // Create VTK File for particles of the streakline
         if (comp.GetParticleTracing()->size() > 0) {
           vtk.InitParticles("VTK/traces");
-          vtk.AddParticles("Trace", comp.GetParticleTracing());
+          vtk.AddParticles(comp.GetParticleTracing());
           vtk.FinishParticles();
         }
       }
@@ -312,14 +311,14 @@ int main(int argc, char **argv) {
     // in the folder VTK (must exist)
     if (comp.GetStreaklines()->size() > 0) {
       vtk.InitParticles("VTK/streaks");
-      vtk.AddParticles("Streakline", comp.GetStreaklines());
+      vtk.AddParticles(comp.GetStreaklines());
       vtk.FinishParticles();
     }
     
     // Create VTK File for particles of the streakline
     if (comp.GetParticleTracing()->size() > 0) {
       vtk.InitParticles("VTK/traces");
-      vtk.AddParticles("Trace", comp.GetParticleTracing());
+      vtk.AddParticles(comp.GetParticleTracing());
       vtk.FinishParticles();
     }
   }

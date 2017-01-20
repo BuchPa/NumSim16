@@ -53,7 +53,7 @@ public:
   void FinishParticles();
   
   /// Add a particle data
-  void AddParticles(const char *title, list<particles_t> *particles);
+  void AddParticles(list<particles_t> *particles);
 private:
   const multi_real_t &_h;
   const multi_index_t &_size;

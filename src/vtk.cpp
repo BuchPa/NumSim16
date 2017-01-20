@@ -193,13 +193,13 @@ void VTK::FinishParticles(){
   _handle = NULL;
 }
 //------------------------------------------------------------------------------
-void VTK::AddParticles(const char *title, list<particles_t> *particles){
+void VTK::AddParticles(list<particles_t> *particles){
   if (!_handle)
     return;
   
   // Cycle the list of different streaklines / traces
   for (list<particles_t>::iterator it_list=particles->begin(); it_list!=particles->end(); ++it_list) {
-    fprintf(_handle, "<Piece NumberOfPoints=\"%i \" NumberOfVerts=\"0\" NumberOfLines=\"0\" NumberOfStrips=\"0\" NumberOfPolys=\"0\">\n", it_list->size());
+    fprintf(_handle, "<Piece NumberOfPoints=\"%li \" NumberOfVerts=\"0\" NumberOfLines=\"0\" NumberOfStrips=\"0\" NumberOfPolys=\"0\">\n", it_list->size());
     fprintf(_handle, "<Points>\n");
     fprintf(_handle, "<DataArray type=\"Float64\" format=\"ascii\" "
                     "NumberOfComponents=\"3\">\n");
