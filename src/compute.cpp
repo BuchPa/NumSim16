@@ -212,12 +212,12 @@ bool Compute::TimeStep(bool printInfo) {
   bool print = false;
   int curstep = (int)(_t*_inv_dt_fixed);
   if (curstep < (int)((_t+dt+DT_MIN)*_inv_dt_fixed)) {
-    real_t candidate = (curstep+1)*_dt_fixed - _t;
-    if (candidate>DT_MIN) {
-      dt = candidate;
-    } else {
-      dt = DT_MIN;
-    }
+//     real_t candidate = (curstep+1)*_dt_fixed - _t;
+//     if (candidate>DT_MIN) {
+//       dt = candidate;
+//     } else {
+//       dt = DT_MIN;
+//     }
     print = true;
   }
   
@@ -254,7 +254,7 @@ bool Compute::TimeStep(bool printInfo) {
   // Compute new time
   _t += dt;
   
-  if (printInfo) {
+  if (print) {
     // Print current time
     printf("###############################################################\n");
     printf("Current time: %4.2f\n", _t);
