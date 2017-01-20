@@ -285,7 +285,7 @@ int main(int argc, char **argv) {
       
     } //end if (print)
     
-    print = comp.TimeStep(stepNr % SILENT_STEPS == 0);
+    print = comp.TimeStep(stepNr);
 
     stepNr++;
   }

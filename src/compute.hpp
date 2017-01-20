@@ -31,12 +31,12 @@ public:
   /// Deconstructs the compute instance.
   ~Compute();
 
-  /// Execute one time step of the fluid simulation (with or without debug info).
-  //
-  // @param printInfo bool If true, prints information about the current
-  //   solver state (residual etc.)
-  // @@return bool A boolean, if the current timestep needs to be printed to CSV
-  bool TimeStep(bool printInfo);
+  /// Execute one time step of the fluid simulation.
+  ///
+  /// @param int stepNr The number of the current step. Is used for calculating
+  ///   when to add new particles
+  /// @return bool A boolean, if the current timestep needs to be printed to CSV
+  bool TimeStep(int stepNr);
 
   /// Returns the simulated time in total.
   //

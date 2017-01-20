@@ -11,6 +11,7 @@
 using namespace std;
 
 #define DYNAMIC_TIMESTEP true
+#define PARTICLE_PERIOD 5
 
 Compute::Compute(const Geometry *geom, const Parameter *param)
     : _geom(geom), _param(param) {
@@ -194,7 +195,7 @@ list<particles_t> *Compute::GetStreaklines(){
   return &_streakline;
 }
 
-bool Compute::TimeStep(bool printInfo) {  
+bool Compute::TimeStep(int stepNr) {
   // Compute candidates for current time step
   const real_t cfl_x = _geom->Mesh()[0] / _u->AbsMax();
   const real_t cfl_y = _geom->Mesh()[1] / _v->AbsMax();
@@ -248,8 +249,8 @@ bool Compute::TimeStep(bool printInfo) {
   this->NewConcentration(dt);
 
   // Update positions of particles for streaklines and particle tracing
-  this->ComputeStreaklines(dt, printInfo);
-  this->ComputeParticleTracing(dt, printInfo);
+  this->ComputeStreaklines(dt, stepNr % PARTICLE_PERIOD == 0);
+  this->ComputeParticleTracing(dt, stepNr % PARTICLE_PERIOD == 0);
   
   // Compute new time
   _t += dt;
