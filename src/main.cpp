@@ -324,8 +324,6 @@ int main(int argc, char **argv) {
       vtk.FinishParticles();
     }
   }
-  
-  printf("Multirun finished!\n");
 
   if (MEASURE_TIME) {
     end = std::chrono::duration_cast<std::chrono::milliseconds>(
