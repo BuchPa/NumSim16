@@ -17,6 +17,7 @@
 
 #include "typedef.hpp"
 #include "grid.hpp"
+#include "geometry.hpp"
 #include "SDL2/SDL.h"
 //------------------------------------------------------------------------------
 #ifndef __VISU_HPP
@@ -39,7 +40,7 @@ const char States[][42] = {
 class Renderer {
 public:
   /// Constructs a Renderer
-  Renderer(const multi_real_t &length, const multi_real_t &h);
+  Renderer(const multi_real_t &length, const multi_real_t &h, const Geometry *geom);
   ~Renderer();
 
   /// Initializes the Renderer
@@ -77,6 +78,7 @@ private:
   index_t _click_x;
   index_t _click_y;
   int _idx;
+  const Geometry *_geom;
 
   static uint32_t _count;
 };

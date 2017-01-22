@@ -117,8 +117,8 @@ void setpixelrgb(SDL_Surface *screen, int x, int y, uint8_t r, uint8_t g,
 //------------------------------------------------------------------------------
 uint32_t Renderer::_count = 0;
 //------------------------------------------------------------------------------
-Renderer::Renderer(const multi_real_t &length, const multi_real_t &h)
-    : _length(length), _h(h) {
+Renderer::Renderer(const multi_real_t &length, const multi_real_t &h, const Geometry *geom)
+    : _length(length), _h(h), _geom(geom) {
   if (_count == 0)
     SDL_Init(SDL_INIT_VIDEO);
   _count++;
@@ -277,6 +277,11 @@ int Renderer::Render(const Grid *grid, const real_t &min, const real_t &max) {
     _orig[_x] = _length[_x] * x / _width;
     for (uint32_t y = 0; y < _height; ++y) {
       _orig[_y] = _length[_y] * (_height - y - 1) / _height;
+      multi_index_t clamp = {
+        (index_t)(floor(_orig[0] / _geom->Mesh()[0]) + 1),
+        (index_t)(floor(_orig[1] / _geom->Mesh()[1]) + 1)
+      };
+//       printf('orig[0]: %f, orig[1]: %f\n', _orig[0], _orig[1]);
       if (x == _click_x || y == _click_y) {
         setpixelrgb(_screen, x, y, 255, 255, 255);
         continue;
@@ -286,6 +291,8 @@ int Renderer::Render(const Grid *grid, const real_t &min, const real_t &max) {
       } else if (_grid && _orig[_y] < treshold[1]) {
         setpixelrgb(_screen, x, y, 20, 20, 20);
         treshold[1] -= _h[_y];
+      } else if (_grid && _geom->CellTypeAt(clamp[0], clamp[1]) != CellType::Fluid) {
+        setpixelrgb(_screen, x, y, 20, 20, 20);
       } else {
         value = grid->Interpolate(_orig);
         setpixelhue(_screen, x, y, value, min, max);

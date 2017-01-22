@@ -141,7 +141,7 @@ void test_interpolate() {
   Iterator it(&geo);
   
   // Create and initialize the visualization
-  Renderer visu(geo.Length(), geo.Mesh());
+  Renderer visu(geo.Length(), geo.Mesh(), &geo);
   visu.Init(800, 800);
   
   visu.Render(&grid, 0.0, 1.0);
@@ -301,7 +301,7 @@ void test_solver(const Geometry *geom){
   Grid rhs(geom, 0.0);
   
   // Create and initialize the visualization
-  Renderer visu(geom->Length(), geom->Mesh());
+  Renderer visu(geom->Length(), geom->Mesh(), geom);
   visu.Init(800, 800);
   real_t maxGrid = grid->AbsMax();
   
