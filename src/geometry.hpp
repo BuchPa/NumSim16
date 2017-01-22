@@ -104,12 +104,6 @@ public:
   /// @param p Grid The pressure field p
   void Update_P(Grid *p) const;
 
-  /// Updates the concentration field c at the boundaries by applying the
-  /// boundary values to them.
-  ///
-  /// @param c Grid The concentration field c
-  void Update_C(Grid *c) const;
-
   /// Returns the cell type of the cell at the given iterator position.
   ///
   /// @see Enum CellType
@@ -123,6 +117,12 @@ public:
   /// @param pos index_t The x/y position
   /// @return char The cell type at the given position
   char CellTypeAt(index_t xpos, index_t ypos) const;
+  
+  /// Retrun value of _baked_neighbors array at position pos.
+  ///
+  /// @param pos index_t Position to get array at.
+  /// @return int The value of _baked_neighbors array at position pos.
+  int BakedNeighbors(index_t pos) const;
 
   /// Returns cell types of the von-Neumann neighborhood of the cell at the
   /// given iterator position coded into a four-sized int array. The four
@@ -137,11 +137,6 @@ public:
   /// @return char* field containing the cell types, e.g. fluid cell, obstacle,
   ///   inflow boundary etc.
   const char* GetCells() const;
-
-  /// Initialises the concentration grid with starting values.
-  ///
-  /// @param c Grid* The grid containing the concentration
-  void Init_C(Grid *c) const;
 
 private:
   /// _size multi_index_t The number of cells in each dimension
@@ -158,9 +153,6 @@ private:
 
   /// _pressure real_t The pressure boundary values for the boundaries
   real_t _pressure;
-
-  /// _concentration real_t The concentration boundary values for the boundaries
-  real_t _concentration;
   
   // _invh multi_real_t The inverse mesh width in each dimension
   multi_real_t _invh;
@@ -201,12 +193,6 @@ private:
   /// @param p Grid The pressure field p
   /// @param boit BoundaryIterator Boundary to iterate until boit.Valid() equals false
   void CycleBoundary_P(Grid *p, BoundaryIterator boit) const;
-  
-  /// Cycle the full boundary given by BoundaryIterator boit on Grid c
-  ///
-  /// @param c Grid The concentration field c
-  /// @param boit BoundaryIterator Boundary to iterate until boit.Valid() equals false
-  void CycleBoundary_C(Grid *c, BoundaryIterator boit) const;
   
   /// Sets Dirichlet boundary condition for Grid u on boundary boit.Boundary() at position boit to value
   /// 

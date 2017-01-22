@@ -129,5 +129,6 @@ class Parameter;
 class Solver;
 class Compute;
 class CSV;
+class Substance;
 
 #endif // __TYPEDEF_HPP

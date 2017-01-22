@@ -45,12 +45,12 @@ public:
   /// Write access to the grid cell at position [it].
   ///
   /// @param it Iterator The position
-  real_t &Cell(const Iterator &it);
+  real_t &Cell(const index_t &it);
 
   /// Read access to the grid cell at position [it].
   ///
   /// @param it Iterator The position
-  const real_t &Cell(const Iterator &it) const;
+  const real_t &Cell(const index_t &it) const;
 
   /// Interpolate the value at an arbitrary position
   ///  For notes on how this algorithm works, see the implementation notes on

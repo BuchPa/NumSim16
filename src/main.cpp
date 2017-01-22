@@ -25,6 +25,7 @@
 #include "iterator.hpp"
 #include "solver.hpp"
 #include "tests.hpp"
+#include "substance.hpp"
 
 #include <iostream> // getchar()
 #include <chrono> // time functions
@@ -86,6 +87,7 @@ int main(int argc, char **argv) {
   // Create parameter and geometry instances with default values
   Parameter param;
   Geometry geom;
+  Substance subst(&geom);
   
   // Check which scenario (if any) we want to simulate
   string scenarioName = "none";
@@ -117,13 +119,16 @@ int main(int argc, char **argv) {
   if (scenarioName != "none") {
     param.Load(("scenarios/" + scenarioName + ".param").c_str());
     geom.Load(("scenarios/" + scenarioName + ".geom").c_str());
+    // Load subst only if available
+    if (file_exists("scenarios/" + scenarioName + ".subst"))
+      subst.Load(("scenarios/" + scenarioName + ".subst").c_str());
   } else {
     param.Load("scenarios/free_sim.param");
     geom.Load("scenarios/free_sim.geom");
   }
   
   // Create the fluid solver
-  Compute comp(&geom, &param);
+  Compute comp(&geom, &param, &subst);
 
   #ifdef USE_DEBUG_VISU
   // Create and initialize the visualization
@@ -240,7 +245,13 @@ int main(int argc, char **argv) {
           visugrid = comp.GetVorticity();
           break;
         case 6:
-          visugrid = comp.GetC();
+          visugrid = subst.GetC(index_t(0));
+          break;
+        case 7:
+          visugrid = subst.GetC(index_t(1));
+          break;
+        case 8:
+          visugrid = subst.GetC(index_t(2));
           break;
         default:
           break;
@@ -264,7 +275,9 @@ int main(int argc, char **argv) {
         vtk.AddScalar("Pressure", comp.GetP());
         vtk.AddScalar("Stream", comp.GetStream());
         vtk.AddScalar("Vorticity", comp.GetVorticity());
-        vtk.AddScalar("Substance", comp.GetC());
+        string label = "Substance ";
+        for (index_t cc=0; cc<subst.N(); ++cc)
+          vtk.AddScalar((label + to_string(cc)).c_str(), subst.GetC(cc));
         vtk.Finish();
         
         // Create VTK File for particles of the streakline
@@ -306,7 +319,9 @@ int main(int argc, char **argv) {
     vtk.AddScalar("Pressure", comp.GetP());
     vtk.AddScalar("Stream", comp.GetStream());
     vtk.AddScalar("Vorticity", comp.GetVorticity());
-    vtk.AddScalar("Substance", comp.GetC());
+    string label = "Substance ";
+    for (index_t cc=0; cc<subst.N(); ++cc)
+      vtk.AddScalar((label + to_string(cc)).c_str(), subst.GetC(cc));
     vtk.Finish();
     
     // Create VTK File for particles of the streakline

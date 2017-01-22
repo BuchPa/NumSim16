@@ -29,7 +29,8 @@ srcs = ['src/main.cpp',
         'src/csv.cpp',
         'src/vtk.cpp',
         'src/tests.cpp',
-        'src/visu.cpp'
+        'src/visu.cpp',
+        'src/substance.cpp'
         ]
 
 # check if debug-visualization should be build.

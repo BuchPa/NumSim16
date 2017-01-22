@@ -78,11 +78,11 @@ void Grid::Initialize(const real_t &value) {
   }
 }
 
-real_t &Grid::Cell(const Iterator &it) {
+real_t &Grid::Cell(const index_t &it) {
   return _data[it];
 }
 
-const real_t &Grid::Cell(const Iterator &it) const {
+const real_t &Grid::Cell(const index_t &it) const {
   return _data[it];
 }
 

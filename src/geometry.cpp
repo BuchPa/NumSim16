@@ -28,9 +28,6 @@ Geometry::Geometry(){
   // Init p boundary values
   _pressure = 0.0;
   
-  // Init c boundary values
-  _concentration = 0.0;
-  
   // Calculate and "bake" neighbor codes used in calculating boundary values
   // for free geometries
   _baked_neighbors = new int[_size[0] * _size[1]];
@@ -89,13 +86,6 @@ void Geometry::Load(const char *file){
     if (strcmp(name, "pressure") == 0) {
       if (fscanf(handle, " %lf\n", &inval[0])) {
         _pressure = inval[0];
-      }
-      continue;
-    }
-
-    if (strcmp(name, "concentration") == 0) {
-      if (fscanf(handle, " %lf\n", &inval[0])) {
-        _concentration = inval[0];
       }
       continue;
     }
@@ -411,117 +401,6 @@ void Geometry::CycleBoundary_V(Grid *v, BoundaryIterator boit) const{
     }
 }
 
-void Geometry::Update_C(Grid *c) const{
-  BoundaryIterator boit(this, 1);
-  
-  // Set left boundary
-  boit.SetBoundary(4);
-  this->CycleBoundary_C(c, boit);
-  
-  // Set right boundary
-  boit.SetBoundary(2);
-  this->CycleBoundary_C(c, boit);
-  
-  // Set lower boundary
-  boit.SetBoundary(1);
-  this->CycleBoundary_C(c, boit);
-
-  // Set upper boundary
-  boit.SetBoundary(3);
-  this->CycleBoundary_C(c, boit);
-  
-  // Set corners to avg of neighbour cells
-  Iterator cbl = boit.CornerBottomLeft();
-  c->Cell(cbl) = (c->Cell(cbl.Right()) + c->Cell(cbl.Top()))/2.0;
-  
-  Iterator cbr = boit.CornerBottomRight();
-  c->Cell(cbr) = (c->Cell(cbr.Left()) + c->Cell(cbr.Top()))/2.0;
-  
-  Iterator ctl = boit.CornerTopLeft();
-  c->Cell(ctl) = (c->Cell(ctl.Right()) + c->Cell(ctl.Down()))/2.0;
-  
-  Iterator ctr = boit.CornerTopRight();
-  c->Cell(ctr) = (c->Cell(ctr.Left()) + c->Cell(ctr.Down()))/2.0; 
-
-  ObstacleIterator oit = ObstacleIterator(this);
-
-  for(; oit.Valid(); oit.Next()) {
-    switch (_baked_neighbors[oit]) {
-      case 13:
-        c->Cell(oit) = c->Cell(oit.Top());
-        break;
-
-      case 11:
-        c->Cell(oit) = c->Cell(oit.Right());
-        break;
-
-      case 7:
-        c->Cell(oit) = c->Cell(oit.Down());
-        break;
-
-      case 14:
-        c->Cell(oit) = c->Cell(oit.Left());
-        break;
-
-      case 3:
-        c->Cell(oit) = 0.5 * (c->Cell(oit.Right()) + c->Cell(oit.Down()));
-        break;
-
-      case 9:
-        c->Cell(oit) = 0.5 * (c->Cell(oit.Right()) + c->Cell(oit.Top()));
-        break;
-
-      case 12:
-        c->Cell(oit) = 0.5 * (c->Cell(oit.Left()) + c->Cell(oit.Top()));
-        break;
-
-      case 6:
-        c->Cell(oit) = 0.5 * (c->Cell(oit.Left()) + c->Cell(oit.Down()));
-        break;
-    }
-  }
-}
-
-void Geometry::CycleBoundary_C(Grid *c, BoundaryIterator boit) const{
-  for (; boit.Valid(); boit.Next())
-    switch(this->CellTypeAt(boit)){
-
-      // In the following, we can reuse the pressure methods, since they work
-      // the same for the concentration
-      case CellType::Obstacle:
-        this->SetPNeumann(c, boit, 0.0);
-        break;
-        
-      case CellType::Inflow:
-        this->SetPNeumann(c, boit, 0.0);
-        break;
-        
-      case CellType::H_Inflow:
-        throw std::runtime_error(std::string("Not implemented!"));
-        break;
-        
-      case CellType::V_Inflow:
-        this->SetPNeumann(c, boit, 0.0);
-        break;
-        
-      case CellType::Outflow:
-        this->SetPDirichlet(c, boit, 0.0);
-        break;
-        
-      case CellType::V_Slip:
-        this->SetPDirichlet(c, boit, _concentration);
-        break;
-        
-      case CellType::H_Slip:
-        this->SetPDirichlet(c, boit, _concentration);
-        break;
-        
-      default:
-        throw std::runtime_error(std::string("Unknown boundary condition: "+ std::to_string(this->CellTypeAt(boit))));
-        break;
-    }
-}
-
 void Geometry::Update_P(Grid *p) const{
   BoundaryIterator boit(this, 1);
   
@@ -826,6 +705,10 @@ char Geometry::CellTypeAt(index_t xpos, index_t ypos) const {
   return _cells[ypos * _size[0] + xpos];
 }
 
+int Geometry::BakedNeighbors(index_t pos) const {
+  return _baked_neighbors[pos];
+}
+
 const char* Geometry::GetCells() const {
   return _cells;
 }
@@ -842,18 +725,4 @@ int* Geometry::NeighbourCode(index_t pos) const {
   _nb[3] = pos % _size[0] == 0 ? 1 : _cells[_nb[3]] != CellType::Fluid;
 
   return _nb;
-}
-
-void Geometry::Init_C(Grid *c) const {
-  InteriorIterator it(this);
-  real_t x,y;
-  for (;it.Valid(); it.Next()) {
-    if (this->CellTypeAt(it) == CellType::Fluid){
-      x = it.Pos()[0] * this->Mesh()[0] - 0.15 * this->Length()[0];
-      y = it.Pos()[1] * this->Mesh()[1] - 0.6 * this->Length()[1];
-      c->Cell(it) = pow(x*x + y*y, 0.5) > 0.01 * this->Length()[1] ? 0.0 : 0.5;
-    }
-  }
-
-  this->Update_C(c); // Setting boundary values
 }

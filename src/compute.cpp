@@ -13,14 +13,13 @@ using namespace std;
 #define DYNAMIC_TIMESTEP true
 #define PARTICLE_PERIOD 5
 
-Compute::Compute(const Geometry *geom, const Parameter *param)
-    : _geom(geom), _param(param) {
+Compute::Compute(const Geometry *geom, const Parameter *param, const Substance *subst)
+    : _geom(geom), _param(param), _subst(subst) {
   
   // Calculate offsets
   multi_real_t offset_u;
   multi_real_t offset_v;
   multi_real_t offset_p;
-  multi_real_t offset_c;
   
   offset_u[0] = geom->Mesh()[0];
   offset_u[1] = geom->Mesh()[1]/2.0;
@@ -30,9 +29,6 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   
   offset_p[0] = geom->Mesh()[0]/2.0;
   offset_p[1] = geom->Mesh()[1]/2.0;
-
-  offset_c[0] = geom->Mesh()[0]/2.0;
-  offset_c[1] = geom->Mesh()[1]/2.0;
   
   // Create and velocity / pressure field
   _u = new Grid(geom, offset_u);
@@ -44,9 +40,6 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   _G   = new Grid(geom);
   _rhs = new Grid(geom);
   _tmp = new Grid(geom);
-
-  // Create concentration field
-  _c   = new Grid(geom, offset_c);
   
   // Create visu fields for stream lines and GetVorticity
   multi_real_t offset_visufields;
@@ -57,11 +50,10 @@ Compute::Compute(const Geometry *geom, const Parameter *param)
   _stream = new Grid(geom, offset_visufields);
   _vort   = new Grid(geom, offset_visufields);
   
-  // Init velocity / pressure / concentration fields
+  // Init velocity / pressure fields
   geom->Update_U(_u);
   geom->Update_V(_v);
   geom->Update_P(_p);
-  geom->Init_C(_c);
 
   // Init time
   _t = 0.0;
@@ -99,7 +91,6 @@ Compute::~Compute() {
   delete _u;
   delete _v;
   delete _p;
-  delete _c;
 
   delete _F;
   delete _G;
@@ -127,10 +118,6 @@ const Grid *Compute::GetV() const {
 
 const Grid *Compute::GetP() const {
   return _p;
-}
-
-const Grid *Compute::GetC() const {
-  return _c;
 }
 
 const Grid *Compute::GetRHS() const{
@@ -245,8 +232,8 @@ bool Compute::TimeStep(int stepNr) {
   _geom->Update_U(_u);
   _geom->Update_V(_v);
   
-  // Compute diffusion-convection of substance
-  this->NewConcentration(dt);
+  // Compute diffusion-convection-reaction of substance
+  _subst->NewConcentrations(dt, _u, _v);
 
   // Update positions of particles for streaklines and particle tracing
   this->ComputeStreaklines(dt, stepNr % PARTICLE_PERIOD == 0);
@@ -298,24 +285,6 @@ void Compute::NewVelocities(const real_t &dt){
       _v->Cell(init) = _G->Cell(init) - dt * _p->dy_r(init);
     }
   }
-}
-
-void Compute::NewConcentration(const real_t &dt) {
-  InteriorIterator init(_geom);
-
-  // Cycle to compute c
-  for (init.First(); init.Valid(); init.Next()) {
-    if (_geom->CellTypeAt(init) == CellType::Fluid){
-      _c->Cell(init) =
-        _c->Cell(init) // Initial value
-        + _param->D() * dt * (_c->dxx(init) + _c->dyy(init)) // diffusion term
-        - dt * _c->DC_dCu_x(init, _param->Gamma(), _u) // x direction convection term
-        - dt * _c->DC_dCv_y(init, _param->Gamma(), _v) // y direction convection term
-        + _param->R() * dt * _c->Cell(init) * (1 - _c->Cell(init)); // Reaction term by Fisher (population)
-    }
-  }
-
-  _geom->Update_C(_c);
 }
 
 void Compute::MomentumEqu(const real_t &dt){
