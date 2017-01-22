@@ -310,7 +310,8 @@ void Compute::NewConcentration(const real_t &dt) {
         _c->Cell(init) // Initial value
         + _param->D() * dt * (_c->dxx(init) + _c->dyy(init)) // diffusion term
         - dt * _c->DC_dCu_x(init, _param->Gamma(), _u) // x direction convection term
-        - dt * _c->DC_dCv_y(init, _param->Gamma(), _v); // y direction convection term
+        - dt * _c->DC_dCv_y(init, _param->Gamma(), _v) // y direction convection term
+        + _param->R() * dt * _c->Cell(init) * (1 - _c->Cell(init)); // Reaction term by Fisher (population)
     }
   }
 

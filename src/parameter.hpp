@@ -86,7 +86,15 @@ public:
   ///
   /// @return real_t The diffusion coefficient
   const real_t &D() const;
-
+  
+  /// Returns the reaction coefficient of the substance.
+  ///
+  /// @return real_t The reaction coefficient
+  const real_t &R() const;
+  
+  /// Returns the scaling of DonorCell for reaction part.
+  ///
+  /// @return real_t Scaling of DonorCell for reaction part.
   const real_t &Gamma() const;
 
 private:
@@ -122,6 +130,9 @@ private:
 
   /// _d real_t The diffusion coefficient
   real_t _d;
+  
+  /// _r real_t The reaction coefficient
+  real_t _r;
 
   /// _gamma real_t The upwind scheme parameter gamma
   real_t _gamma;
