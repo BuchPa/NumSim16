@@ -848,9 +848,11 @@ void Geometry::Init_C(Grid *c) const {
   InteriorIterator it(this);
   real_t x,y;
   for (;it.Valid(); it.Next()) {
-    x = it.Pos()[0] * this->Mesh()[0] - 0.05 * this->Length()[0];
-    y = it.Pos()[1] * this->Mesh()[1] - 0.5 * this->Length()[1];
-    c->Cell(it) = pow(x*x + y*y, 0.5) > 0.2 * this->Length()[1] ? 0.0 : 1.0;
+    if (this->CellTypeAt(it) == CellType::Fluid){
+      x = it.Pos()[0] * this->Mesh()[0] - 0.5 * this->Length()[0];
+      y = it.Pos()[1] * this->Mesh()[1] - 0.5 * this->Length()[1];
+      c->Cell(it) = pow(x*x + y*y, 0.5) > 0.2 * this->Length()[1] ? 0.0 : 1.0;
+    }
   }
 
   this->Update_C(c); // Setting boundary values
