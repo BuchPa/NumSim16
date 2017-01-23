@@ -233,7 +233,7 @@ void Substance::NewConcentrations(const real_t &dt, const Grid *u, const Grid *v
           // y direction convection term
           - dt * _c[self]->DC_dCv_y(init, _gamma[self], v)
           // quadratic reaction term (self-dependent only)
-          + _r[self][self] * dt * _c[self]->Cell(init) * (_l[self] - _c[self]->Cell(init))
+          + _r[self][self] * dt * _c[self]->Cell(init) * (_l[self] - _c[self]->Cell(init))/_l[self]
           // inter-dependent reaction terms (calculated above)
           + _rt[self] * dt;
       }
