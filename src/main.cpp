@@ -130,6 +130,7 @@ int main(int argc, char **argv) {
   } else {
     param.Load("scenarios/free_sim.param");
     geom.Load("scenarios/free_sim.geom");
+    subst.DefaultInit();
   }
   
   // Create the fluid solver

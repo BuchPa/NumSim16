@@ -10,10 +10,23 @@
 #include <ctype.h>   // isdigit
 
 Substance::Substance(const Geometry *geom) : _geom(geom){
-    
   // Init c boundary values
   _concentration = 0.0;
+}
+
+Substance::~Substance() {
+  for (index_t i=0; i<_n; ++i){
+    delete _c[i];
+    delete[] _r[i];
+  }
+  delete[] _c;
+  delete[] _r;
   
+  delete[] _gamma;
+  delete[] _d;
+}
+
+void Substance::DefaultInit() {
   // Init rest
   _n        = index_t(1);
   _r        = new real_t*[_n];
@@ -32,22 +45,6 @@ Substance::Substance(const Geometry *geom) : _geom(geom){
   _c    = new Grid*[_n];
   _c[0] = new Grid(_geom, offset_c);
   
-  
-}
-
-Substance::~Substance() {
-  for (index_t i=0; i<_n; ++i){
-    delete[] _c[i];
-    delete[] _r[i];
-  }
-  delete[] _c;
-  delete[] _r;
-  
-  delete[] _gamma;
-  delete[] _d;
-}
-
-void Substance::DefaultInit() const{
   this->InitCircle(_c[0], multi_real_t({0.15, 0.6}), 0.01);
 }
 
@@ -64,17 +61,6 @@ void Substance::Load(const char *file){
     
     if (strcmp(name, "n") == 0) {
       if (fscanf(handle, " %lf\n", &inval[0])) {
-        // Delete default substances
-        for (index_t i=0; i<_n; ++i){
-          delete[] _c[i];
-          delete[] _r[i];
-        }
-        delete[] _c;
-        delete[] _r;
-        
-        delete[] _gamma;
-        delete[] _d;
-        
         // Save new value for n
         _n = inval[0];
         
@@ -157,7 +143,7 @@ void Substance::Load(const char *file){
                 std::runtime_error(std::string("Unvalid character in Suspension::Load detected: "+ std::to_string(line[0]) +". Suspension load only accepts digits in the init block\n"));
               if (mask & (int)(line[i] - '0'))
                 _c[cc]->Cell((size[1] - 1 - j) * (size[0]) + i) = 1.0;
-              mask << 1;
+              mask = mask << 1;
             }
           }
 

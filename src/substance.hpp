@@ -17,7 +17,7 @@ public:
   
   /// Default init substace
   ///
-  void DefaultInit() const;
+  void DefaultInit();
 
   /// Loads values for the substance from a file.
   ///
