@@ -21,21 +21,29 @@ Substance::~Substance() {
   }
   delete[] _c;
   delete[] _r;
-  
+
+  delete[] _l;
+  delete[] _rt;
   delete[] _gamma;
   delete[] _d;
 }
 
 void Substance::DefaultInit() {
-  // Init rest
   _n        = index_t(1);
+
   _r        = new real_t*[_n];
   _r[0]     = new real_t[_n];
   _r[0][0]  = real_t(0.0001);
+
+  _rt        = new real_t[_n];
+  _rt[0]     = real_t(0.0);
+
   _gamma    = new real_t[_n];
   _gamma[0] = real_t(0.5);
+
   _d        = new real_t[_n];
   _d[0]     = real_t(0.001);
+
   _l        = new real_t[_n];
   _l[0]     = real_t(1.0);
   
@@ -56,7 +64,6 @@ void Substance::Load(const char *file){
   double inval[2];
   char name[20];
   char line[1000]; // Todo: Fix finite line length or add documentation for it
-  index_t cnt_r = 0;
 
   while (!feof(handle)) {
     if (!fscanf(handle, "%s =", name)) continue;
@@ -69,6 +76,8 @@ void Substance::Load(const char *file){
         // Create n new concentrations
         _gamma = new real_t[_n];
         _r     = new real_t*[_n];
+        _rt    = new real_t[_n];
+        _l     = new real_t[_n];
         _d     = new real_t[_n];
         _c     = new Grid*[_n];
         
@@ -102,13 +111,14 @@ void Substance::Load(const char *file){
     }
 
     if (strcmp(name, "r") == 0) {
-      for (index_t cc=0; cc<_n; ++cc) {
-        if (fscanf(handle, " %lf", &inval[0])) {
-          _r[cnt_r][cc] = inval[0];
+      for (index_t self = 0; self < _n; self++) {
+        for (index_t other = 0; other < _n; other++) {
+          if (fscanf(handle, " %lf", &inval[0])) {
+            _r[self][other] = inval[0];
+          }
         }
       }
       fscanf(handle, "\n");
-      cnt_r++;
       continue;
     }
 
@@ -190,15 +200,34 @@ void Substance::NewConcentrations(const real_t &dt, const Grid *u, const Grid *v
 
   // Cycle to compute c
   for (init.First(); init.Valid(); init.Next()) {
-    // Cycle concentrations
-    for (index_t cc=0; cc<_n; ++cc) {
-      if (_geom->CellTypeAt(init) == CellType::Fluid){
-        _c[cc]->Cell(init) =
-          _c[cc]->Cell(init) // Initial value
-          + _d[cc] * dt * (_c[cc]->dxx(init) + _c[cc]->dyy(init)) // diffusion term
-          - dt * _c[cc]->DC_dCu_x(init, _gamma[cc], u) // x direction convection term
-          - dt * _c[cc]->DC_dCv_y(init, _gamma[cc], v) // y direction convection term
-          + _r[cc][cc] * dt * _c[cc]->Cell(init) * (_l[cc] - _c[cc]->Cell(init)); // Reaction term by Fisher (population)
+    if (_geom->CellTypeAt(init) == CellType::Fluid) {
+
+      // Calculate inter-dependant reaction terms first, since they will change
+      // during calculation
+      for (index_t self=0; self < _n; self++) {
+        _rt[self] = real_t(0.0);
+        for (index_t other=0; other < _n; other++) {
+          if (self != other) {
+            _rt[self] += _r[self][other] * _c[self]->Cell(init) * _c[other]->Cell(init);
+          }
+        }
+      }
+
+      // Cycle concentrations
+      for (index_t self=0; self<_n; self++) {
+        _c[self]->Cell(init) =
+          // previous value
+          _c[self]->Cell(init)
+          // diffusion term
+          + _d[self] * dt * (_c[self]->dxx(init) + _c[self]->dyy(init))
+          // x direction convection term
+          - dt * _c[self]->DC_dCu_x(init, _gamma[self], u)
+          // y direction convection term
+          - dt * _c[self]->DC_dCv_y(init, _gamma[self], v)
+          // quadratic reaction term (self-dependent only)
+          + _r[self][self] * dt * _c[self]->Cell(init) * (_l[self] - _c[self]->Cell(init))
+          // inter-dependent reaction terms (calculated above)
+          + _rt[self] * dt;
       }
     }
   }

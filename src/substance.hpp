@@ -54,10 +54,13 @@ private:
   
   /// _r real_t Diffusion coefficients
   real_t *_d;
-  
+
   /// _r real_t Reaction coefficients
   real_t **_r;
-  
+
+  /// _rt real_t Reaction terms (used in synchronous calculation)
+  real_t *_rt;
+
   /// _l real_t Reaction limits (population limit)
   real_t *_l;
   
