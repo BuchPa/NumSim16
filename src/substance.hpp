@@ -58,6 +58,9 @@ private:
   /// _r real_t Reaction coefficients
   real_t **_r;
   
+  /// _l real_t Reaction limits (population limit)
+  real_t *_l;
+  
   /// _gamma real_t DonorCell parameters
   real_t *_gamma;
   

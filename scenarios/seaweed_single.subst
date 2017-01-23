@@ -1,5 +1,6 @@
 n = 1
 d = 0.0001000
 r = 0.005
+l = 1.0
 gamma = 0.8
 init = circle

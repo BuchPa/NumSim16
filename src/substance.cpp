@@ -36,6 +36,8 @@ void Substance::DefaultInit() {
   _gamma[0] = real_t(0.5);
   _d        = new real_t[_n];
   _d[0]     = real_t(0.001);
+  _l        = new real_t[_n];
+  _l[0]     = real_t(1.0);
   
   // Create single substance
   multi_real_t offset_c;
@@ -107,6 +109,16 @@ void Substance::Load(const char *file){
       }
       fscanf(handle, "\n");
       cnt_r++;
+      continue;
+    }
+
+    if (strcmp(name, "l") == 0) {
+      for (index_t cc=0; cc<_n; ++cc) {
+        if (fscanf(handle, " %lf", &inval[0])) {
+          _l[cc] = inval[0];
+        }
+      }
+      fscanf(handle, "\n");
       continue;
     }
 
@@ -186,7 +198,7 @@ void Substance::NewConcentrations(const real_t &dt, const Grid *u, const Grid *v
           + _d[cc] * dt * (_c[cc]->dxx(init) + _c[cc]->dyy(init)) // diffusion term
           - dt * _c[cc]->DC_dCu_x(init, _gamma[cc], u) // x direction convection term
           - dt * _c[cc]->DC_dCv_y(init, _gamma[cc], v) // y direction convection term
-          + _r[cc][cc] * dt * _c[cc]->Cell(init) * (1 - _c[cc]->Cell(init)); // Reaction term by Fisher (population)
+          + _r[cc][cc] * dt * _c[cc]->Cell(init) * (_l[cc] - _c[cc]->Cell(init)); // Reaction term by Fisher (population)
       }
     }
   }
