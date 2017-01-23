@@ -124,30 +124,35 @@ void Substance::Load(const char *file){
     // file content encodes the free concentrations
     if (strcmp(name, "init") == 0) {
       if (fscanf(handle, " %s\n", name)) {
-        index_t j = 0;
-        int result = 0;
-        
-        multi_index_t size = _geom->Size();
+        if (strcmp(name, "free") == 0) {
+          index_t j = 0;
+          int result = 0;
+          
+          multi_index_t size = _geom->Size();
 
-        while (!feof(handle)) {
-          result = fscanf(handle, "%s\n", line);
+          while (!feof(handle)) {
+            result = fscanf(handle, "%s\n", line);
 
-          if (!result) {
-            continue;
-          }
-
-          for (index_t i = 0; i < size[0]; i++){
-            index_t mask = 1;
-            for (index_t cc=0; cc < _n; ++cc){
-              if (!isdigit(line[i]))
-                std::runtime_error(std::string("Unvalid character in Suspension::Load detected: "+ std::to_string(line[0]) +". Suspension load only accepts digits in the init block\n"));
-              if (mask & (int)(line[i] - '0'))
-                _c[cc]->Cell((size[1] - 1 - j) * (size[0]) + i) = 1.0;
-              mask = mask << 1;
+            if (!result) {
+              continue;
             }
-          }
 
-          j++;
+            for (index_t i = 0; i < size[0]; i++){
+              index_t mask = 1;
+              for (index_t cc=0; cc < _n; ++cc){
+                if (!isdigit(line[i]))
+                  std::runtime_error(std::string("Unvalid character in Suspension::Load detected: "+ std::to_string(line[0]) +". Suspension load only accepts digits in the init block\n"));
+                if (mask & (int)(line[i] - '0'))
+                  _c[cc]->Cell((size[1] - 1 - j) * (size[0]) + i) = 1.0;
+                mask = mask << 1;
+              }
+            }
+
+            j++;
+          }
+        } else if (strcmp(name, "circle") == 0) {
+          for (index_t cc=0; cc < _n; ++cc)
+            this->InitCircle(_c[0], multi_real_t({0.15, 0.6}), 0.01, 0.5);
         }
       }
     }
@@ -363,14 +368,14 @@ void Substance::SetCNeumann(Grid *c, const BoundaryIterator &boit, const real_t 
   }
 }
 
-void Substance::InitCircle(Grid *c, const multi_real_t center, const real_t radius) const {
+void Substance::InitCircle(Grid *c, const multi_real_t center, const real_t radius, const real_t val) const {
   InteriorIterator it(_geom);
   real_t x,y;
   for (;it.Valid(); it.Next()) {
     if (_geom->CellTypeAt(it) == CellType::Fluid){
       x = it.Pos()[0] * _geom->Mesh()[0] - center[0] * _geom->Length()[0];
       y = it.Pos()[1] * _geom->Mesh()[1] - center[1] * _geom->Length()[1];
-      c->Cell(it) = pow(x*x + y*y, 0.5) > radius * _geom->Length()[1] ? 0.0 : 1.0;
+      c->Cell(it) = pow(x*x + y*y, 0.5) > radius * _geom->Length()[1] ? 0.0 : val;
     }
   }
 

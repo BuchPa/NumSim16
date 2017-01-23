@@ -93,7 +93,8 @@ private:
   /// @param c Grid The concentration field c
   /// @param center multi_real_t The circle center
   /// @param radius real_t The radius of the circle
-  void InitCircle(Grid *c, const multi_real_t center, const real_t radius) const;
+  /// @param val real_t Value to set inside the circle. Default: 1.0
+  void InitCircle(Grid *c, const multi_real_t center, const real_t radius, const real_t val=1.0) const;
 };
 //------------------------------------------------------------------------------
 #endif // __SUBSTANCE_HPP
