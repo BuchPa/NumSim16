@@ -57,10 +57,15 @@ Compute::Compute(const Geometry *geom, const Parameter *param, const Substance *
 
   // Init time
   _t = 0.0;
-  
-  // Compute cfl time step limitation
-  _diff = _param->Re() *     (pow(_geom->Mesh()[0],2.0) * pow(_geom->Mesh()[1],2.0))
-                        /( 4*(pow(_geom->Mesh()[0],2.0) + pow(_geom->Mesh()[1],2.0)) );
+
+  // Compute cfl time step limitation and check against similar restrictions
+  // for each substance diffusion terms. We select the minimum of all.
+  _diff = _param->Re() * (pow(_geom->Mesh()[0], 2.0) * pow(_geom->Mesh()[1], 2.0))
+    / (4 * (pow(_geom->Mesh()[0], 2.0) + pow(_geom->Mesh()[1], 2.0)));
+  real_t prandtl = _param->Re();
+  for (index_t i = 0; i < _subst->N(); i++) {
+    _diff = min(_diff, pow(max(_geom->Mesh()[0], _geom->Mesh()[1]), 2.0) / (4 * _subst->D(i)));
+  }
   
   // Init _solver
   _solver = new SOR(_geom,_param->Omega());
@@ -191,7 +196,7 @@ bool Compute::TimeStep(int stepNr) {
   // and a minimum timestep
   real_t dt;
   if (DYNAMIC_TIMESTEP) {
-    dt = _param->Tau() * min(_dtlimit, min(min(cfl_x, cfl_y), _diff));
+    dt = _param->Tau() * min(min(min(cfl_x, cfl_y), _diff), _dtlimit);
   } else {
     dt = _dtlimit;
   }

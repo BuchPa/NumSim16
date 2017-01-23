@@ -191,6 +191,14 @@ const Grid *Substance::GetC(const index_t n_subst) const{
   }
 }
 
+real_t Substance::D(index_t idx) const {
+  if (idx >= _n) {
+    throw std::runtime_error(std::string("Unknown substance index: "+ std::to_string(idx)));
+  } else {
+    return _d[idx];
+  }
+}
+
 const index_t &Substance::N() const{
   return _n;
 }

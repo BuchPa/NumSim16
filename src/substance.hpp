@@ -28,7 +28,14 @@ public:
   ///
   /// @return Grid The grid containing the substance concentration n_subst.
   const Grid *GetC(const index_t n_subst) const;
-  
+
+  /// Returns the substance diffusion coefficient with the
+  /// given index. Indizes are numbered starting with 0.
+  ///
+  /// @param idx index_t Which substance
+  /// @return real_t The diffusion coefficient of the substance
+  real_t D(const index_t idx) const;
+
   /// Returns the number of substances.
   ///
   /// @return index_t The number of substances.
