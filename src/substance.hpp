@@ -14,6 +14,10 @@ public:
 
   /// Desctructor.
   ~Substance();
+  
+  /// Default init substace
+  ///
+  void DefaultInit() const;
 
   /// Loads values for the substance from a file.
   ///

@@ -120,8 +120,13 @@ int main(int argc, char **argv) {
     param.Load(("scenarios/" + scenarioName + ".param").c_str());
     geom.Load(("scenarios/" + scenarioName + ".geom").c_str());
     // Load subst only if available
-    if (file_exists("scenarios/" + scenarioName + ".subst"))
+    if (file_exists("scenarios/" + scenarioName + ".subst")){
       subst.Load(("scenarios/" + scenarioName + ".subst").c_str());
+      
+    // Else init default substance
+    } else {
+      subst.DefaultInit();
+    }
   } else {
     param.Load("scenarios/free_sim.param");
     geom.Load("scenarios/free_sim.geom");

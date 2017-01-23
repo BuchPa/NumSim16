@@ -31,8 +31,7 @@ Substance::Substance(const Geometry *geom) : _geom(geom){
   
   _c    = new Grid*[_n];
   _c[0] = new Grid(_geom, offset_c);
-  this->InitCircle(_c[0], multi_real_t({0.15, 0.6}), 0.01);
-  this->Update_C(_c[0]);
+  
   
 }
 
@@ -46,6 +45,10 @@ Substance::~Substance() {
   
   delete[] _gamma;
   delete[] _d;
+}
+
+void Substance::DefaultInit() const{
+  this->InitCircle(_c[0], multi_real_t({0.15, 0.6}), 0.01);
 }
 
 void Substance::Load(const char *file){
