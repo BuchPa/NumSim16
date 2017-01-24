@@ -62,7 +62,6 @@ Compute::Compute(const Geometry *geom, const Parameter *param, const Substance *
   // for each substance diffusion terms. We select the minimum of all.
   _diff = _param->Re() * (pow(_geom->Mesh()[0], 2.0) * pow(_geom->Mesh()[1], 2.0))
     / (4 * (pow(_geom->Mesh()[0], 2.0) + pow(_geom->Mesh()[1], 2.0)));
-  real_t prandtl = _param->Re();
   for (index_t i = 0; i < _subst->N(); i++) {
     _diff = min(_diff, pow(max(_geom->Mesh()[0], _geom->Mesh()[1]), 2.0) / (4 * _subst->D(i)));
   }
