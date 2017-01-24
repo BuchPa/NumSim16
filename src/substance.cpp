@@ -64,6 +64,7 @@ void Substance::Load(const char *file){
   double inval[2];
   char name[20];
   char line[1000]; // Todo: Fix finite line length or add documentation for it
+  bool expected = true;
 
   while (!feof(handle)) {
     if (!fscanf(handle, "%s =", name)) continue;
@@ -106,7 +107,7 @@ void Substance::Load(const char *file){
           _d[cc] = inval[0];
         }
       }
-      fscanf(handle, "\n");
+      expected = expected && fscanf(handle, "\n");
       continue;
     }
 
@@ -118,7 +119,7 @@ void Substance::Load(const char *file){
           }
         }
       }
-      fscanf(handle, "\n");
+      expected = expected && fscanf(handle, "\n");
       continue;
     }
 
@@ -128,7 +129,7 @@ void Substance::Load(const char *file){
           _l[cc] = inval[0];
         }
       }
-      fscanf(handle, "\n");
+      expected = expected && fscanf(handle, "\n");
       continue;
     }
 
@@ -138,7 +139,7 @@ void Substance::Load(const char *file){
           _gamma[cc] = inval[0];
         }
       }
-      fscanf(handle, "\n");
+      expected = expected && fscanf(handle, "\n");
       continue;
     }
 
