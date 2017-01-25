@@ -329,7 +329,7 @@ void Substance::CycleBoundary_C(Grid *c, BoundaryIterator boit) const{
       // In the following, we can reuse the pressure methods, since they work
       // the same for the concentration
       case CellType::Obstacle:
-        this->SetCNeumann(c, boit, 0.0);
+        this->SetCDirichlet(c, boit, 0.0);
         break;
         
       case CellType::Inflow:
@@ -345,15 +345,15 @@ void Substance::CycleBoundary_C(Grid *c, BoundaryIterator boit) const{
         break;
         
       case CellType::Outflow:
-        this->SetCDirichlet(c, boit, 0.0);
+        this->SetCNeumann(c, boit, 0.0);
         break;
         
       case CellType::V_Slip:
-        this->SetCDirichlet(c, boit, _concentration);
+        this->SetCNeumann(c, boit, 0.0);
         break;
         
       case CellType::H_Slip:
-        this->SetCDirichlet(c, boit, _concentration);
+        this->SetCNeumann(c, boit, 0.0);
         break;
         
       default:
