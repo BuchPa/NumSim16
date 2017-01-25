@@ -288,35 +288,35 @@ void Substance::Update_C(Grid *c) const{
   for(; oit.Valid(); oit.Next()) {
     switch (_geom->BakedNeighbors(oit)) {
       case 13:
-        c->Cell(oit) = c->Cell(oit.Top());
+        c->Cell(oit) = -c->Cell(oit.Top());
         break;
 
       case 11:
-        c->Cell(oit) = c->Cell(oit.Right());
+        c->Cell(oit) = -c->Cell(oit.Right());
         break;
 
       case 7:
-        c->Cell(oit) = c->Cell(oit.Down());
+        c->Cell(oit) = -c->Cell(oit.Down());
         break;
 
       case 14:
-        c->Cell(oit) = c->Cell(oit.Left());
+        c->Cell(oit) = -c->Cell(oit.Left());
         break;
 
       case 3:
-        c->Cell(oit) = 0.5 * (c->Cell(oit.Right()) + c->Cell(oit.Down()));
+        c->Cell(oit) = -0.5 * (c->Cell(oit.Right()) + c->Cell(oit.Down()));
         break;
 
       case 9:
-        c->Cell(oit) = 0.5 * (c->Cell(oit.Right()) + c->Cell(oit.Top()));
+        c->Cell(oit) = -0.5 * (c->Cell(oit.Right()) + c->Cell(oit.Top()));
         break;
 
       case 12:
-        c->Cell(oit) = 0.5 * (c->Cell(oit.Left()) + c->Cell(oit.Top()));
+        c->Cell(oit) = -0.5 * (c->Cell(oit.Left()) + c->Cell(oit.Top()));
         break;
 
       case 6:
-        c->Cell(oit) = 0.5 * (c->Cell(oit.Left()) + c->Cell(oit.Down()));
+        c->Cell(oit) = -0.5 * (c->Cell(oit.Left()) + c->Cell(oit.Down()));
         break;
     }
   }
@@ -329,7 +329,7 @@ void Substance::CycleBoundary_C(Grid *c, BoundaryIterator boit) const{
       // In the following, we can reuse the pressure methods, since they work
       // the same for the concentration
       case CellType::Obstacle:
-        this->SetCNeumann(c, boit, 0.0);
+        this->SetCDirichlet(c, boit, 0.0);
         break;
         
       case CellType::Inflow:
@@ -345,15 +345,15 @@ void Substance::CycleBoundary_C(Grid *c, BoundaryIterator boit) const{
         break;
         
       case CellType::Outflow:
-        this->SetCDirichlet(c, boit, 0.0);
+        this->SetCNeumann(c, boit, 0.0);
         break;
         
       case CellType::V_Slip:
-        this->SetCDirichlet(c, boit, _concentration);
+        this->SetCNeumann(c, boit, 0.0);
         break;
         
       case CellType::H_Slip:
-        this->SetCDirichlet(c, boit, _concentration);
+        this->SetCNeumann(c, boit, 0.0);
         break;
         
       default:
