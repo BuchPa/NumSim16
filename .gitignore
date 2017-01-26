@@ -35,3 +35,6 @@ doc/
 
 # Ignore Karman VTK folder (1 Gig space)
 Results/Blatt03/Karman/VTK/
+
+# Ignore the Blatt05 results (we will add the files manually with "git add")
+Results/Blatt05/*
