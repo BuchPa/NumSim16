@@ -166,7 +166,7 @@ void Substance::Load(const char *file){
                 if (!isdigit(line[i]))
                   std::runtime_error(std::string("Unvalid character in Suspension::Load detected: "+ std::to_string(line[0]) +". Suspension load only accepts digits in the init block\n"));
                 if (mask & (int)(line[i] - '0'))
-                  _c[cc]->Cell((size[1] - 1 - j) * (size[0]) + i) = 1.0;
+                  _c[cc]->Cell((size[1] - 1 - j) * (size[0]) + i) = _l[cc];
                 mask = mask << 1;
               }
             }
