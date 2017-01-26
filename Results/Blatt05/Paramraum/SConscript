@@ -1,0 +1,15 @@
+# import exported environment
+Import('env')
+
+# collect sources.
+# do not use glob here, because else you have to fiddle out visu.cpp if it
+# should not be built
+srcs = ['reactions.cpp',
+        'renderer.cpp'
+        ]
+
+# give the program a name
+name = 'reactions'
+
+# build it
+env.Program(name, srcs)
