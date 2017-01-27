@@ -35,15 +35,19 @@ int main() {
   _l[0] = 2.0;
   _l[1] = 10.0;
 
-  double dt = 0.05;
+  double dt = 0.1;
   double tend = 0.0;
 
-  double r00l = 0.1,
+  /*double r00l = 0.1,
     r00u = 0.13,
     r01l = 0.016,
-    r01u = 0.018;
+    r01u = 0.018;*/
+  double r00l = -15.245,
+    r00u = 15.475,
+    r01l = -0.8272,
+    r01u = 1.536;
 
-  int N = 60;
+  int N = 300;
   double h1 = (r00u - r00l) / N;
   double h2 = (r01u - r01l) / N;
 
@@ -96,14 +100,26 @@ int main() {
   }
 
   Renderer r = Renderer();
-  int S = 5;
+  int S = 2;
   r.Init(N*S, N*S);
+
+  double min = 500.0, max = 0.0;
+  for (int i = 0; i < N; i++) {
+    for (int j = 0; j < N; j++) {
+      if (_points[i][j] > max) {
+        max = _points[i][j];
+      }
+      if (_points[i][j] < min) {
+        min = _points[i][j];
+      }
+    }
+  }
 
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
       for (int k = 0; k < S; k++) {
         for (int l = 0; l < S; l++) {
-          int val = std::min(255, std::max(0, (int)floor(255 * _points[i][j] / 500)));
+          int val = std::min(255, std::max(0, (int)floor(255 * (_points[i][j] - min) / max)));
           r.SetPixelRGB(i*S+k, j*S+l, val, val, val);
         }
       }
