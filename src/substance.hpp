@@ -71,6 +71,15 @@ private:
   /// _l real_t Reaction limits (population limit)
   real_t *_l;
   
+  /// _k real_t Kill coefficients (-> Grey-Scott)
+  real_t _k;
+  
+  /// _f real_t Feed coefficients (-> Grey-Scott)
+  real_t _f;
+  
+  /// _useGS bool Flag, whether to use the Grey-Scott terms (n=2 only)
+  bool _useGS;
+  
   /// _gamma real_t DonorCell parameters
   real_t *_gamma;
   
@@ -108,6 +117,8 @@ private:
   /// @param radius real_t The radius of the circle
   /// @param val real_t Value to set inside the circle. Default: 1.0
   void InitCircle(Grid *c, const multi_real_t center, const real_t radius, const real_t val=1.0) const;
+  
+  void InitSquare(Grid *c, const multi_real_t center, const real_t width, const real_t height, const real_t val) const;
 };
 //------------------------------------------------------------------------------
 #endif // __SUBSTANCE_HPP

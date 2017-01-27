@@ -55,6 +55,11 @@ void Substance::DefaultInit() {
   _c    = new Grid*[_n];
   _c[0] = new Grid(_geom, offset_c);
   
+  // Turn Grey-Scott off
+  _k = 0;
+  _f = 0;
+  _useGS = false;
+  
   this->InitCircle(_c[0], multi_real_t({0.15, 0.6}), 0.01);
 }
 
@@ -90,6 +95,11 @@ void Substance::Load(const char *file){
           _c[cc] = new Grid(_geom, offset_c);
           _r[cc] = new real_t[_n];
         }
+        
+        // Turn Grey-Scott off
+        _k = 0;
+        _f = 0;
+        _useGS = false;
       }
       continue;
     }
@@ -142,6 +152,20 @@ void Substance::Load(const char *file){
       expected = expected && fscanf(handle, "\n");
       continue;
     }
+    
+    if (strcmp(name, "f") == 0) {
+      if (fscanf(handle, " %lf\n", &inval[0])) {
+        _f = inval[0];
+      }
+      continue;
+    }
+    
+    if (strcmp(name, "k") == 0) {
+      if (fscanf(handle, " %lf\n", &inval[0])) {
+        _k = inval[0];
+      }
+      continue;
+    }
 
     // As soon as we read the "init = free" line, we assume the remaining
     // file content encodes the free concentrations
@@ -176,12 +200,26 @@ void Substance::Load(const char *file){
         } else if (strcmp(name, "circle") == 0) {
           for (index_t cc=0; cc < _n; ++cc)
             this->InitCircle(_c[0], multi_real_t({0.15, 0.6}), 0.01, 0.5);
+        } else if (strcmp(name, "square") == 0) {
+          this->InitSquare(_c[0], multi_real_t({0.5, 0.5}), 1.0, 1.0, _l[0]);
+          this->InitSquare(_c[1], multi_real_t({0.5, 0.4}), 0.05, 0.05, _l[1]);
+          this->InitSquare(_c[1], multi_real_t({0.4, 0.5}), 0.05, 0.05, _l[1]);
+          this->InitSquare(_c[1], multi_real_t({0.5, 0.6}), 0.05, 0.05, _l[1]);
+          this->InitSquare(_c[1], multi_real_t({0.6, 0.5}), 0.05, 0.05, _l[1]);
         }
       }
     }
   }
 
   fclose(handle);
+  
+  if ((fabs(_f)>0)&&(fabs(_k)>0)) {
+    if (_n==2) {
+      _useGS = true;
+    } else {
+      throw std::runtime_error(std::string("Grey-Scott model works for n=2 only!"));
+    }
+  }
 }
 
 const Grid *Substance::GetC(const index_t n_subst) const{
@@ -210,7 +248,7 @@ void Substance::NewConcentrations(const real_t &dt, const Grid *u, const Grid *v
   // Cycle to compute c
   for (init.First(); init.Valid(); init.Next()) {
     if (_geom->CellTypeAt(init) == CellType::Fluid) {
-
+      
       // Calculate inter-dependant reaction terms first, since they will change
       // during calculation
       for (index_t self=0; self < _n; self++) {
@@ -228,15 +266,33 @@ void Substance::NewConcentrations(const real_t &dt, const Grid *u, const Grid *v
           // previous value
           _c[self]->Cell(init)
           // diffusion term
-          + _d[self] * dt * (_c[self]->dxx(init) + _c[self]->dyy(init))
+          + dt * _d[self] * (_c[self]->dxx(init) + _c[self]->dyy(init))
           // x direction convection term
           - dt * _c[self]->DC_dCu_x(init, _gamma[self], u)
           // y direction convection term
           - dt * _c[self]->DC_dCv_y(init, _gamma[self], v)
           // quadratic reaction term (self-dependent only)
-          + _r[self][self] * dt * _c[self]->Cell(init) * (_l[self] - _c[self]->Cell(init))/_l[self]
+          + dt * _r[self][self] * _c[self]->Cell(init) * (_l[self] - _c[self]->Cell(init))/_l[self]
           // inter-dependent reaction terms (calculated above)
-          + _rt[self] * dt;
+          + dt * _rt[self];
+      }
+      
+      if (_useGS) {
+        _c[0]->Cell(init) = 
+          // previous value
+          _c[0]->Cell(init)
+          // reaction
+          - dt * _c[0]->Cell(init) * _c[1]->Cell(init) * _c[1]->Cell(init)
+          // feed
+          + dt * _f *(1.0 - _c[0]->Cell(init));
+        
+        _c[1]->Cell(init) = 
+          // previous value
+          _c[1]->Cell(init)
+          // reaction
+          + dt * _c[0]->Cell(init) * _c[1]->Cell(init) * _c[1]->Cell(init)
+          // kill
+          - dt * (_k+_f) * _c[1]->Cell(init);
       }
     }
   }
@@ -245,6 +301,8 @@ void Substance::NewConcentrations(const real_t &dt, const Grid *u, const Grid *v
   for (index_t cc=0; cc<_n; ++cc)
     this->Update_C(_c[cc]);
   
+//   // Spawn B source
+//   this->InitSquare(_c[1], multi_real_t({0.9, 0.9}), 0.1, 0.1, 1.0);
 }
 
 /***************************************************************************
@@ -281,7 +339,7 @@ void Substance::Update_C(Grid *c) const{
   c->Cell(ctl) = (c->Cell(ctl.Right()) + c->Cell(ctl.Down()))/2.0;
   
   Iterator ctr = boit.CornerTopRight();
-  c->Cell(ctr) = (c->Cell(ctr.Left()) + c->Cell(ctr.Down()))/2.0; 
+  c->Cell(ctr) = (c->Cell(ctr.Left()) + c->Cell(ctr.Down()))/2.0;
 
   ObstacleIterator oit = ObstacleIterator(_geom);
 
@@ -426,6 +484,21 @@ void Substance::InitCircle(Grid *c, const multi_real_t center, const real_t radi
       x = it.Pos()[0] * _geom->Mesh()[0] - center[0] * _geom->Length()[0];
       y = it.Pos()[1] * _geom->Mesh()[1] - center[1] * _geom->Length()[1];
       c->Cell(it) = pow(x*x + y*y, 0.5) > radius * _geom->Length()[1] ? 0.0 : val;
+    }
+  }
+
+  this->Update_C(c); // Setting boundary values
+}
+
+void Substance::InitSquare(Grid *c, const multi_real_t center, const real_t width, const real_t height, const real_t val) const {
+  InteriorIterator it(_geom);
+  real_t x,y;
+  for (;it.Valid(); it.Next()) {
+    if (_geom->CellTypeAt(it) == CellType::Fluid){
+      x = (it.Pos()[0] / (double)_geom->Size()[0] - center[0]);
+      y = (it.Pos()[1] / (double)_geom->Size()[1] - center[1]);
+      if ((fabs(x)<width/2.0)&&(fabs(y)<height/2.0))
+        c->Cell(it) = val;
     }
   }
 
