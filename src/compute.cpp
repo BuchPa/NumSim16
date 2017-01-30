@@ -63,7 +63,8 @@ Compute::Compute(const Geometry *geom, const Parameter *param, const Substance *
   _diff = _param->Re() * (pow(_geom->Mesh()[0], 2.0) * pow(_geom->Mesh()[1], 2.0))
     / (4 * (pow(_geom->Mesh()[0], 2.0) + pow(_geom->Mesh()[1], 2.0)));
   for (index_t i = 0; i < _subst->N(); i++) {
-    _diff = min(_diff, pow(max(_geom->Mesh()[0], _geom->Mesh()[1]), 2.0) / (4 * _subst->D(i)));
+    _diff = min(_diff, (pow(_geom->Mesh()[0], 2.0) * pow(_geom->Mesh()[1], 2.0))
+      / (2 * _subst->D(i) * (pow(_geom->Mesh()[0], 2.0) + pow(_geom->Mesh()[1], 2.0))));
   }
   
   // Init _solver
