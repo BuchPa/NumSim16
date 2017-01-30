@@ -1,6 +1,7 @@
 \documentclass[12pt]{beamer}
 \usepackage[utf8x]{inputenc}
 \usepackage{amsmath}
+\usepackage{graphics}
 \title{Stofftransport \& Reaktionsgleichungen}
 \subtitle{Projekt zur Vorlesung Numerische Simulation WS16/17}
 \author{P.~Buchfink\inst{1} \and E.~Ott\inst{1} \and M.~Schleicher\inst{1}}
@@ -36,7 +37,7 @@
       Für Konvektion: "Vererbt" von Beschränkung für Strömungslöser
     \end{frame}
 
-  \section{Räuber-Beute-Modell}
+  \section{Reaktions-gleichungen}
     \begin{frame}
     \frametitle{Lotka-Volterra-Modell}
     $R(C,t)$ nicht analytisch bestimmbar. Modelliert als System von ODEs.
@@ -45,5 +46,37 @@
     
     Zudem: $\beta_{ii} = -\frac{\alpha_i}{L}$ mit L als Wachstumsgrenze
     \end{frame}
+    
+    \begin{frame}
+    \frametitle{Verhalten \& Stabilität}
+    \includegraphics[scale=0.5]{n1_anfangsbedingungen.png}
+    \end{frame}
+    
+    \begin{frame}
+    \frametitle{Verhalten \& Stabilität}
+    \includegraphics[scale=0.5]{n2_unged_schwingungen.png}
+    \end{frame}
+    
+    \begin{frame}
+    \frametitle{Verhalten \& Stabilität}
+    \includegraphics[scale=0.5]{n2_ged_schwingungen.png}
+    \end{frame}
+    
+    \begin{frame}
+    \frametitle{Verhalten \& Stabilität}
+    \includegraphics[scale=0.5]{n2_explodiert.png}
+    \end{frame}
+    
+    \begin{frame}
+    \frametitle{Verhalten \& Stabilität}
+    \begin{itemize}
+      \item Instabilität durch Parameter und Löser überlagert
+      \item Löser lässt sich durch symplektische Verfahren ersetzen
+      \item Parameterwahl nicht trivial, aber auch nicht willkürlich
+    \end{itemize}
+    \end{frame}
+    
+    \section{Algenwachstum Szenarien}
+    
 
 \end{document}
