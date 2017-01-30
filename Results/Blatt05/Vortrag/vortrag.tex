@@ -20,10 +20,11 @@
 \usepackage[version=3,arrows=pgf-filled]{mhchem}
 \usepackage[ruled, linesnumbered]{algorithm2e}
 \usepackage{calrsfs}
+\usepackage{bm}
 
 \title{Reaktions-Diffusions-Advektionsgleichung in 2D}
 \author{Etienne Ott, Moritz Schleicher, Patrick Buchfink }
-\institute{Numerische Simulation}
+\institute{Numerische Simulation WS16/17}
 \date{10. Februar 2017}
 
 
@@ -210,10 +211,40 @@
 \begin{frame}
 \frametitle{Wiederholung: Diffusions-Advektionsgleichung}
 
+\begin{center}
+\begin{tabular}{ c c }
+	Diffusion & Advektion \\
+	\(
+		\frac{\partial s(t,\bm{x})}{\partial t} = \nabla \cdot \left( \bm{D} \nabla s(t,\bm{x}) \right)
+	\)
+	&
+	\(
+		\frac{\partial s(t,\bm{x})}{\partial t} = - \nabla \cdot \bm{v}
+	\)
+	\\
+  \includegraphics[width=\textwidth/3,keepaspectratio]{Bilder/diffusion.pdf}
+	&
+  \includegraphics[width=\textwidth/3,keepaspectratio,angle=-90,origin=c]{Bilder/advection.pdf}
+	\\
+\end{tabular}
+\end{center}
+
 \end{frame}
 
 \begin{frame}
 \frametitle{Motivation: Reaktionen}
+
+\begin{center}
+\begin{tabular}{ c c }
+	Reaktion \\
+	\(
+		\frac{\partial s(t,\bm{x})}{\partial t} = R(s,t,\bm{x})
+	\)
+	\\
+  \includegraphics[height=\textwidth/3,keepaspectratio,angle=-90,origin=c]{Bilder/reaction.pdf}
+	\\
+\end{tabular}
+\end{center}
 
 \end{frame}
 
@@ -236,7 +267,17 @@
 
 \begin{frame}
 \frametitle{Idee des Gray-Scott Modells}
-
+\begin{itemize}
+  \reditem Zwei Substanzen A: Futter, B: Räuber
+    \begin{figure}[H]
+      \includegraphics[height=\textwidth/12,keepaspectratio,angle=-90,origin=c]{Bilder/substances.pdf}
+    \end{figure}
+  \reditem Phänomene
+  
+  \reditem Parameter
+    \
+    
+\end{itemize}
 \end{frame}
 
 %----------------------------------------------------------------------------------
