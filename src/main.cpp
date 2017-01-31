@@ -210,6 +210,15 @@ int main(int argc, char **argv) {
     csv.Init("CSV/multirun");
   }
 
+  if (OUTPUT_VTK) {
+    Grid* g = new Grid(&geom);
+    geom.FillCellType(g);
+    vtk.Init("VTK/celltypes");
+    vtk.AddScalar("Celltypes", g);
+    vtk.Finish();
+    delete g;
+  }
+
   const Grid *visugrid;
   bool run   = true;
   bool print = true;
