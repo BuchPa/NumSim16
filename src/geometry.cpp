@@ -713,6 +713,13 @@ const char* Geometry::GetCells() const {
   return _cells;
 }
 
+void Geometry::FillCellType(Grid* g) {
+  Iterator it(this);
+  for (; it.Valid(); it.Next()) {
+    g->Cell(it) = _cells[it] == CellType::Fluid ? 1.0 : 0.0;
+  }
+}
+
 int* Geometry::NeighbourCode(index_t pos) const {
   _nb[0] = pos - _size[0];
   _nb[1] = pos + 1;

@@ -138,6 +138,12 @@ public:
   ///   inflow boundary etc.
   const char* GetCells() const;
 
+  /// Fills a grid with the cell types of the cells encoded as float values.
+  /// Fluid cells get a value of 1.0, everything else 0.0.
+  ///
+  /// @param Grid* The grid that will be filled
+  void FillCellType(Grid* g);
+
 private:
   /// _size multi_index_t The number of cells in each dimension
   multi_index_t _size;
