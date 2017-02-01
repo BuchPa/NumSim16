@@ -61,11 +61,11 @@
   \section{Reaktions-gleichungen}
     \begin{frame}
     \frametitle{Lotka-Volterra-Modell}
-    $R(s,t)$ nicht analytisch bestimmbar. Modelliert als System von ODEs.
+    Reaktionsterm im Lotka-Volterra-Modell
     
-    $$\frac{ds_i}{dt} = \alpha_i s_i + \sum_{j=1}^{n} \beta_{ij} s_j$$
+    $$R(s,t) = \alpha_i s_i + s_i \sum_{j=1}^{n} \beta_{ij} s_j$$
     
-    Zudem: $\beta_{ii} = -\frac{\alpha_i}{L}$ mit L als Wachstumsgrenze
+    Zudem: $\beta_{ii} = -\frac{\alpha_i}{L_i}$ mit $L_i$ als Wachstumsgrenze
     
     {\tiny (\emph{Principes de biologie mathématique}, V. Volterra, Acta Biotheoretica, 1937, Volume 3, Issue 1, Pages 1–36)}
     \end{frame}
@@ -91,7 +91,7 @@
 	  \)
 	  &
 	  \(
-		p_A s_A (l_A-s_A)
+		\alpha_A s_A (l_A-s_A)
 	  \)
 	  &
 	  \(
@@ -109,17 +109,17 @@
 	  \)
 	  &
 	  \(
-		- p_B s_B (l_B-s_B)
+		- \alpha_B s_B (l_B-s_B)
 	  \)
 	  \\
       \end{tabular}
       \renewcommand{\arraystretch}{1.0}
       \begin{itemize}
-	  \item $p_A$ Reproduktionsrate der Beute
+	  \item $\alpha_A$ Reproduktionsrate der Beute
 	  \item $l_A$ Gleichgewichtspunkt der Beute
 	  \item $\gamma_A$ Fressrate der Räuber pro Beutelebewesen
 	  \item $\gamma_B$ Reproduktionsrate der Räuber pro Beutelebewesen
-	  \item $p_B$ Sterberate der Räuber
+	  \item $\alpha_B$ Sterberate der Räuber
 	  \item $l_B$ Gleichgewichtspunkt der Räuber
 	  \item $d_A, d_B$ Diffusions-Konstanten
       \end{itemize}
