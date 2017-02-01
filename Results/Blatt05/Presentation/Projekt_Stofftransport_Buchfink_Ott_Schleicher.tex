@@ -74,18 +74,20 @@
       \frametitle{Lotka-Volterra-Modell}
       \begin{itemize}
       \item Zwei Substanzen A: Beute, B: Jäger
-      \item Phänomene
+      \end{itemize}
+      \renewcommand{\arraystretch}{0.1}
+      \setlength{\tabcolsep}{0.2em} % for the horizontal padding
       \begin{tabular}{ r c c c }
 	  & Feed & Reaktion & Kill \\
 	  &
-      \includegraphics[scale=0.15,angle=-90,origin=c]{Bilder/lv_feed.pdf}
+      \includegraphics[scale=0.12,angle=-90]{Bilder/lv_feed.pdf}
 	  &
-      \includegraphics[scale=0.15,angle=-90,origin=c]{Bilder/lv_mix.pdf}
+      \includegraphics[scale=0.12,angle=-90]{Bilder/lv_mix.pdf}
       &
-      \includegraphics[scale=0.15,angle=-90,origin=c]{Bilder/lv_kill.pdf}
+      \includegraphics[scale=0.12,angle=-90]{Bilder/lv_kill.pdf}
 	  \\
 	  \(
-		R_A(s_A,s_B,t,\bm{x})=
+		R_A(s_A,s_B)=
 	  \)
 	  &
 	  \(
@@ -98,7 +100,7 @@
 	  &
 	  \\
 	  \(
-		R_B(s_A,s_B,t,\bm{x})=
+		R_B(s_A,s_B)=
 	  \)
 	  &
 	  &
@@ -111,18 +113,15 @@
 	  \)
 	  \\
       \end{tabular}
-
-      \item Parameter
+      \renewcommand{\arraystretch}{1.0}
       \begin{itemize}
-	  \item Reproduktionsrate der Beute $p_A$
-	  \item Gleichgewichtspunkt der Beute $l_A$
-	  \item Fressrate der Räuber pro Beute-Lebewesen $\gamma_A$
-	  \item Reproduktionsrate der Räuber pro Beute-Lebewesen $\gamma_B$
-	  \item Sterberate der Räuber $p_B$
-	  \item Gleichgewichtspunkt der Räuber $l_B$
-	  \item Diffusions-Konstanten $d_A, d_B$
-      \end{itemize}
-    
+	  \item $p_A$ Reproduktionsrate der Beute
+	  \item $l_A$ Gleichgewichtspunkt der Beute
+	  \item $\gamma_A$ Fressrate der Räuber pro Beutelebewesen
+	  \item $\gamma_B$ Reproduktionsrate der Räuber pro Beutelebewesen
+	  \item $p_B$ Sterberate der Räuber
+	  \item $l_B$ Gleichgewichtspunkt der Räuber
+	  \item $d_A, d_B$ Diffusions-Konstanten
       \end{itemize}
     \end{frame}
     
@@ -173,7 +172,10 @@
       \frametitle{Idee des Gray-Scott Modells}
       \begin{itemize}
       \item Zwei Substanzen A: Futter, B: Räuber
-      \item Phänomene
+      \renewcommand{\arraystretch}{0.1}
+      \setlength{\tabcolsep}{0.2em} % for the horizontal padding
+      \end{itemize}
+      
       \begin{tabular}{ r c c c }
 	  & Feed & Reaktion & Kill \\
 	  &
@@ -210,15 +212,14 @@
 	  \)
 	  \\
       \end{tabular}
+      \renewcommand{\arraystretch}{1.0}
 
-      \item Parameter
       \begin{itemize}
 	  \item Kill-Rate $k$
 	  \item Feed-Rate $f$
 	  \item Diffusions-Konstanten $d_A, d_B$
       \end{itemize}
     
-      \end{itemize}
       \end{frame}
 
       \begin{frame}
