@@ -35,7 +35,7 @@ int main() {
 
   double dt = 0.05;
 
-  for (double t = 0.0; t < 500.0; t += dt) {
+  for (double t = 0.0; t < 150.0; t += dt) {
     // Calculate inter-dependant reaction terms first, since they will change
     // during calculation
     for (int self=0; self < _n; self++) {
@@ -48,7 +48,7 @@ int main() {
     }
 
     // Cycle concentrations
-    for (int self=0; self<_n; self++) {
+    /*for (int self=0; self<_n; self++) {
       _c[self] =
         // previous value
         _c[self]
@@ -56,7 +56,10 @@ int main() {
         + _r[self][self] * dt * _c[self] * (_l[self] - _c[self]) / _l[self]
         // inter-dependent reaction terms (calculated above)
         + _rt[self] * dt;
-    }
+    }*/
+    double x = _c[0], rxx = _r[0][0], ryy = _r[1][1], y = _c[1], rxy = _r[0][1], ryx = _r[1][0];
+    _c[1] = (1/(1 - x*rxy*ryx*dt*dt*y))*(y+dt*(ryy*y*(_l[1]-y)/_l[1]+y*ryx*(x+dt*(rxx*x*(_l[0]-x)/_l[0]))));
+    _c[0] = x+dt*(rxx*x*(_l[0]-x)/_l[0]+x*rxy*_c[1]);
 
     printf("%lf %lf %lf\n", t, _c[0], _c[1]);
   }
