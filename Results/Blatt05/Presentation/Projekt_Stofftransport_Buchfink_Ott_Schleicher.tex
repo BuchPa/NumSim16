@@ -5,15 +5,9 @@
 \usepackage{bm}
 \title{Stofftransport \& Reaktionsgleichungen}
 \subtitle{Projekt zur Vorlesung Numerische Simulation WS16/17}
-\author{P.~Buchfink\inst{1} \and E.~Ott\inst{1} \and M.~Schleicher\inst{1}}
+\author{P.~Buchfink \and E.~Ott \and M.~Schleicher}
 \usetheme{Berkeley}
 \usecolortheme{crane}
-\institute
-{
-  \inst{1}
-  Institut \\
-  Universität Stuttgart
-}
 \subject{Simulation Technology}
 
 \begin{document}
@@ -37,8 +31,15 @@
       \includegraphics[scale=0.5,angle=-90,origin=c]{Bilder/advection.pdf}
 	\\
     \end{tabular}
+
+    \end{center}
+    \hfill
+    \begin{center}  
     
-    {\tiny (\emph{Stochastic Problems in Physics and Astronomy}, Page 41, S. Chandrasekhar, 1943, Reviews of Modern Physics, American Physical Society)}
+    {\tiny (\emph{Stochastic Problems in Physics and Astronomy}, Page 41, S. Chandrasekhar, 1943,
+    \\[-0.15cm]
+    Reviews of Modern Physics, American Physical Society)}
+    
     \end{center}
     \end{frame}
 
@@ -46,7 +47,14 @@
       \frametitle{Zeitschrittbeschränkung}
       Für Diffusion:
       $$\Delta t \leq \frac{\Delta x^2 \Delta y^2}{2D(\Delta x^2 + \Delta y^2)}$$
-      {\tiny (\emph{http://pauli.uni-muenster.de/tp/fileadmin/lehre/NumMethoden/WS0910/ScriptPDE/Heat.pdf}, Page 12)}
+      
+      \hfill
+      
+      {\tiny (\emph{pauli.uni-muenster.de/tp/fileadmin/lehre/NumMethoden/WS0910/ScriptPDE/Heat.pdf},
+	  \\[-0.15cm]
+      Page 12)}
+      
+      \hfill
       
       Für Advektion: "Vererbt" von Beschränkung für Strömungslöser
     \end{frame}
@@ -58,16 +66,22 @@
     Erweitert um allgemeinen Reaktionsterm R
   \end{frame}
 
-  \section{Reaktions-gleichungen}
+  \section{Lotka-Volterra}
     \begin{frame}
     \frametitle{Lotka-Volterra-Modell}
     Reaktionsterm im Lotka-Volterra-Modell
     
     $$R(s,t) = \alpha_i s_i + s_i \sum_{j=1}^{n} \beta_{ij} s_j$$
     
-    Zudem: $\beta_{ii} = -\frac{\alpha_i}{L_i}$ mit $L_i$ als Wachstumsgrenze
+    Zudem: $\beta_{ii} = -\frac{\alpha_i}{L_i}$ mit $L_i$ als Gleichgewichtspunkt
     
-    {\tiny (\emph{Principes de biologie mathématique}, V. Volterra, Acta Biotheoretica, 1937, Volume 3, Issue 1, Pages 1–36)}
+	\hfill    
+    
+    \begin{center}
+    {\tiny (\emph{Principes de biologie mathématique}, V. Volterra, Acta Biotheoretica, 1937,
+	\\[-0.15cm]    
+    Volume 3, Issue 1, Pages 1–36)}
+    \end{center}
     \end{frame}
     
     \begin{frame}
@@ -91,7 +105,7 @@
 	  \)
 	  &
 	  \(
-		\alpha_A s_A (l_A-s_A)
+		\alpha_A s_A (L_A-s_A)
 	  \)
 	  &
 	  \(
@@ -109,19 +123,16 @@
 	  \)
 	  &
 	  \(
-		- \alpha_B s_B (l_B-s_B)
+		- \alpha_B s_B (L_B-s_B)
 	  \)
 	  \\
       \end{tabular}
       \renewcommand{\arraystretch}{1.0}
       \begin{itemize}
 	  \item $\alpha_A$ Reproduktionsrate der Beute
-	  \item $l_A$ Gleichgewichtspunkt der Beute
 	  \item $\gamma_A$ Fressrate der Räuber pro Beutelebewesen
 	  \item $\gamma_B$ Reproduktionsrate der Räuber pro Beutelebewesen
 	  \item $\alpha_B$ Sterberate der Räuber
-	  \item $l_B$ Gleichgewichtspunkt der Räuber
-	  \item $d_A, d_B$ Diffusions-Konstanten
       \end{itemize}
     \end{frame}
     
@@ -154,7 +165,6 @@
     \end{itemize}
     \end{frame}
     
-    \section{Algenwachstum Szenarien}
     
     \begin{frame}
     \begin{center}
