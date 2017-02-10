@@ -17,7 +17,7 @@ Numerische Simulation 2016/2017
 
 ## Compile
 ### Main program
-1. ```scons debug=-1 -j #NP``` where #NP is replaced with the number of processors. Note that ```scons``` without any arguments can be used as well. The parameters then fall back to their default values. It is also not necessary to specify the number of processors at compile time. We assume this is merely a safety feature or may improve performance, though this is untested.
+1. ```scons opt=1 visu=1 ``` Note that ```scons``` without any arguments can be used as well. The parameters then fall back to their default values.
 
 To clear all cached files of the build process, run the shell script ```clear_cmake.sh```, e.g. with ```./clear_cmake.sh```. Make sure to be in the project folder when executing the script.
 
