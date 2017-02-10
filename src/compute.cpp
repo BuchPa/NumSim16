@@ -58,7 +58,7 @@ Compute::Compute(const Geometry *geom, const Parameter *param, const Substance *
   // Init time
   _t = 0.0;
 
-  // Compute cfl time step limitation and check against similar restrictions
+  // Compute solver time step limitation on diffusive part and check against similar restrictions
   // for each substance diffusion terms. We select the minimum of all.
   _diff = _param->Re() * (pow(_geom->Mesh()[0], 2.0) * pow(_geom->Mesh()[1], 2.0))
     / (4 * (pow(_geom->Mesh()[0], 2.0) + pow(_geom->Mesh()[1], 2.0)));
