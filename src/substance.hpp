@@ -118,6 +118,13 @@ private:
   /// @param val real_t Value to set inside the circle. Default: 1.0
   void InitCircle(Grid *c, const multi_real_t center, const real_t radius, const real_t val=1.0) const;
   
+  /// Init substance with a square at the position r.
+  /// 
+  /// @param c Grid The concentration field c
+  /// @param center multi_real_t The square center
+  /// @param width real_t The width of the square
+  /// @param height real_t The height of the square
+  /// @param val real_t Value to set inside the square. Default: 1.0
   void InitSquare(Grid *c, const multi_real_t center, const real_t width, const real_t height, const real_t val) const;
 };
 //------------------------------------------------------------------------------

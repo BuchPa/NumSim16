@@ -117,7 +117,20 @@ public:
   /// @param alpha real_t The alpha parameter; a weight for the DC algorithm
   real_t DC_vdv_y(const Iterator &it, const real_t &alpha) const;
 
+  /// Computes the derivative of the u field in x direction using the donor
+  /// cell method.
+  ///
+  /// @param it Iterator The position
+  /// @param gamma real_t A weight parameter for the DC algorithm
+  /// @param u Grid The grid containing the u velocities
   real_t DC_dCu_x(const Iterator &it, const real_t &gamma, const Grid *u) const;
+
+  /// Computes the derivative of the v field in y direction using the donor
+  /// cell method.
+  ///
+  /// @param it Iterator The position
+  /// @param gamma real_t A weight parameter for the DC algorithm
+  /// @param u Grid The grid containing the v velocities
   real_t DC_dCv_y(const Iterator &it, const real_t &gamma, const Grid *v) const;
 
   /// Returns the maximal value of the grid.
