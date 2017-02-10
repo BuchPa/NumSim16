@@ -11,8 +11,9 @@ Numerische Simulation 2016/2017
 1. ```git clone https://github.com/BuchPa/NumSim16.git```
 2. ```cd NumSim16```
 3. ```mkdir CSV```
-4. Compile the main program and the helper programs Magrathea and random. See section "Compile" for instructions
-5. ```doxygen doxyfile``` if you want source code documentation in a navigatable format like HTML. The created documentation can be found in the folder ```doc```.
+4. ```mkdir VTK```
+5. Compile the main program and the helper programs Magrathea and random. See section "Compile" for instructions
+6. ```doxygen doxyfile``` if you want source code documentation in a navigatable format like HTML. The created documentation can be found in the folder ```doc```.
 
 ## Compile
 ### Main program
@@ -49,6 +50,9 @@ When executing ```scons``` you can use three different compiler flags, that will
         shedding to appear.
     * ```driven_cavity```: A driven cavity problem where the upper border has a fixed velocity and the other three
         borders are walls.
+    * ```gs_cell```: A driven cavity problem with the Gray-Scott model building cells
+    * ```gs_mitose```: A driven cavity problem with the Gray-Scott model building a mitosis scenario
+    * ```seaweed```: A scenario with population dynamics simulating a seaweed scenario in the North Sea
 
 ### Using Magrathea to create a customized scenario
 The helper program Magrathea can be used to create a customized scenario without having to edit the geometry and parameter files manually. By default the scenario overwrites the existing scenario ```free_sim```. If you want to save a created scenario, simply copy the two files ```free_sim.geom``` and ```free_sim.param``` and rename them to something you'd like. You can then call the main program with your scenario name.
@@ -56,6 +60,7 @@ The helper program Magrathea can be used to create a customized scenario without
 1. ```chmod +x MagratheaWrapper.sh```: Depending on your operating system, you will need to make the shell script ```MagratheaWrapper``` executable
 2. Running ```./MagratheaWrapper.sh``` will create a geometry file from a list of prepared scenarios. This is helpful if your desired geometry is a variation on one of the existing scenarios. The implemented scenarios of Magrathea are: Channel, PressureChannel, Karman and Step. Channel and PressureChannel differ by how the channel flow is created by the boundary values. Channel uses a velocity based approach, while PressureChannel uses a pressure driven one.
 3. You will need to modify the shell script in order to choose the scenario and set the parameters to the values you need. Simply change the values of the named parameters and comment-in the correct scenario (as well as comment-out the currently selected one). The parameters are described in section "Parameters".
+4. Concentration files (subst) need to be created manually
 
 ### Creating a geometry file manually
 Since Magrathea only supports a given number of scenarios, you might need to create a geometry file manually in order to simulate your chosen problem. Let's have a look at an example geometry file:
